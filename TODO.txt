@@ -1,0 +1,17 @@
+STRUCTURE
+=========
+- Decide on programming convention. Namings etc.
+- CMake build and run profile for Visual Studio.
+- Get ClangTidy format file.
+- Use std::uint_32t and such?
+
+RENDERER
+========
+- Add mesh class that handles VBO, VAO, EBO, shaders, OpenGL stuff .
+- Add shader class to parse and feed shaders to the mesh.
+- Add cube.
+- Add floating camera.
+
+INPUT-MANAGER
+=============
+- Events or bitset? Must be easily managed by the game module.
