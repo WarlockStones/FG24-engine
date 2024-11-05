@@ -1,5 +1,7 @@
 #pragma once
 namespace FG24 {
+	class Renderer;
+	class InputManager;
 class Engine {
 public:
 	Engine() = default;
@@ -7,6 +9,8 @@ public:
 	bool Init();
 	void GameLoop();
 
-	class Renderer* renderer;
+private:
+	InputManager* inputManager;
+	Renderer* renderer;
 };
 }

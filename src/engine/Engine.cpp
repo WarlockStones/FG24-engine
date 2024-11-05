@@ -1,5 +1,6 @@
 #include "Engine.hpp"
 #include "../renderer/Renderer.hpp"
+#include "inputmanager/InputManager.hpp"
 #include <stdio.h>
 
 namespace FG24 {
@@ -10,20 +11,21 @@ namespace FG24 {
 			return 1;
 		}
 
+		inputManager = new InputManager();
 		return 0;
 	}
 
-	void Engine::GameLoop()
-	{
-		while (true)
-		{
+	void Engine::GameLoop()	{
+		while (inputManager->ProcessInputs()) {
 			renderer->Update();
 		}
 	}
 
-	Engine::~Engine()
-	{
+
+	Engine::~Engine() {
+		printf("Engine destructor started\n");
 		delete renderer;
+		delete inputManager;
 		printf("Engine destructor done\n");
 	}
 }
