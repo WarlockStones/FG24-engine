@@ -22,6 +22,9 @@ add_definitions(${OPENGL_DEFINITIONS})
 
 add_executable(FG24
 	src/main.cpp
+    src/glad/gl.c
+    src/engine/Engine.cpp
+    src/renderer/Renderer.cpp
 )
 
 # SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications

@@ -1,16 +1,12 @@
 // Copyright 2024 Changemaker Educations AB. All Rights Reserved
-#include <iostream>
-#include <SDL2/SDL.h>
-
+#include "engine/Engine.hpp"
+#include <stdio.h>
 int main(int argv, char** args)
 {
-  if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-  {
-    std::cerr<<"Error initializing SDL!\n";
-    return 1;
-  }
+	FG24::Engine engine;
+	if (engine.Init() == 0)	{
+		 engine.GameLoop();
+	}
 
-  SDL_Quit();
-  std::cout<<"Program ended successfully\n";
-  return 0;
+	printf("Program exited...\n");
 }
