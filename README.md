@@ -1,4 +1,5 @@
 # Futuregames 2024 Game engine
+Read the docs/ directory for code convention, TODO list, and general documentation.
 
 ## Compiling from source
 ### Windows:

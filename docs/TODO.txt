@@ -1,9 +1,12 @@
 STRUCTURE
 =========
-- Decide on programming convention. Namings etc.
 - CMake build and run profile for Visual Studio.
-- Get ClangTidy format file.
+- Get ClangFormat file.
 - Use std::uint_32t and such?
+
+CONVENTION
+----------
+What parts of C++ std to allow? unique_ptr?
 
 RENDERER
 ========
