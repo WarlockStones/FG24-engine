@@ -8,7 +8,7 @@ if (x) {
 }
 ```
 
-### Always use braces for if-statments
+### Always use braces even when optional
 ```
 if (x) {
 	DoOneThing();
@@ -16,10 +16,8 @@ if (x) {
 ```
 
 ### Use floating point values unless there is a need for double
-`float f = 0.5f;`
-And 
-`float f = 1.0f`
-Instead of
+`float f = 1.0f`\
+And not\
 `float f = 1.f;`
 
 ### Function names start with an upper case
@@ -34,32 +32,65 @@ Instead of
 `int startingGold = 0;`
 
 ### Always initialize your variables
+```
+constexpr int maxPlayers = 8;
+int currentPlayers = 0;
+Player* lastConnectedPlayer{}; 
+```
 
 ### Prefer 'using' over typedef
-`using FileHandle = int;`
-Instead of
+`using FileHandle = int;`\
+And not\
 `typedef FileHandle int;`
 
-### Do not use macros to define constants. Use constexpr**
+### Use constexpr to define constants
 `constexpr int StartingPoint = 0;`
 
 ### Use const and constexpr as much as possible
 
-### Avoid early returns and hidden returns. Try to make the code more structured
+### Try to avoid early returns whenever possible
+Pre condition checks are fine. 
 
-### Don't use the continue keyword. Instead nest it in an if-statement
+### Don't use the continue keyword and limit the use of break
+```
+for (...;...;...) {
+  // Statement
+
+  if ( !expression ) {
+    // Statement 2
+  }
+}
+```
+And not
+```
+for (...) {
+	// Statement
+	if ( expression ) {
+    		continue;
+	}
+	// Statement 2
+}
+```
 
 ### Always use classed enums
+```
+enum class WebColor { red = 0xFF0000, green = 0x00FF00, blue = 0x0000FF };
+```
+And not
+```
+enum WebColor { red = 0xFF0000, green = 0x00FF00, blue = 0x0000FF };
+```
+For better type checking.
 
 ### Pointer should be placed near type
 `int* p;`\
 And not\
-`int *p;`\
-`int * p;`\
+`int *p;` or `int * p;`
 
 ### Use `#pragma once` as header guard
 
 ### Avoid using macros
+Macros for 
 
 ### Use the namespace FG24:: to not clutter global namespace
 This also avoids the need for prefixed class names. Don't prefix class names.
@@ -71,7 +102,7 @@ class SomeClass {
 }
 };
 ```
-and not
+And not
 ```
 namespace FG24 {
 	class SomeClass {
@@ -83,7 +114,6 @@ namespace FG24 {
 ### Forward declare classes at top of file after includes
 ```
 #include <cstdio>
-#include <cassert>
 
 class Foo;
 class Bar;
@@ -107,6 +137,9 @@ This is to also to not declare something inside the namespace as FG24::Foo.
 Which is an issue when using external libraries.
 
 ### Use C++ // comments and not C /* */ comments
+`// Some comment`
+And not
+`/* Some comment */`
 
 ### Keep destructors and constructors as simple as possible
 They should only allocate and deallocate memory. Call other function if state needs to be changed.
@@ -127,6 +160,7 @@ And not
 #include <stdio.h>
 printf(str);
 ```
+
 
 ## CLASSES
 ### Class variabls have the same naming convention as variables
