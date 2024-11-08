@@ -146,6 +146,19 @@ They should only allocate and deallocate memory. Call other function if state ne
 
 ### Use C++17
 
+### Use explicit c++ casts instead of c-style casts
+```
+int i = 10;
+float f = static_cast<float>(i);
+reinterpret_cast<void*>(0);
+```
+And not
+```
+int i 10;
+float f = (float)i;
+(void*)0;
+```
+
 ### Use libc instead of the C++ standard library
 This is mostly for educational purposes and may be changed in the future.\
 I may allow for unique_ptr because they are nice.
