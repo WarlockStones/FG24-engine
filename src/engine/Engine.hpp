@@ -1,3 +1,4 @@
+// Copyright 2024 Changemaker Educations AB. All Rights Reserved
 #pragma once
 namespace FG24 {
 	class Renderer;
@@ -5,9 +6,9 @@ namespace FG24 {
 class Engine {
 public:
 	Engine() = default;
-	~Engine();
 	bool Init();
 	void GameLoop();
+	~Engine();
 
 private:
 	InputManager* inputManager;
