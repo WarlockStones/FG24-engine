@@ -22,6 +22,17 @@ It may also need to have a compiler defined. e.g. 'g++' or 'cl'.
 \
 
 #### 4. Compile using CMake:
+Build using CMakeUserPreset.json
+```
 cd "path\to\cloned-repository"\
 cmake --preset=default\
 cmake --build build
+```
+
+Build using terminal:
+```
+mkdir build
+cd build
+cmake ..
+make
+```
