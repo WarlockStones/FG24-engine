@@ -1,9 +1,17 @@
 // Copyright 2024 Changemaker Educations AB. All Rights Reserved
 #pragma once
-#include <glm/glm.hpp>
 
 namespace FG24 {
 class Shader {
-	glm::mat4 m{};
+public:
+	std::uint32_t id{}; // Shader program ID;
+
+	// Input is path to vertex and fragment shader files
+	Shader(const char* vertexPath, const char* fragmentPath);
+	~Shader();
+
+	void Use();
+private:
+	static const char* LoadShaderFile(const char* path);
 };
 }
