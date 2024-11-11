@@ -10,15 +10,15 @@ class Shader;
 
 class Mesh {
 public:
-	Mesh(const float* vertices, std::size_t vertexArraySize, const std::uint_fast32_t* indicies, std::size_t indexArraySize);
+	Mesh(const float* vertices, std::size_t vertexArraySize, const std::uint32_t* indicies, std::size_t indexArraySize);
 	void Render(const Shader* shader);
 	~Mesh();
 	
 private:
 	// VBO, VAO, EBO
-	std::uint_fast32_t VBO{};
-	std::uint_fast32_t VAO{};
-	std::uint_fast32_t EBO{};
+	std::uint32_t VBO{};
+	std::uint32_t VAO{};
+	std::uint32_t EBO{};
 	
 };
 }

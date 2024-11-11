@@ -6,7 +6,7 @@
 
 
 namespace FG24 {
-Mesh::Mesh(const float* vertices, std::size_t vertexArraySize, const std::uint_fast32_t* indicies, std::size_t indexArraySize) {
+Mesh::Mesh(const float* vertices, std::size_t vertexArraySize, const std::uint32_t* indicies, std::size_t indexArraySize) {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 

@@ -11,7 +11,7 @@ public:
 	void Update();
 
 private:
-	SDL_Window* window;
-	void* context; // SDL_GLContext is a void* typedef
+	SDL_Window* window{};
+	void* context{}; // SDL_GLContext is a void* typedef
 };
 };

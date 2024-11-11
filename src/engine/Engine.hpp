@@ -3,15 +3,15 @@
 namespace FG24 {
 	class Renderer;
 	class InputManager;
-class Engine {
-public:
-	Engine() = default;
-	bool Init();
-	void GameLoop();
-	~Engine();
+	class Engine {
+	public:
+		Engine() = default;
+		bool Init();
+		void GameLoop();
+		~Engine();
 
-private:
-	InputManager* inputManager;
-	Renderer* renderer;
+	private:
+		InputManager* inputManager{};
+		Renderer* renderer{};
 };
 }
