@@ -1,5 +1,6 @@
 // Copyright 2024 Changemaker Educations AB. All Rights Reserved
 #pragma once
+#include <cstdint>
 
 namespace FG24 {
 class Shader {
@@ -12,6 +13,5 @@ public:
 
 	void Use();
 private:
-	static const char* LoadShaderFile(const char* path);
 };
 }

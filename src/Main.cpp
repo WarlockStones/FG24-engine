@@ -3,6 +3,7 @@
 #include <cstdio>
 
 int main(int argv, char** args) {
+
 	FG24::Engine engine;
 
 	if (engine.Init() == 0)	{
