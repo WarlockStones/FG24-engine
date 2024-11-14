@@ -2,16 +2,12 @@ STRUCTURE
 =========
 - CMake build and run profile for Visual Studio.
 - Get ClangFormat file?
-- Use std::uint_32t and such? Which header to use? fast uint32?
-	Put them in a header so I don't have to uint_fast32_t it gets very verbose. FG24::u32f?
-	Does std::uint_fast32_t even do anything fast? Will it ever be 64?
 - Remove need to "../"
 - Where to place desturctor? At top or bottom of public functions?
 
 CONVENTION
 ----------
 What parts of C++ std to allow? unique_ptr?
-
 
 RENDERER
 ========
@@ -23,3 +19,7 @@ RENDERER
 INPUT-MANAGER
 =============
 - Events or bitset? Must be easily managed by the game module.
+
+UTILS
+=====
+- Add simple benchmark tool
