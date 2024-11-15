@@ -24,12 +24,12 @@ Mesh::Mesh(const float* vertices, std::size_t vertexArraySize, const std::uint32
 	// Now this is only for temporary cube
 
 	// Vertex position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
 						reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
 
 	// Normal vector attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
 						reinterpret_cast<void*>(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
@@ -38,8 +38,8 @@ Mesh::Mesh(const float* vertices, std::size_t vertexArraySize, const std::uint32
 	glBindVertexArray(0);
 }
 
-void Mesh::Render(const Shader* shader) {
-	// shader->Use();
+void Mesh::Render(const Shader& shader) {
+	 shader.Use();
 
 	glBindVertexArray(VAO);
 	if (EBO == 0) {

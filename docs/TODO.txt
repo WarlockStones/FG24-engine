@@ -4,6 +4,10 @@ STRUCTURE
 - Get ClangFormat file?
 - Remove need to "../"
 - Where to place desturctor? At top or bottom of public functions?
+- Actor? Mesh? Entity? GameObject? 
+	What is something that has a position in the world?
+	What is something that has a 3D mesh and texture and shader?
+	But then what is a trigger volume?
 
 CONVENTION
 ----------
@@ -15,6 +19,7 @@ RENDERER
 - Add shader class to parse and feed shaders to the mesh.
 - Add cube.
 - Add floating camera.
+- Improve shader code with error handling.
 
 INPUT-MANAGER
 =============
@@ -23,3 +28,5 @@ INPUT-MANAGER
 UTILS
 =====
 - Add simple benchmark tool
+- Improve files.cpp
+- Add FilePath class with helper functions like getting the file name only.

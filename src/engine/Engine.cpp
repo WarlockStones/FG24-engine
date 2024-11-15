@@ -3,6 +3,10 @@
 #include "../renderer/Renderer.hpp"
 #include "inputmanager/InputManager.hpp"
 #include <cstdio>
+#include "../renderer/mesh/shapes/Cube.hpp"
+#include "../renderer/shader/Shader.hpp"
+#include "core/actor/Actor.hpp"
+#include <cassert>
 
 namespace FG24 {
 bool Engine::Init() {
@@ -15,6 +19,27 @@ bool Engine::Init() {
 
 	inputManager = new InputManager();
 	return 0;
+}
+
+// Temporary debug thing until I have a proper structure of game object management
+constexpr int boxCount = 24;
+Actor* boxes[boxCount] {nullptr};
+
+void Engine::Start() {
+	Cube* cube = new Cube();
+
+	Shader* shader = new Shader("../assets/shaders/shader.vert", "../assets/shaders/shader.frag");
+	assert(shader);
+	
+	for (int i = 0; i < boxCount; ++i)
+	{
+		static int yOffset = 0;
+		boxes[i] = new Actor(cube, shader, Transform());
+		boxes[i]->transform.position.y += 100;
+	}
+
+	assert(boxes[4]);
+	
 }
 
 void Engine::GameLoop()	{

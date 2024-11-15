@@ -11,7 +11,7 @@ class Shader;
 class Mesh {
 public:
 	Mesh(const float* vertices, std::size_t vertexArraySize, const std::uint32_t* indicies, std::size_t indexArraySize);
-	void Render(const Shader* shader);
+	void Render(const Shader& shader);
 	~Mesh();
 	
 private:

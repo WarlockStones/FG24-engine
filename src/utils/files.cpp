@@ -4,7 +4,7 @@
 #include <utility>
 
 namespace FG24 {
-const char* LoadTextFile(const char* path) {
+TextFileContent LoadTextFile(const char* path) {
 	auto Check = [path](bool failCondition, const char* functionName) {
 		if (failCondition == true) {
 			std::perror(functionName);
@@ -39,7 +39,7 @@ const char* LoadTextFile(const char* path) {
 	char* text = new char[fileSize];
 
 	std::uint64_t readCount
-	  =	std::fread(static_cast<char*>(text), sizeof(char), fileSize, file);
+		= std::fread(static_cast<char*>(text), sizeof(char), fileSize, file);
 	if (Check(readCount != fileSize, "fread()")) {
 		return nullptr;
 	}
@@ -47,6 +47,6 @@ const char* LoadTextFile(const char* path) {
 	std::fclose(file);
 	std::printf("Successfully read file of size %zi\n", fileSize);
 
-	return std::move(text);
+	return text;
 }
 } // FG24 namespace

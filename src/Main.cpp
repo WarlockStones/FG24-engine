@@ -7,7 +7,8 @@ int main(int argv, char** args) {
 	FG24::Engine engine;
 
 	if (engine.Init() == 0)	{
-		 engine.GameLoop();
+		engine.Start();
+		engine.GameLoop();
 	}
 
 	std::printf("Program exited...\n");

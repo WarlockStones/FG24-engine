@@ -6,7 +6,8 @@ namespace FG24 {
 	class Engine {
 	public:
 		Engine() = default;
-		bool Init();
+		bool Init();	// Initializes core engine modules like renderer
+		void Start();	// Starts the game. Loads game objects
 		void GameLoop();
 		~Engine();
 
