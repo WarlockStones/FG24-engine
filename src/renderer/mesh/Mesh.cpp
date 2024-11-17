@@ -4,6 +4,7 @@
 #include <glad/gl.h>
 #include <SDL2/SDL_opengl.h>
 
+#include <cassert>
 
 namespace FG24 {
 Mesh::Mesh(const float* vertices, std::size_t vertexArraySize, const std::uint32_t* indicies, std::size_t indexArraySize) {
@@ -28,8 +29,8 @@ Mesh::Mesh(const float* vertices, std::size_t vertexArraySize, const std::uint32
 						reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
 
-	// Normal vector attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+	// Texture coordinates
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
 						reinterpret_cast<void*>(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 

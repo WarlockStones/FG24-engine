@@ -1,9 +1,17 @@
 // Copyright 2024 Changemaker Educations AB. All Rights Reserved
 #include "Renderer.hpp"
 #include <glad/gl.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL.h>
 #include <cstdio>
+#include "../engine/core/actor/Actor.hpp"
+#include "mesh/Mesh.hpp"
+#include "camera/Camera.hpp"
+#include "shader/Shader.hpp"
+
+#include "../engine/inputmanager/InputManager.hpp" // Temproary solution
 
 namespace FG24 {
 bool Renderer::Init(int windowWidth, int windowHeight) {
@@ -39,13 +47,48 @@ bool Renderer::Init(int windowWidth, int windowHeight) {
 		return 1;
 	}
 
+	// Temporary. Move camera somewhere else later
+	camera = Camera( glm::vec3{ -10, 0.0f, 0.0f });
+	
+	
 	return 0;
-	}
+}
 
-	void Renderer::Update() {
+  void Renderer::Update(Actor** actors, int actorCount) {
 		glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// TODO: Remove projection matrix from update loop
+		glm::mat4 projection = glm::mat4(1.0f);
+		projection = glm::perspective(glm::radians(90.0f),
+									  static_cast<float>(800) /
+									  static_cast<float>(600),
+									  0.1f,
+									  100.0f);
+
+		// TODO: set all the transforms to the shader
+		glm::mat4 view = glm::lookAt(camera.position, camera.position + camera.front,
+									 camera.up);
+		glm::mat4 model = glm::mat4(1.0f);
+		
+		
+		// All boxes share the same shader atm
+		Shader& s = *actors[0]->shader;
+		s.Use(); // Must use before setting shit
+		s.SetMat4("projection", projection);
+		s.SetMat4("view", view);
+		s.SetMat4("model", model);
+
+		// std::printf("Camera: %f.%f.%f\n", camera.position.x, camera.position.y, camera.position.z);
+		const glm::vec3& p = actors[0]->transform.position;
+		// std::printf("Actor 1: %f.%f.%f\n", p.x, p.y, p.z);
+		
+		for (int i = 0; i < actorCount; ++i)
+		  {
+			// Hmm... This code. This structure... ???
+			actors[i]->mesh->Render(s);
+		  }
+		
 		SDL_GL_SwapWindow(window);
 	}
 
@@ -59,4 +102,4 @@ bool Renderer::Init(int windowWidth, int windowHeight) {
 
 		std::printf("Renderer destructor done\n");
 	}
-}
+} // namespace FG24

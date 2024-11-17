@@ -10,9 +10,9 @@ class Actor {
 public:
 	Actor(Mesh* mesh, Shader* shader, Transform transform);
 	Transform transform{};
-private:
-	Mesh* mesh;
+	Mesh* mesh; // TODO: How to acces mesh and shader it in a good way to render?
 	Shader* shader;
+private:
 };
 
 }

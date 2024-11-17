@@ -22,8 +22,8 @@ bool Engine::Init() {
 }
 
 // Temporary debug thing until I have a proper structure of game object management
-constexpr int boxCount = 24;
-Actor* boxes[boxCount] {nullptr};
+static constexpr int boxCount = 24;
+static Actor* boxes[boxCount] {nullptr};
 
 void Engine::Start() {
 	Cube* cube = new Cube();
@@ -35,16 +35,44 @@ void Engine::Start() {
 	{
 		static int yOffset = 0;
 		boxes[i] = new Actor(cube, shader, Transform());
-		boxes[i]->transform.position.y += 100;
+		boxes[i]->transform.position.z += 5;
 	}
 
 	assert(boxes[4]);
 	
 }
 
+void Engine::Update() {
+		if (inputManager->input_w == true) {
+		  renderer->camera.position.x += 0.01;
+		}
+		if (inputManager->input_s == true) {
+		  renderer->camera.position.x -= 0.01;
+		}
+		if (inputManager->input_d == true) {
+		  renderer->camera.position.z += 0.01;
+		}
+		if (inputManager->input_a == true) {
+		  renderer->camera.position.z -= 0.01;
+		}
+}
+
 void Engine::GameLoop()	{
+	const int FPS {3};
+	const int MILLISECS_PER_FRAME = {1000 / FPS} ;
+	static double millisecsPreviousFrame{}; // 0. First frame = current frame
 	while (inputManager->ProcessInputs()) {
-		renderer->Update();
+
+		int timeToWait =
+		MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
+		// Protection. If we HAVE to wait and we are too fast. Delay.
+		if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
+			SDL_Delay(timeToWait);
+		}
+		
+
+		Update();
+		renderer->Update(boxes, boxCount);
 	}
 }
 

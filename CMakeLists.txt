@@ -32,6 +32,7 @@ add_executable(FG24
 	src/renderer/shader/Shader.cpp
 	src/utils/files.cpp
 	src/renderer/mesh/shapes/Cube.cpp
+	src/renderer/camera/Camera.cpp
 	src/engine/core/actor/Actor.cpp
 	src/engine/core/Transform.cpp
 )

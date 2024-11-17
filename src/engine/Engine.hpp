@@ -8,6 +8,7 @@ namespace FG24 {
 		Engine() = default;
 		bool Init();	// Initializes core engine modules like renderer
 		void Start();	// Starts the game. Loads game objects
+		void Update();
 		void GameLoop();
 		~Engine();
 

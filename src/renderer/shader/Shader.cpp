@@ -20,7 +20,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 		glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(vertex, 512, nullptr, infoLog);
-			std::fprintf(stderr, "Error compiling vertex shader: '%s'", vertexPath);
+			std::fprintf(stderr, "Error compiling vertex shader: '%s'\n%s\n",
+						 vertexPath, infoLog);
 			// Handle error. Swap to default engine shader
 		}
 
@@ -30,7 +31,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 		glGetShaderiv(fragment , GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(fragment , 512, nullptr, infoLog);
-			std::fprintf(stderr, "Error compiling fragment shader: '%s'", fragmentPath);
+			std::fprintf(stderr, "Error compiling fragment shader: '%s'\n%s\n",
+						 fragmentPath, infoLog);
 			// Handle error. Swap to default engine shader
 		}
 
@@ -42,7 +44,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 		glGetProgramiv(id, GL_LINK_STATUS, &success);
 		if (!success) {
 			glGetProgramInfoLog(id, 512, nullptr, infoLog);
-			std::fprintf(stderr, "Error creating shader program: '%s'", fragmentPath);
+			std::fprintf(stderr, "Error creating shader program:\n'%s'\n", infoLog);
 		}
 
 		glDeleteShader(vertex);

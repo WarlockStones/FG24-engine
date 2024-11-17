@@ -1,13 +1,19 @@
 STRUCTURE
 =========
+- THIS >> Remove need to "../"
+- THIS >> Restructure directories to be simpler and fewer
+
 - CMake build and run profile for Visual Studio.
 - Get ClangFormat file?
-- Remove need to "../"
 - Where to place desturctor? At top or bottom of public functions?
 - Actor? Mesh? Entity? GameObject? 
 	What is something that has a position in the world?
 	What is something that has a 3D mesh and texture and shader?
 	But then what is a trigger volume?
+
+- Flow? Engine update > Renderer but has to get all game objects to draw and shaders and...
+- A way to get certain settings like window width and height, fov, etc. CVars?
+- How to access camera? Where is the camera? Who owns it?
 
 CONVENTION
 ----------
