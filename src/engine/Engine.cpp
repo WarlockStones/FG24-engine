@@ -7,8 +7,10 @@
 #include "../renderer/shader/Shader.hpp"
 #include "core/actor/Actor.hpp"
 #include <cassert>
+#include "../Globals.hpp"
 
 namespace FG24 {
+
 bool Engine::Init() {
 	renderer = new Renderer();
 
@@ -28,7 +30,8 @@ static Actor* boxes[boxCount] {nullptr};
 void Engine::Start() {
 	Cube* cube = new Cube();
 
-	Shader* shader = new Shader("../assets/shaders/shader.vert", "../assets/shaders/shader.frag");
+	// Shader* shader = new Shader("../assets/shaders/shader.vert", "../assets/shaders/shader.frag");
+	Shader* shader = new Shader("..\\assets\\shaders\\shader.vert", "..\\assets\\shaders\\shader.frag");
 	assert(shader);
 	
 	for (int i = 0; i < boxCount; ++i)
@@ -43,25 +46,15 @@ void Engine::Start() {
 }
 
 void Engine::Update() {
-		if (inputManager->input_w == true) {
-		  renderer->camera.position.x += 0.01;
-		}
-		if (inputManager->input_s == true) {
-		  renderer->camera.position.x -= 0.01;
-		}
-		if (inputManager->input_d == true) {
-		  renderer->camera.position.z += 0.01;
-		}
-		if (inputManager->input_a == true) {
-		  renderer->camera.position.z -= 0.01;
-		}
 }
 
 void Engine::GameLoop()	{
-	const int FPS {3};
+	const int FPS {14};
 	const int MILLISECS_PER_FRAME = {1000 / FPS} ;
 	static double millisecsPreviousFrame{}; // 0. First frame = current frame
-	while (inputManager->ProcessInputs()) {
+	g_isRunning = true;
+	while (g_isRunning) {
+		renderer->camera.ProcessInput();
 
 		int timeToWait =
 		MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
@@ -70,6 +63,8 @@ void Engine::GameLoop()	{
 			SDL_Delay(timeToWait);
 		}
 		
+		g_deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
+		millisecsPreviousFrame = SDL_GetTicks(); // Store frame-time
 
 		Update();
 		renderer->Update(boxes, boxCount);

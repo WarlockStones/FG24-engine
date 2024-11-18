@@ -35,6 +35,7 @@ add_executable(FG24
 	src/renderer/camera/Camera.cpp
 	src/engine/core/actor/Actor.cpp
 	src/engine/core/Transform.cpp
+	src/Globals.cpp
 )
 
 # SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications

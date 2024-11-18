@@ -48,7 +48,10 @@ bool Renderer::Init(int windowWidth, int windowHeight) {
 	}
 
 	// Temporary. Move camera somewhere else later
-	camera = Camera( glm::vec3{ -10, 0.0f, 0.0f });
+  camera = Camera(glm::vec3(-10.0f, 0.0f, 0.0f),  // Position
+			glm::vec3(1.0f, 0.0f, 1.0f), // Front
+			glm::vec3(0.0f, 1.0f, 0.0f), // Up
+			45, 20.0f, 0.1f); // Fov, Speed, Mouse sensitivity
 	
 	
 	return 0;
@@ -67,20 +70,22 @@ bool Renderer::Init(int windowWidth, int windowHeight) {
 									  100.0f);
 
 		// TODO: set all the transforms to the shader
-		glm::mat4 view = glm::lookAt(camera.position, camera.position + camera.front,
-									 camera.up);
+		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 model = glm::mat4(1.0f);
 		
 		
 		// All boxes share the same shader atm
 		Shader& s = *actors[0]->shader;
 		s.Use(); // Must use before setting shit
-		s.SetMat4("projection", projection);
-		s.SetMat4("view", view);
+		// s.SetMat4("projection", projection);
+		// s.SetMat4("view", view);
 		s.SetMat4("model", model);
 
 		// std::printf("Camera: %f.%f.%f\n", camera.position.x, camera.position.y, camera.position.z);
 		const glm::vec3& p = actors[0]->transform.position;
+		const auto cameraPos = camera.position;
+		const auto cameraDir = camera.front;
+		const auto cameraUp = camera.up;
 		// std::printf("Actor 1: %f.%f.%f\n", p.x, p.y, p.z);
 		
 		for (int i = 0; i < actorCount; ++i)
