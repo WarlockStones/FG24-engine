@@ -23,19 +23,17 @@ add_definitions(${OPENGL_DEFINITIONS})
 find_package(glm CONFIG REQUIRED)
 
 add_executable(FG24
-	src/Main.cpp
-	src/glad/gl.c
-	src/engine/Engine.cpp
-	src/engine/inputmanager/InputManager.cpp
-	src/renderer/Renderer.cpp
-	src/renderer/mesh/Mesh.cpp
-	src/renderer/shader/Shader.cpp
-	src/utils/files.cpp
-	src/renderer/mesh/shapes/Cube.cpp
-	src/renderer/camera/Camera.cpp
-	src/engine/core/actor/Actor.cpp
-	src/engine/core/Transform.cpp
-	src/Globals.cpp
+	"src/Main.cpp"
+	"src/Globals.cpp"
+	"src/glad/gl.c"
+	"src/utils/File.cpp"
+	"src/framework/Session.cpp"
+	"src/renderer/Renderer.cpp"
+	"src/framework/KeyInput.cpp"
+)
+
+target_include_directories(FG24 PRIVATE
+	"src/"
 )
 
 # SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications
