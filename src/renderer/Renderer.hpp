@@ -12,6 +12,5 @@ public:
 private:
 	SDL_Window* window{};
 	void* context{}; // SDL_GLContext is a void* typedef
-
 };
 }

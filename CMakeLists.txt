@@ -30,6 +30,9 @@ add_executable(FG24
 	"src/framework/Session.cpp"
 	"src/renderer/Renderer.cpp"
 	"src/framework/KeyInput.cpp"
+	"src/renderer/Triangle.cpp"
+	"src/renderer/Renderer_temp.cpp"
+	"src/renderer/Mesh.cpp"
 )
 
 target_include_directories(FG24 PRIVATE

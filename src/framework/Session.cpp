@@ -5,6 +5,7 @@
 #include "Globals.hpp"
 #include "renderer/Renderer.hpp"
 #include "framework/KeyInput.hpp"
+#include "renderer/Renderer_temp.hpp"
 
 
 namespace FG24 {
@@ -20,6 +21,8 @@ bool Session::Init() {
 }
 
 void Session::Start() {
+	Temp::InitTriangle();
+	Temp::CompileShaderForTriangle();
 }
 
 void Session::Update() {

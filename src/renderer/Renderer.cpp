@@ -5,6 +5,8 @@
 #include <SDL2/SDL.h>
 #include <cstdio>
 #include "Globals.hpp"
+#include "Renderer_temp.hpp"
+
 
 namespace FG24 {
 bool Renderer::Init() {
@@ -48,6 +50,8 @@ void Renderer::Draw() {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	FG24::Temp::DrawTriangle();
+
 	SDL_GL_SwapWindow(window);
 }
 Renderer::~Renderer() {
@@ -55,7 +59,7 @@ Renderer::~Renderer() {
 		SDL_DestroyWindow(window);
 	}
 	if (context) {
-		SDL_GL_DeleteContext;
+		SDL_GL_DeleteContext(context);
 	}
 	SDL_Quit();
 
