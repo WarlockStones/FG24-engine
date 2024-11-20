@@ -12,23 +12,45 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize) {
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-
-	// Vertex attributes for triangle
+	// Vertex attributes for triangle only
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 		reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
 }
 
+Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* indices,
+	std::size_t indicesSize) {
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertexSize, vertices, GL_STATIC_DRAW);
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	// Vertex attributes for square only
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+						  reinterpret_cast<void*>(0));
+	glEnableVertexAttribArray(0);
+
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
+
+}
 void Mesh::Draw(std::uint32_t shaderProgram) {
 	assert(VAO);
 	assert(VBO);
 
-	// Draw triangle which is just an array of a single vertex attribute pointer
 	glUseProgram(shaderProgram);
 	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // It is not an EBO yet, we are only drawing an array of vertex position (a single vertex attribute)
-	glBindVertexArray(0);
+	if (EBO > 0) {
+		// Draw the square. It has an EBO and 6 verticies
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
+	} else {
+		// Draw the triangle. it has no EBO and only 3 verticies
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+	}
+	
+	glBindVertexArray(0); // Unbind
 }
 
 } // namespace FG24

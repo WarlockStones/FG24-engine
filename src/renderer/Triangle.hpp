@@ -7,4 +7,9 @@ public:
 	Triangle();
 };
 
+class Square : public Mesh {
+public:
+	Square();
+};
+
 } // namespace FG24

@@ -21,7 +21,7 @@ bool Session::Init() {
 }
 
 void Session::Start() {
-	TempTriangle::Init();
+	TempRenderObject::Init();
 }
 
 void Session::Update() {

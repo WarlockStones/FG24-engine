@@ -1,8 +1,8 @@
 // Temporary things for when developing features of the Renderer.
 // These things are here to not clutter the overall intended structure.
-#pragma once
 #include "Renderer_temp.hpp"
 #include <cassert>
+#include <cstdio>
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,21 +12,11 @@
 #include "Triangle.hpp"
 
 namespace FG24 {
-std::uint32_t TempTriangle::shaderProgram{};
-Triangle* TempTriangle::triangle{};
+std::uint32_t TempRenderObject::shaderProgram;
+Triangle* TempRenderObject::triangle{};
+Square* TempRenderObject::square{};
 
-void TempTriangle::Init() {
-	triangle = new Triangle(); 
-	assert(CompileShader());
-	assert(triangle);
-}
-
-void TempTriangle::Draw() {
-	assert(triangle);
-	triangle->Draw(shaderProgram);
-}
-
-bool TempTriangle::CompileShader() {
+std::uint32_t TempRenderObject::CompileSimpleShader() {
 	constexpr char *vertexShaderSource = "#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
 		"void main()\n"
@@ -66,13 +56,13 @@ bool TempTriangle::CompileShader() {
 		return false;
 	}
 	
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	std::uint32_t program = glCreateProgram();
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, fragmentShader);
+	glLinkProgram(program);
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
+		glGetProgramInfoLog(program, 512, nullptr, infoLog);
 		std::fprintf(stderr, "Error: Renderer failed to link triangle shader program\n");
 		std::fprintf(stderr, "%s\n", infoLog);
 		return false;
@@ -81,7 +71,29 @@ bool TempTriangle::CompileShader() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	return true;
+	return program;
 }
+
+void TempRenderObject::Init() {
+	triangle = new Triangle();
+	assert(triangle);
+	square = new Square();
+	assert(square);
+	
+	shaderProgram = CompileSimpleShader();
+}
+
+void TempRenderObject::Draw(RenderType typeToDraw) {
+	assert(triangle);
+	assert(square);
+	assert(shaderProgram);
+	
+	if (typeToDraw == RenderType::triangle) {
+		triangle->Draw(shaderProgram);
+	} else {
+		square->Draw(shaderProgram);
+	}
+}
+
 } // namespace FG24
 
