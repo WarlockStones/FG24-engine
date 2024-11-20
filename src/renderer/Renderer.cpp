@@ -50,7 +50,7 @@ void Renderer::Draw() {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	FG24::Temp::DrawTriangle();
+	TempTriangle::Draw();
 
 	SDL_GL_SwapWindow(window);
 }

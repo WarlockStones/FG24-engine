@@ -21,8 +21,7 @@ bool Session::Init() {
 }
 
 void Session::Start() {
-	Temp::InitTriangle();
-	Temp::CompileShaderForTriangle();
+	TempTriangle::Init();
 }
 
 void Session::Update() {

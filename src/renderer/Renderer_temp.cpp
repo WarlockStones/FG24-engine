@@ -1,6 +1,7 @@
 // Temporary things for when developing features of the Renderer.
 // These things are here to not clutter the overall intended structure.
 #pragma once
+#include "Renderer_temp.hpp"
 #include <cassert>
 #include <glad/gl.h>
 #include <glm/glm.hpp>
@@ -11,8 +12,21 @@
 #include "Triangle.hpp"
 
 namespace FG24 {
-namespace Temp {
-bool CompileShaderForTriangle() {
+std::uint32_t TempTriangle::shaderProgram{};
+Triangle* TempTriangle::triangle{};
+
+void TempTriangle::Init() {
+	triangle = new Triangle(); 
+	assert(CompileShader());
+	assert(triangle);
+}
+
+void TempTriangle::Draw() {
+	assert(triangle);
+	triangle->Draw(shaderProgram);
+}
+
+bool TempTriangle::CompileShader() {
 	constexpr char *vertexShaderSource = "#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
 		"void main()\n"
@@ -52,13 +66,13 @@ bool CompileShaderForTriangle() {
 		return false;
 	}
 	
-	g_triangleShaderProgram = glCreateProgram();
-	glAttachShader(g_triangleShaderProgram, vertexShader);
-	glAttachShader(g_triangleShaderProgram, fragmentShader);
-	glLinkProgram(g_triangleShaderProgram);
-	glGetProgramiv(g_triangleShaderProgram, GL_LINK_STATUS, &success);
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(g_triangleShaderProgram, 512, nullptr, infoLog);
+		glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
 		std::fprintf(stderr, "Error: Renderer failed to link triangle shader program\n");
 		std::fprintf(stderr, "%s\n", infoLog);
 		return false;
@@ -69,15 +83,5 @@ bool CompileShaderForTriangle() {
 
 	return true;
 }
-
-void InitTriangle() {
-	g_Triangle = new Triangle();
-}
-
-void DrawTriangle() {
-	assert(g_Triangle);
-	g_Triangle->Draw(g_triangleShaderProgram);
-}
-} // namespace Temp
 } // namespace FG24
 
