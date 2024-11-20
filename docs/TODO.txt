@@ -1,10 +1,6 @@
 STRUCTURE
 =========
-- THIS >> Remove need to "../"
-- THIS >> Restructure directories to be simpler and fewer
-
 - CMake build and run profile for Visual Studio.
-- Get ClangFormat file?
 - Where to place desturctor? At top or bottom of public functions?
 - Actor? Mesh? Entity? GameObject? 
 	What is something that has a position in the world?
@@ -12,8 +8,6 @@ STRUCTURE
 	But then what is a trigger volume?
 
 - Flow? Engine update > Renderer but has to get all game objects to draw and shaders and...
-- A way to get certain settings like window width and height, fov, etc. CVars?
-- How to access camera? Where is the camera? Who owns it?
 
 CONVENTION
 ----------
@@ -21,18 +15,18 @@ What parts of C++ std to allow? unique_ptr?
 
 RENDERER
 ========
+- Add cube.
 - Add mesh class that handles VBO, VAO, EBO, shaders, OpenGL stuff .
 - Add shader class to parse and feed shaders to the mesh.
-- Add cube.
 - Add floating camera.
 - Improve shader code with error handling.
 
 INPUT-MANAGER
 =============
-- Events or bitset? Must be easily managed by the game module.
+- Events? Bitset? Must be easily managed by the game module.
 
 UTILS
 =====
 - Add simple benchmark tool
-- Improve files.cpp
+- Improve Files.cpp
 - Add FilePath class with helper functions like getting the file name only.
