@@ -4,7 +4,6 @@ namespace FG24 {
 	// Own wrapper class could contain a dynamically allocated fixed size const char*
 	// And then on destruction it could free that memory. 
 
-	using TextFileContent = const char*; // A dynamically allocated c-string
-
-	TextFileContent LoadTextFile(const char* path);
+	// Load LF formatted ANSI text files and leaks some memory to boot!
+	const char* LoadTextFile(const char* path);
 }

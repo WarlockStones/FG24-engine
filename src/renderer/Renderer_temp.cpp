@@ -10,6 +10,7 @@
 #include "Globals.hpp"
 #include "Mesh.hpp"
 #include "Triangle.hpp"
+#include "utils/File.hpp"
 
 namespace FG24 {
 std::uint32_t TempRenderObject::shaderProgram;
@@ -17,12 +18,16 @@ Triangle* TempRenderObject::triangle{};
 Square* TempRenderObject::square{};
 
 std::uint32_t TempRenderObject::CompileSimpleShader() {
+	/*
 	constexpr char *vertexShaderSource = "#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
 		"void main()\n"
 		"{\n"
 		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 		"}\0";
+	*/
+	const char* vertexShaderSource = LoadTextFile("..\\assets\\shaders\\simple.vert");
+	assert(vertexShaderSource);
 
 	std::uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
@@ -38,12 +43,16 @@ std::uint32_t TempRenderObject::CompileSimpleShader() {
 	}
 
 	// Fragment shader
+	/*
 	const char *fragmentShaderSource = "#version 330 core\n"
 		"out vec4 FragColor;\n"
 		"void main()\n"
 		"{\n"
 		"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 		"}\n\0";
+	*/
+	const char* fragmentShaderSource = LoadTextFile("..\\assets\\shaders\\simple.frag");
+	assert(fragmentShaderSource);
 
 	std::uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);

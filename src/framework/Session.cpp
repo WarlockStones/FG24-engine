@@ -7,6 +7,7 @@
 #include "framework/KeyInput.hpp"
 #include "renderer/Renderer_temp.hpp"
 
+#include "utils/File.hpp"
 
 namespace FG24 {
 bool Session::Init() {
@@ -22,6 +23,14 @@ bool Session::Init() {
 
 void Session::Start() {
 	TempRenderObject::Init();
+
+	const char* str = LoadTextFile("..\\assets\\shaders\\simple.vert");
+	char c = str[0];
+	std::printf(">> %c <<\n", str[0]);
+
+	std::printf("%s\n", str);
+	delete str
+;
 }
 
 void Session::Update() {

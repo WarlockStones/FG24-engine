@@ -27,6 +27,8 @@ INPUT-MANAGER
 
 UTILS
 =====
-- Add simple benchmark tool
-- Improve Files.cpp
+- Add simple benchmark tool.
+- Improve Files.cpp:
+	- Remove memory leak on string allocation.
+	- Translate \\ and / so same path works on both MS-DOS and Unix. 
 - Add FilePath class with helper functions like getting the file name only.
