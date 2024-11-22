@@ -29,7 +29,7 @@ bool Renderer::Init() {
 	context = SDL_GL_CreateContext(window);
 
 	if (!gladLoadGL(GLADloadfunc(SDL_GL_GetProcAddress))) {
-		std::fprintf(stderr, "Error: Renderer failed to initailzie GLAD!\n");
+		std::fprintf(stderr, "Error: Renderer failed to initialize GLAD!\n");
 		return false;
 	}
 
@@ -55,6 +55,7 @@ void Renderer::Draw() {
 
 	SDL_GL_SwapWindow(window);
 }
+
 Renderer::~Renderer() {
 	if (window) {
 		SDL_DestroyWindow(window);
