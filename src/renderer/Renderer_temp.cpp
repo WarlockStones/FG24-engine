@@ -97,11 +97,13 @@ void TempRenderObject::Draw(RenderType typeToDraw) {
 	assert(square);
 	assert(shaderProgram);
 	
+	/* Draw has been moved away from mesh and onto Actor
 	if (typeToDraw == RenderType::triangle) {
 		triangle->Draw(shaderProgram);
 	} else {
 		square->Draw(shaderProgram);
 	}
+	*/
 }
 
 } // namespace FG24

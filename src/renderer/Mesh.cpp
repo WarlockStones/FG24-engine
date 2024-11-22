@@ -36,21 +36,13 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
 
 }
-void Mesh::Draw(std::uint32_t shaderProgram) {
-	assert(VAO);
-	assert(VBO);
-
-	glUseProgram(shaderProgram);
-	glBindVertexArray(VAO);
-	if (EBO > 0) {
-		// Draw the square. It has an EBO and 6 verticies
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
-	} else {
-		// Draw the triangle. it has no EBO and only 3 verticies
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-	}
-	
-	glBindVertexArray(0); // Unbind
+std::uint32_t Mesh::GetVBO() const {
+	return VBO;
 }
-
+std::uint32_t Mesh::GetVAO() const {
+	return VAO;
+}
+std::uint32_t Mesh::GetEBO() const {
+	return EBO;
+}
 } // namespace FG24

@@ -1,6 +1,7 @@
 {
   "dependencies": [
+    "glm",
     "sdl2",
-    "glm"
+    "sdl2-image"
   ]
 }
