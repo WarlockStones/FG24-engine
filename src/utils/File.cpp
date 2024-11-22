@@ -8,7 +8,7 @@
 namespace FG24 {
 static void FormatFilePath(char* s, std::size_t size) {
 #ifdef _WIN32
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		if (s[i] == '/') {
 			s[i] = '\\';
 		}
@@ -31,7 +31,6 @@ const char* LoadTextFile(const char* path) {
 
 	std::size_t pathlen = std::strlen(path);
 	assert(pathlen < 260);
-	// if (sizeof(path) > 260)
 	// Windows only allows for 260 character paths. This is probably faster than dynamic allocation
 	// TODO: Measure stack array vs dynamic array
 	char p[260];
@@ -48,7 +47,7 @@ const char* LoadTextFile(const char* path) {
 		return nullptr;
 	}
 
-	const std::size_t fileSize = std::ftell(file);
+	std::int32_t fileSize = std::ftell(file);
 	if (Check(fileSize == -1L, "ftell()"))  {
 		return nullptr;
 	}
@@ -58,26 +57,24 @@ const char* LoadTextFile(const char* path) {
 		return nullptr;
 	}
 
-	char* text = new char[fileSize+1]; // TODO: Fix memory leak...
+	// Allocate string of fileSize + 1 for '\0'
+	std::size_t textBuffSize = static_cast<std::size_t>(fileSize + 1);
+	char* text = new char[textBuffSize]; // TODO: Fix memory leak...
 
 	// TODO: Read count is wrong when not using UNIX line end character
-	std::uint64_t readCount
-		= std::fread(static_cast<char*>(text), sizeof(char), fileSize, file);
-	if (Check(readCount != fileSize, "fread()")) {
+	std::size_t readCount = std::fread(
+		static_cast<char*>(text), sizeof(char), static_cast<std::size_t>(fileSize), file);
+	if (Check(readCount != static_cast<std::size_t>(fileSize), "fread()")) {
+
 		std::ferror(file);
-		std::fprintf(stderr, "Read count: %lu is not file size %zu\n", readCount, fileSize);
+		std::fprintf(stderr, "Read count: %zd is not file size %I32d\n", readCount, fileSize);
 		return nullptr;
 	}
 
-	std::printf("Last char is: %c\n", text[fileSize]);
 	text[fileSize] = '\0';
-	if (text[fileSize] == '\0')
-		std::printf("Good!\n");
-	else
-		std::printf("Bad!\n");
 
 	std::fclose(file);
-	std::printf("Successfully read file of size %zi\n", fileSize);
+	std::printf("Successfully read file of size %I32d\n", fileSize);
 
 	return text;
 }
