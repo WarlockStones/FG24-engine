@@ -26,7 +26,7 @@ std::uint32_t TempRenderObject::CompileSimpleShader() {
 		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 		"}\0";
 	*/
-	const char* vertexShaderSource = LoadTextFile("..\\assets\\shaders\\simple.vert");
+	const char* vertexShaderSource = LoadTextFile("../assets/shaders/simple.vert");
 	assert(vertexShaderSource);
 
 	std::uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -51,7 +51,7 @@ std::uint32_t TempRenderObject::CompileSimpleShader() {
 		"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 		"}\n\0";
 	*/
-	const char* fragmentShaderSource = LoadTextFile("..\\assets\\shaders\\simple.frag");
+	const char* fragmentShaderSource = LoadTextFile("../assets/shaders/simple.frag");
 	assert(fragmentShaderSource);
 
 	std::uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);

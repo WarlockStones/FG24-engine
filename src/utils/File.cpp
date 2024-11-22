@@ -2,19 +2,41 @@
 #include <cstdio>
 #include <cstdint>
 #include <utility>
+#include <cstring>
+#include <cassert>
 
 namespace FG24 {
+static void FormatFilePath(char* s, std::size_t size) {
+#ifdef _WIN32
+	for (int i = 0; i < size; i++) {
+		if (s[i] == '/') {
+			s[i] = '\\';
+		}
+	}
+#endif
+}
+
 const char* LoadTextFile(const char* path) {
+	// TODO: Measure lambda vs static function
 	auto Check = [path](bool failCondition, const char* functionName) {
 		if (failCondition == true) {
 			std::perror(functionName);
 			std::fprintf(stderr, "Error: LoadTextFile %s failed for path '%s'\n",
-						functionName, path);
+				functionName, path);
 			return true;
 		} else {
 			return false;
 		}
 	};
+
+	std::size_t pathlen = std::strlen(path);
+	assert(pathlen < 260);
+	// if (sizeof(path) > 260)
+	// Windows only allows for 260 character paths. This is probably faster than dynamic allocation
+	// TODO: Measure stack array vs dynamic array
+	char p[260];
+	std::memcpy(p, path, sizeof(path));
+	FormatFilePath(p, sizeof(path));
 
 	std::FILE* file = std::fopen(path, "r");
 	if (Check(file == nullptr, "fopen()")) {

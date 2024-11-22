@@ -23,14 +23,6 @@ bool Session::Init() {
 
 void Session::Start() {
 	TempRenderObject::Init();
-
-	const char* str = LoadTextFile("..\\assets\\shaders\\simple.vert");
-	char c = str[0];
-	std::printf(">> %c <<\n", str[0]);
-
-	std::printf("%s\n", str);
-	delete str
-;
 }
 
 void Session::Update() {

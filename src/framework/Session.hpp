@@ -13,7 +13,7 @@ public:
 	void GameLoop();
 	~Session();
 private:
-	Renderer* renderer;
-	KeyInput* keyInput;
+	Renderer* renderer{};
+	KeyInput* keyInput{};
 };
 }
