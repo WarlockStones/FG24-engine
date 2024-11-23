@@ -5,9 +5,14 @@
 #include "Globals.hpp"
 #include "renderer/Renderer.hpp"
 #include "framework/KeyInput.hpp"
-#include "renderer/Renderer_temp.hpp"
 
 #include "utils/File.hpp"
+
+// I should probably not do these rendering stuff here
+#include "renderer/Material.hpp"
+#include "renderer/Triangle.hpp"
+#include "renderer/Shader.hpp"
+#include "framework/Actor.hpp"
 
 namespace FG24 {
 bool Session::Init() {
@@ -22,7 +27,17 @@ bool Session::Init() {
 }
 
 void Session::Start() {
-	TempRenderObject::Init();
+
+	// Or should I do some of this in the renderer?
+	// Factory pattern or something?
+    g_simpleShader = new Shader();
+	g_simpleShader
+		->CompileShader("../assets/shaders/simple.vert", "../assets/shaders/simple.frag");
+	std::printf("In session start shaderPogram: %u\n", g_simpleShader->program);
+	g_simpleMaterial = new Material(g_simpleShader);
+	g_simpleMaterial->GetShader();
+	g_triangleMesh = new Triangle();
+	g_triangle = new Actor(g_triangleMesh, g_simpleMaterial);
 }
 
 void Session::Update() {

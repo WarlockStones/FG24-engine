@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 #include <cstdio>
 #include "Globals.hpp"
-#include "Renderer_temp.hpp"
+#include "framework/Actor.hpp"
 
 
 namespace FG24 {
@@ -50,8 +50,7 @@ void Renderer::Draw() {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// TempRenderObject::Draw(RenderType::triangle);
-	TempRenderObject::Draw(RenderType::triangle);
+	g_triangle->Draw();
 
 	SDL_GL_SwapWindow(window);
 }

@@ -16,7 +16,8 @@ static void FormatFilePath(char* s, std::size_t size) {
 #endif
 }
 
-const char* LoadTextFile(const char* path) {
+namespace File {
+static const char* LoadTextFile(const char* path) {
 	// TODO: Measure lambda vs static function
 	auto Check = [path](bool failCondition, const char* functionName) {
 		if (failCondition == true) {
@@ -78,4 +79,6 @@ const char* LoadTextFile(const char* path) {
 
 	return text;
 }
-} // FG24 namespace
+
+} // namespace File
+} // namespace FG24

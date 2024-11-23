@@ -7,13 +7,13 @@ class Mesh;
 // Actor is a thing in the world that has graphics and can be drawn
 class Actor {
 public:
-	Actor(Material* material, Mesh* mesh);
+	Actor(Mesh* mesh, Material* material);
 	~Actor() = default;
 
 	void Draw();
 
 private:
-	Material* material;
-	Mesh* mesh;
+	Mesh* mesh{};
+	Material* material{};
 };
 } // namespace FG24

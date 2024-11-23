@@ -8,6 +8,7 @@ STRUCTURE
 	But then what is a trigger volume?
 
 - Flow? Engine update > Renderer but has to get all game objects to draw and shaders and...
+- Make sure constructors are as simple as possible
 
 CONVENTION
 ----------

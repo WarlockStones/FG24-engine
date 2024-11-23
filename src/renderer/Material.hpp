@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 
 namespace FG24 {
@@ -10,7 +11,7 @@ class Material {
 public:
 	Material(Shader* shader, Texture* texture = nullptr);
 
-	const Shader& GetShader() const;
+	std::uint32_t GetShader() const;
 
 private:
 	Shader* shader{};

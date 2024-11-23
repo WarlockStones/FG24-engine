@@ -34,10 +34,11 @@ add_executable(FG24
 	"src/framework/Actor.cpp"
 	"src/renderer/Renderer.cpp"
 	"src/renderer/Triangle.cpp"
-	"src/renderer/Renderer_temp.cpp"
 	"src/renderer/Mesh.cpp"
 	"src/renderer/Material.cpp"
-	"src/renderer/Texture.cpp")
+	"src/renderer/Texture.cpp"
+	"src/renderer/Shader.cpp"
+)
 
 target_include_directories(FG24 PRIVATE
 	"src/"

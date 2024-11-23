@@ -5,5 +5,8 @@ namespace FG24 {
 	// And then on destruction it could free that memory. 
 
 	// Load LF formatted ANSI text files and leaks some memory to boot!
-	const char* LoadTextFile(const char* path);
-}
+namespace File {
+	static const char* LoadTextFile(const char* path);
+};
+
+} // namespace FG24

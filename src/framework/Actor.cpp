@@ -5,8 +5,11 @@
 #include "renderer/Mesh.hpp"
 #include "renderer/Material.hpp"
 
+#include <cstdio>
+
 namespace FG24 {
-Actor::Actor(Material* material, Mesh* mesh) {
+Actor::Actor(Mesh* mesh, Material* material) :
+	mesh(mesh), material(material) {
 
 }
 
@@ -14,7 +17,8 @@ void Actor::Draw() {
 	assert(mesh->GetVAO());
 	assert(mesh->GetVBO());
 
-	// glUseProgram(shaderProgram);
+	glUseProgram(material->GetShader());
+
 	glBindVertexArray(mesh->GetVAO());
 	if (mesh->GetEBO() > 0) {
 		// Draw the square. It has an EBO and 6 verticies
