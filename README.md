@@ -19,9 +19,20 @@ Dynamic libraries will be handled automatically by vcpkg.
 Check the 'CMakeUserPresets.json.example'.\
 It needs path to vcpkg root and vcpkg CMake script.\
 It may also need to have a compiler defined. e.g. 'g++' or 'cl'.
-\
+
 
 #### 4. Compile using CMake:
-cd "path\to\cloned-repository"\
-cmake --preset=default\
+Build using CMakeUserPreset.json
+```
+cd "path\to\cloned-repository"
+cmake --preset=default
 cmake --build build
+```
+
+Build using terminal:
+```
+mkdir build
+cd build
+cmake ..
+make
+```
