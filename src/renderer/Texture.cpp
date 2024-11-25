@@ -32,14 +32,13 @@ bool Texture::LoadFromFile(const char* path) {
 				 GL_UNSIGNED_BYTE, // Datatype of source image
 				 surface->pixels); // The data of source image
 
-  
 	// Set wrapping/filtering options
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glGenerateMipmap(GL_TEXTURE_2D); // Automatically gerenrate mipmap textures
+	glGenerateMipmap(GL_TEXTURE_2D); // Automatically generate mipmap textures
 
 	SDL_FreeSurface(surface);
 
@@ -47,7 +46,7 @@ bool Texture::LoadFromFile(const char* path) {
 }
 
 std::uint32_t Texture::Get() const {
-  return textureID;
+	return textureID;
 }
 
 } // namespace FG24

@@ -25,12 +25,12 @@ void Actor::Draw() {
 		glBindTexture(GL_TEXTURE_2D, material->GetTexture());
 	}
 	else if (mesh->GetEBO() > 0) {
-		// Draw the square. It has an EBO and 6 verticies
+		// Draw the square. It has an EBO and 6 vertices
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	} else if (mesh->GetEBO() == 0) {
-		// Draw the triangle. it has no EBO and only 3 verticies
+		// Draw the triangle. it has no EBO and only 3 vertices
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);  
-	} 
+	}
 	
 	glBindVertexArray(0); // Unbind
 }
