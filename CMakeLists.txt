@@ -17,15 +17,31 @@ find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
 # 1. Look for a SDL2 package, 2. Look for the SDL2maincomponent and 3. DO NOT fail when SDL2main is not available
 find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
 
+find_package(SDL2_image CONFIG REQUIRED)
+
 find_package(OpenGL REQUIRED)
 add_definitions(${OPENGL_DEFINITIONS})
 
+find_package(glm CONFIG REQUIRED)
+
 add_executable(FG24
-	src/Main.cpp
-	src/glad/gl.c
-	src/engine/Engine.cpp
-	src/renderer/Renderer.cpp
-	src/engine/inputmanager/InputManager.cpp
+	"src/Main.cpp"
+	"src/Globals.cpp"
+	"src/glad/gl.c"
+	"src/utils/File.cpp"
+	"src/framework/Session.cpp"
+	"src/framework/KeyInput.cpp"
+	"src/framework/Actor.cpp"
+	"src/renderer/Renderer.cpp"
+	"src/renderer/Triangle.cpp"
+	"src/renderer/Mesh.cpp"
+	"src/renderer/Material.cpp"
+	"src/renderer/Texture.cpp"
+	"src/renderer/Shader.cpp"
+)
+
+target_include_directories(FG24 PRIVATE
+	"src/"
 )
 
 # SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications
@@ -36,3 +52,5 @@ endif()
 
 # Link to the actual SDL2 library. SDL2::SDL2 is the shared SDL library, SDL2::SDL2-static is the static SDL libarary.
 target_link_libraries(FG24 PRIVATE SDL2::SDL2)
+target_link_libraries(FG24 PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
+target_link_libraries(FG24 PRIVATE glm::glm)

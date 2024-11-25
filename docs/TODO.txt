@@ -1,23 +1,35 @@
 STRUCTURE
 =========
 - CMake build and run profile for Visual Studio.
-- Get ClangFormat file?
-- Use std::uint_32t and such? Which header to use? fast uint32?
-    Put them in a header so I don't have to uint_fast32_t it gets very verbose. FG24::u32f?
-    Does std::uint_fast32_t even do anything fast? Will it ever be 64?
+- Where to place desturctor? At top or bottom of public functions?
+- Actor? Mesh? Entity? GameObject? 
+	What is something that has a position in the world?
+	What is something that has a 3D mesh and texture and shader?
+	But then what is a trigger volume?
+
+- Flow? Engine update > Renderer but has to get all game objects to draw and shaders and...
+- Make sure constructors are as simple as possible
 
 CONVENTION
 ----------
 What parts of C++ std to allow? unique_ptr?
 
-
 RENDERER
 ========
+- Add cube.
 - Add mesh class that handles VBO, VAO, EBO, shaders, OpenGL stuff .
 - Add shader class to parse and feed shaders to the mesh.
-- Add cube.
 - Add floating camera.
+- Improve shader code with error handling.
 
 INPUT-MANAGER
 =============
-- Events or bitset? Must be easily managed by the game module.
+- Events? Bitset? Must be easily managed by the game module.
+
+UTILS
+=====
+- Add simple benchmark tool.
+- Improve Files.cpp:
+	- Remove memory leak on string allocation.
+	- Translate \\ and / so same path works on both MS-DOS and Unix. 
+- Add FilePath class with helper functions like getting the file name only.
