@@ -46,13 +46,20 @@ void Session::Start() {
     // 2. Load texture from file.
     // 3. mesh for square
     // 4. Load all of that into a new actor
-	g_simpleShader = Shader::CompileShader("../assets/shaders/simple.vert",
-										 "../assets/shaders/simple.frag");
+	// g_simpleShader = Shader::CompileShader("../assets/shaders/simple.vert",
+	//									 "../assets/shaders/simple.frag");
+
+	// TODO: change name of shader.vert to be something to do with textures.
+    // TODO: change name of Triangle.cpp to be SimpleShapes.cpp
+
+    g_simpleShader = Shader::CompileShader("../assets/shaders/shader.vert",
+										   "../assets/shaders/shader.frag");
 	assert(g_simpleShader != 0);
 	g_arcadeTexture = Texture::LoadFromFile("../assets/textures/arcade_carpet.png");
 	assert(g_arcadeTexture != 0);
-	g_triangleMesh = new Triangle();
-	g_triangle = new Actor(g_triangleMesh, g_simpleShader, 0);
+	g_triangleMesh = new Square();
+	g_triangle = new Actor(g_triangleMesh, g_simpleShader, g_arcadeTexture);
+	
 	assert(g_triangle);
 }
 

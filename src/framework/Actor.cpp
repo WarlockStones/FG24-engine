@@ -16,6 +16,8 @@ void Actor::Draw() {
 	assert(mesh->GetVBO());
 	assert(shader != 0);
 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
+
 	glUseProgram(shader);
 
 	glBindVertexArray(mesh->GetVAO());
@@ -26,7 +28,7 @@ void Actor::Draw() {
 
 	if (mesh->GetEBO() > 0) {
 		// Draw the square. It has an EBO and 6 vertices
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);  
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
 	} else if (mesh->GetEBO() == 0) {
 		// Draw the triangle. it has no EBO and only 3 vertices
 		glDrawArrays(GL_TRIANGLES, 0, 3);

@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <glad/gl.h>
 #include <SDL2/SDL.h>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace FG24 {
 namespace Shader {
@@ -58,5 +60,24 @@ std::uint32_t CompileShader(const char* vertPath, const char* fragPath) {
 
 	return program;
 }
+void Use(std::uint32_t shaderID) {
+  glUseProgram(shaderID);
+}
+void SetInt(std::uint32_t shaderID, const char* name, int value) {
+	glUniform1i(glGetUniformLocation(shaderID, name), value);
+}
+void SetFloat(std::uint32_t shaderID, const char* name, float value) {
+	glUniform1f(glGetUniformLocation(shaderID, name), value);
+
+}
+void SetMat4 (std::uint32_t shaderID, const char* name, glm::mat4 value) {
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, name),
+					  1, // Amout of matrices we are sending
+					  GL_FALSE, // Should the matrix be transposed?
+					  glm::value_ptr(value)); // Pointer to transformation value
+
+}
+
+
 } // namespace Shader
 } // namespace FG24

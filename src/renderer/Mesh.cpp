@@ -26,10 +26,23 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	// Vertex attributes for square only
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+
+	// Vertex attributes for textured square only
+	
+	// Vertex position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
 						  reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
+
+	// Vertex Color. Intentionally not implemented for now
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float),
+	//					  reinterpret_cast<void *>(3 * sizeof(float)));
+
+
+	// Texture coordinates (aka. UV)
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+						  reinterpret_cast<void*>(6 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
