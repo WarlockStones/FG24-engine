@@ -12,6 +12,7 @@
 #include "renderer/Material.hpp"
 #include "renderer/Triangle.hpp"
 #include "renderer/Shader.hpp"
+#include "renderer/Texture.hpp"
 #include "framework/Actor.hpp"
 
 namespace FG24 {
@@ -34,7 +35,9 @@ void Session::Start() {
 	g_simpleShader
 		->CompileShader("../assets/shaders/simple.vert", "../assets/shaders/simple.frag");
 	std::printf("In session start shaderPogram: %u\n", g_simpleShader->program);
-	g_simpleMaterial = new Material(g_simpleShader);
+	Texture* g_arcadeTexture = new Texture();
+	g_arcadeTexture->LoadFromFile("../assets/textures/arcade_carpet.png");
+	g_simpleMaterial = new Material(g_simpleShader, g_arcadeTexture);
 	g_simpleMaterial->GetShader();
 	g_triangleMesh = new Triangle();
 	g_triangle = new Actor(g_triangleMesh, g_simpleMaterial);

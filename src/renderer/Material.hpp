@@ -12,6 +12,7 @@ public:
 	Material(Shader* shader, Texture* texture = nullptr);
 
 	std::uint32_t GetShader() const;
+	std::uint32_t GetTexture() const;
 
 private:
 	Shader* shader{};

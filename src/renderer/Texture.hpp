@@ -1,11 +1,12 @@
 #pragma once
+#include <cstdint>
 
 namespace FG24 {
 class Texture {
 public:
-	// data?
-	// Function which loads image from disk using SDL_Image
-	Texture(const char* path);
-	~Texture();
+	bool LoadFromFile(const char* path);
+	std::uint32_t Get() const;
+private:
+	std::uint32_t textureID{};
 };
 } // namespace FG24
