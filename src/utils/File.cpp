@@ -7,7 +7,7 @@
 
 namespace FG24 {
 namespace File {
-void FormatFilePath(char* s, std::size_t size) {
+static void FormatFilePath(char* s, std::size_t size) {
 #ifdef _WIN32
 	for (size_t i = 0; i < size; i++) {
 		if (s[i] == '/') {
@@ -17,7 +17,7 @@ void FormatFilePath(char* s, std::size_t size) {
 #endif
 }
 
-const char* LoadTextFile(const char* path) {
+static const char* LoadTextFile(const char* path) {
 	// TODO: Measure lambda vs static function
 	auto Check = [path](bool failCondition, const char* functionName) {
 		if (failCondition == true) {

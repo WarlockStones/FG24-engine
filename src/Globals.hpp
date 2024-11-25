@@ -3,8 +3,6 @@
 
 namespace FG24 {
 class Actor;
-class Shader;
-class Material;
 class Mesh;
 
 // just temporary thing

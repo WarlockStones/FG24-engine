@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdint>
+#include <cassert>
 #include <SDL2/SDL.h>
 #include "Session.hpp"
 #include "Globals.hpp"
@@ -9,7 +10,6 @@
 #include "utils/File.hpp"
 
 // I should probably not do these rendering stuff here
-#include "renderer/Material.hpp"
 #include "renderer/Triangle.hpp"
 #include "renderer/Shader.hpp"
 #include "renderer/Texture.hpp"
@@ -31,15 +31,29 @@ void Session::Start() {
 
 	// Or should I do some of this in the renderer?
 	// Factory pattern or something?
-    g_simpleShader = new Shader();
-	g_simpleShader
-		->CompileShader("../assets/shaders/simple.vert", "../assets/shaders/simple.frag");
-	std::printf("In session start shaderPogram: %u\n", g_simpleShader->program);
-	g_arcadeTexture->LoadFromFile("../assets/textures/arcade_carpet.png");
-	g_simpleMaterial = new Material(g_simpleShader, g_arcadeTexture);
-	g_simpleMaterial->GetShader();
+    // g_simpleShader = new Shader();
+	// g_simpleShader
+	// ->CompileShader("../assets/shaders/simple.vert", "../assets/shaders/simple.frag");
+	//	std::printf("In session start shaderPogram: %u\n", g_simpleShader->program);
+	// g_arcadeTexture->LoadFromFile("../assets/textures/arcade_carpet.png");
+	// g_simpleMaterial = new Material(g_simpleShader, g_arcadeTexture);
+	// g_simpleMaterial->GetShader();
+	// g_triangleMesh = new Triangle();
+	// g_triangle = new Actor(g_triangleMesh, g_simpleMaterial);
+
+	// Actor needs mesh, uint32 shaderId, uint32 textureId
+    // 1. Load shader from file.
+    // 2. Load texture from file.
+    // 3. mesh for square
+    // 4. Load all of that into a new actor
+	g_simpleShader = Shader::CompileShader("../assets/shaders/simple.vert",
+										 "../assets/shaders/simple.frag");
+	assert(g_simpleShader != 0);
+	g_arcadeTexture = Texture::LoadFromFile("../assets/textures/arcade_carpet.png");
+	assert(g_arcadeTexture != 0);
 	g_triangleMesh = new Triangle();
-	g_triangle = new Actor(g_triangleMesh, g_simpleMaterial);
+	g_triangle = new Actor(g_triangleMesh, g_simpleShader, 0);
+	assert(g_triangle);
 }
 
 void Session::Update() {

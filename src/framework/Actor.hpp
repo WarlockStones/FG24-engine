@@ -14,7 +14,7 @@ public:
 
 private:
 	Mesh* mesh{};
-	std::uint32_t shader;
+	std::uint32_t shader{};
 	std::uint32_t texture = 0; // Texture id 0 means has no texture
 };
 } // namespace FG24

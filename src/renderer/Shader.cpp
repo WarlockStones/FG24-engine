@@ -6,7 +6,8 @@
 #include <SDL2/SDL.h>
 
 namespace FG24 {
-bool Shader::CompileShader(const char* vertPath, const char* fragPath) {
+namespace Shader {
+std::uint32_t CompileShader(const char* vertPath, const char* fragPath) {
 	const char* vertexShaderSource = File::LoadTextFile(vertPath);
 	assert(vertexShaderSource);
 
@@ -20,7 +21,7 @@ bool Shader::CompileShader(const char* vertPath, const char* fragPath) {
 		glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
 		std::fprintf(stderr, "Error: Renderer failed to compile triangle vertex shader\n");
 		std::fprintf(stderr, "%s\n", infoLog);
-		return false;
+		return 0;
 	}
 
 	const char* fragmentShaderSource = File::LoadTextFile(fragPath);
@@ -34,10 +35,10 @@ bool Shader::CompileShader(const char* vertPath, const char* fragPath) {
 		glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
 		std::fprintf(stderr, "Error: Renderer failed to compile triangle fragment shader\n");
 		std::fprintf(stderr, "%s\n", infoLog);
-		return false;
+		return 0;
 	}
 	
-	program = glCreateProgram();
+	std::uint32_t program = glCreateProgram();
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragmentShader);
 	glLinkProgram(program);
@@ -46,10 +47,8 @@ bool Shader::CompileShader(const char* vertPath, const char* fragPath) {
 		glGetProgramInfoLog(program, 512, nullptr, infoLog);
 		std::fprintf(stderr, "Error: Renderer failed to link triangle shader program\n");
 		std::fprintf(stderr, "%s\n", infoLog);
-		return false;
+		return 0;
 	}
-
-	std::printf("Program on init = %u\n", program);
 
 	// TODO: Utilize RAII, C++ is not C
 	delete vertexShaderSource;
@@ -57,11 +56,7 @@ bool Shader::CompileShader(const char* vertPath, const char* fragPath) {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	return true;
-}
-
-std::uint32_t Shader::GetShaderProgram() const {
 	return program;
 }
-
+} // namespace Shader
 } // namespace FG24

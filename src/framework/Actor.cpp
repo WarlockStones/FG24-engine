@@ -5,6 +5,8 @@
 #include "renderer/Mesh.hpp"
 #include <cstdint>
 
+#include <cstdio>
+
 namespace FG24 {
 Actor::Actor(Mesh* mesh, std::uint32_t shader, std::uint32_t texture) :
 	mesh(mesh), shader(shader), texture(texture) {
@@ -12,6 +14,7 @@ Actor::Actor(Mesh* mesh, std::uint32_t shader, std::uint32_t texture) :
 void Actor::Draw() {
 	assert(mesh->GetVAO());
 	assert(mesh->GetVBO());
+	assert(shader != 0);
 
 	glUseProgram(shader);
 
@@ -20,12 +23,13 @@ void Actor::Draw() {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 	}
-	else if (mesh->GetEBO() > 0) {
+
+	if (mesh->GetEBO() > 0) {
 		// Draw the square. It has an EBO and 6 vertices
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);  
 	} else if (mesh->GetEBO() == 0) {
 		// Draw the triangle. it has no EBO and only 3 vertices
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);  
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 	
 	glBindVertexArray(0); // Unbind
