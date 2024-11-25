@@ -3,26 +3,22 @@
 #include <cassert>
 #include "Actor.hpp"
 #include "renderer/Mesh.hpp"
-#include "renderer/Material.hpp"
-
-#include <cstdio>
+#include <cstdint>
 
 namespace FG24 {
-Actor::Actor(Mesh* mesh, Material* material) :
-	mesh(mesh), material(material) {
-
+Actor::Actor(Mesh* mesh, std::uint32_t shader, std::uint32_t texture) :
+	mesh(mesh), shader(shader), texture(texture) {
 }
-
 void Actor::Draw() {
 	assert(mesh->GetVAO());
 	assert(mesh->GetVBO());
 
-	glUseProgram(material->GetShader());
+	glUseProgram(shader);
 
 	glBindVertexArray(mesh->GetVAO());
-	if (material->GetTexture() != 0) {
+	if (texture != 0) {
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, material->GetTexture());
+		glBindTexture(GL_TEXTURE_2D, texture);
 	}
 	else if (mesh->GetEBO() > 0) {
 		// Draw the square. It has an EBO and 6 vertices

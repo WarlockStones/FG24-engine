@@ -6,7 +6,8 @@ namespace FG24 {
 
 	// Load LF formatted ANSI text files and leaks some memory to boot!
 namespace File {
-	static const char* LoadTextFile(const char* path);
+	const char* LoadTextFile(const char* path);
+	void FormatFilePath(char* s, std::size_t size);
 };
 
 } // namespace FG24

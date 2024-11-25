@@ -35,7 +35,6 @@ add_executable(FG24
 	"src/renderer/Renderer.cpp"
 	"src/renderer/Triangle.cpp"
 	"src/renderer/Mesh.cpp"
-	"src/renderer/Material.cpp"
 	"src/renderer/Texture.cpp"
 	"src/renderer/Shader.cpp"
 )

@@ -35,7 +35,6 @@ void Session::Start() {
 	g_simpleShader
 		->CompileShader("../assets/shaders/simple.vert", "../assets/shaders/simple.frag");
 	std::printf("In session start shaderPogram: %u\n", g_simpleShader->program);
-	Texture* g_arcadeTexture = new Texture();
 	g_arcadeTexture->LoadFromFile("../assets/textures/arcade_carpet.png");
 	g_simpleMaterial = new Material(g_simpleShader, g_arcadeTexture);
 	g_simpleMaterial->GetShader();

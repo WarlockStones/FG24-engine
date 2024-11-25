@@ -14,10 +14,10 @@ extern double g_deltaTime;
 extern int g_windowWidth;
 extern int g_windowHeight;
 
-extern Actor *       g_triangle;
-extern Shader *      g_simpleShader;
-extern Material *    g_simpleMaterial;
-extern Mesh *        g_triangleMesh;
+extern Actor*			g_triangle;
+extern std::uint32_t	g_simpleShader;
+extern std::uint32_t	g_arcadeTexture;
+extern Mesh*			g_triangleMesh;
 
 
 // Inputs

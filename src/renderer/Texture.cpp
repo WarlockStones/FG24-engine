@@ -7,14 +7,17 @@
 #include <SDL2/SDL_opengl.h>
 
 namespace FG24 {
-bool Texture::LoadFromFile(const char* path) {
+namespace Texture {
+std::uint32_t LoadFromFile(const char* path) {
+	// TODO: format path
 	SDL_Surface* surface = IMG_Load(path);
 
 	if (surface == nullptr) {
 		std::fprintf(stderr, "Error: Texture failed to load texture!\n");
-		return false;
+		return 0;
 	}
 
+	std::uint32_t textureID;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -33,7 +36,7 @@ bool Texture::LoadFromFile(const char* path) {
 				 surface->pixels); // The data of source image
 
 	// Set wrapping/filtering options
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -42,11 +45,7 @@ bool Texture::LoadFromFile(const char* path) {
 
 	SDL_FreeSurface(surface);
 
-	return true;
-}
-
-std::uint32_t Texture::Get() const {
 	return textureID;
 }
-
+} // namesapce Texture
 } // namespace FG24
