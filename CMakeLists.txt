@@ -24,6 +24,17 @@ add_definitions(${OPENGL_DEFINITIONS})
 
 find_package(glm CONFIG REQUIRED)
 
+set(IMGUI_SRC
+	src/imgui/imgui.cpp
+	src/imgui/imgui_demo.cpp
+	src/imgui/imgui_draw.cpp
+	src/imgui/imgui_impl_opengl3.cpp
+	src/imgui/imgui_impl_sdl2.cpp
+	src/imgui/imgui_impl_win32.cpp
+	src/imgui/imgui_tables.cpp
+	src/imgui/imgui_widgets.cpp
+)
+
 add_executable(FG24
 	"src/Main.cpp"
 	"src/Globals.cpp"
@@ -38,10 +49,14 @@ add_executable(FG24
 	"src/renderer/Material.cpp"
 	"src/renderer/Texture.cpp"
 	"src/renderer/Shader.cpp"
+	${IMGUI_SRC}
 )
+
+
 
 target_include_directories(FG24 PRIVATE
 	"src/"
+	"src/imgui/"
 )
 
 # SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications

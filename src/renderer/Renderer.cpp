@@ -7,6 +7,9 @@
 #include "Globals.hpp"
 #include "framework/Actor.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
 
 namespace FG24 {
 bool Renderer::Init() {
@@ -21,7 +24,7 @@ bool Renderer::Init() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-	uint32_t windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_MOUSE_GRABBED;
+	uint32_t windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
 	window = SDL_CreateWindow("FG24 Engine", SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED, g_windowWidth, g_windowHeight, windowFlags);
@@ -34,7 +37,7 @@ bool Renderer::Init() {
 	}
 
 	// Hide cursor and constrain it to the window
-	SDL_SetRelativeMouseMode(SDL_TRUE); 
+	SDL_SetRelativeMouseMode(SDL_FALSE); 
 
 	// 0 = none, 1 = vsync, -1 = adaptive vsync
 	if (SDL_GL_SetSwapInterval(0) != 0) {
@@ -47,11 +50,15 @@ bool Renderer::Init() {
 }
 
 void Renderer::Draw() {
+	ImGui::Render(); // Imgui - Run this first!
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	g_triangle->Draw();
 
+
+	// Imgui - Run this right before swapping frames
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	SDL_GL_SwapWindow(window);
 }
 

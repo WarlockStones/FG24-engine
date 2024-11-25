@@ -7,11 +7,15 @@
 #include <SDL2/SDL_timer.h>
 #include "Globals.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+
 namespace FG24 {
 
 void KeyInput::ProcessInput() {
 	SDL_Event e{};
 	while (SDL_PollEvent(&e)) {
+		ImGui:ImGui_ImplSDL2_ProcessEvent(&e); // Send event to imgui
 		if (e.type == SDL_QUIT) {
 			std::printf("KeyInput: SDL_QUIT received. Exiting game loop...\n");
 			g_runGameLoop = false;

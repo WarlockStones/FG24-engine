@@ -14,6 +14,10 @@
 #include "renderer/Shader.hpp"
 #include "framework/Actor.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
+
 namespace FG24 {
 bool Session::Init() {
 	renderer = new Renderer();
@@ -23,13 +27,25 @@ bool Session::Init() {
 		return 1;
 	}
 
+	// 0. Imgui - Init imgui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	if (ImGui_ImplSDL2_InitForOpenGL(renderer->window, renderer->context) == false) {
+		std::fprintf(stderr, "Error: Failed to init imgui for SDL2!\n");
+		return 1;
+	}
+	if (ImGui_ImplOpenGL3_Init("#version 330") == false) {
+		std::fprintf(stderr, "Error: Failed to init imgui for OpengL3!\n");
+		return 1;
+	}
+
 	return 0;
 }
 
 void Session::Start() {
-
-	// Or should I do some of this in the renderer?
-	// Factory pattern or something?
     g_simpleShader = new Shader();
 	g_simpleShader
 		->CompileShader("../assets/shaders/simple.vert", "../assets/shaders/simple.frag");
@@ -41,6 +57,16 @@ void Session::Start() {
 }
 
 void Session::Update() {
+	// 2. Imgui - Start of update, call imgui NewFrame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
+
+	// 3. Imgui - Render the windows, buttons, or maybe just the demo window
+	// ImGui::Begin("Hello");
+	// ImGui::Button("Test", { 200, 200 });
+	// ImGui::End();
+	ImGui::ShowDemoWindow(); 
 }
 
 void Session::GameLoop() {
@@ -49,8 +75,7 @@ void Session::GameLoop() {
 	static double millisecondsPreviousFrame{};
 	g_runGameLoop = true;
 	while (g_runGameLoop) {
-		// TODO: Get new input
-		KeyInput::ProcessInput();
+		KeyInput::ProcessInput(); // 1. Imgui - Send input context to imgui
 
 		// Block game loop if running too fast
 		std::uint32_t timeToWait = millisecondsPerFrame - 
@@ -60,11 +85,16 @@ void Session::GameLoop() {
 		}
 
 		Update();
-		renderer->Draw();
+		renderer->Draw();  // 4. Imgui - Render imgui
 	}
 }
 
 Session::~Session() {
+	// 5. Free imgui memory
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+
 	delete renderer;
 	std::printf("Session destructor done\n");
 }
