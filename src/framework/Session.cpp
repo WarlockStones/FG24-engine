@@ -15,6 +15,8 @@
 #include "renderer/Texture.hpp"
 #include "framework/Actor.hpp"
 
+#include "tools/Editor.hpp"
+
 namespace FG24 {
 bool Session::Init() {
 	renderer = new Renderer();
@@ -37,8 +39,10 @@ void Session::Start() {
 	assert(g_arcadeTexture != 0);
 	g_triangleMesh = new Square();
 	g_triangle = new Actor(g_triangleMesh, g_texturedShader, g_arcadeTexture);
-	
 	assert(g_triangle);
+
+	Editor* editor = new Editor();
+	editor->InitQt();
 }
 
 void Session::Update() {

@@ -24,6 +24,8 @@ add_definitions(${OPENGL_DEFINITIONS})
 
 find_package(glm CONFIG REQUIRED)
 
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+
 add_executable(FG24
 	"src/Main.cpp"
 	"src/Globals.cpp"
@@ -37,6 +39,7 @@ add_executable(FG24
 	"src/renderer/Mesh.cpp"
 	"src/renderer/Texture.cpp"
 	"src/renderer/Shader.cpp"
+	"src/tools/Editor.cpp"
 )
 
 target_include_directories(FG24 PRIVATE
@@ -53,3 +56,4 @@ endif()
 target_link_libraries(FG24 PRIVATE SDL2::SDL2)
 target_link_libraries(FG24 PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
 target_link_libraries(FG24 PRIVATE glm::glm)
+target_link_libraries(FG24 PRIVATE Qt6::Core Qt6::Widgets)
