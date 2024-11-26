@@ -52,13 +52,13 @@ void Session::Start() {
 	// TODO: change name of shader.vert to be something to do with textures.
     // TODO: change name of Triangle.cpp to be SimpleShapes.cpp
 
-    g_simpleShader = Shader::CompileShader("../assets/shaders/shader.vert",
-										   "../assets/shaders/shader.frag");
-	assert(g_simpleShader != 0);
+    g_texturedShader = Shader::CompileShader("../assets/shaders/textured.vert",
+										   "../assets/shaders/textured.frag");
+	assert(g_texturedShader != 0);
 	g_arcadeTexture = Texture::LoadFromFile("../assets/textures/arcade_carpet.png");
 	assert(g_arcadeTexture != 0);
 	g_triangleMesh = new Square();
-	g_triangle = new Actor(g_triangleMesh, g_simpleShader, g_arcadeTexture);
+	g_triangle = new Actor(g_triangleMesh, g_texturedShader, g_arcadeTexture);
 	
 	assert(g_triangle);
 }

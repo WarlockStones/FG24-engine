@@ -13,7 +13,7 @@ int g_windowWidth = 800;
 int g_windowHeight = 600;
 
 Actor* g_triangle{};
-std::uint32_t		g_simpleShader{};
+std::uint32_t		g_texturedShader{};
 std::uint32_t		g_arcadeTexture{};
 Mesh*				g_triangleMesh{};
 

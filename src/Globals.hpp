@@ -13,7 +13,7 @@ extern int g_windowWidth;
 extern int g_windowHeight;
 
 extern Actor*			g_triangle;
-extern std::uint32_t	g_simpleShader;
+extern std::uint32_t	g_texturedShader;
 extern std::uint32_t	g_arcadeTexture;
 extern Mesh*			g_triangleMesh;
 
