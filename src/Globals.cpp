@@ -1,5 +1,5 @@
 #include <cstdint>
-#include "renderer/Triangle.hpp"
+#include "renderer/SimpleShapes.hpp"
 #include "renderer/Shader.hpp"
 #include "renderer/Mesh.hpp"
 #include "framework/Actor.hpp"

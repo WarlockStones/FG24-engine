@@ -33,7 +33,7 @@ add_executable(FG24
 	"src/framework/KeyInput.cpp"
 	"src/framework/Actor.cpp"
 	"src/renderer/Renderer.cpp"
-	"src/renderer/Triangle.cpp"
+	"src/renderer/SimpleShapes.cpp"
 	"src/renderer/Mesh.cpp"
 	"src/renderer/Texture.cpp"
 	"src/renderer/Shader.cpp"

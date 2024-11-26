@@ -1,4 +1,4 @@
-#include "Triangle.hpp"
+#include "SimpleShapes.hpp"
 #include "Mesh.hpp"
 #include <cstdio>
 

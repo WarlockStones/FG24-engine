@@ -9,7 +9,6 @@
 namespace FG24 {
 namespace Texture {
 std::uint32_t LoadFromFile(const char* path) {
-	// TODO: format path
 	SDL_Surface* surface = IMG_Load(path);
 
 	if (surface == nullptr) {
