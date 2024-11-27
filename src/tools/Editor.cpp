@@ -1,5 +1,6 @@
 #include "Editor.hpp"
 #include <QtWidgets>
+#include <cstdio>
 
 
 namespace FG24 {
@@ -11,5 +12,7 @@ void Editor::InitQt() {
 	window.show();
 	window.setWindowTitle(
 		QApplication::translate("toplevel", "Top-level widget"));
+	std::printf("end of InitQt\n");
+	app.exec();
 } 
 } // namespace FG24
