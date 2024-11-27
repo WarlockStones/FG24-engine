@@ -57,3 +57,11 @@ target_link_libraries(FG24 PRIVATE SDL2::SDL2)
 target_link_libraries(FG24 PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
 target_link_libraries(FG24 PRIVATE glm::glm)
 target_link_libraries(FG24 PRIVATE Qt6::Core Qt6::Widgets)
+
+if (WIN32)
+# Run windeployqt to make Qt find all necessary windows platform plugins and dependencies at the binary output directory
+	add_custom_command(TARGET FG24 POST_BUILD 
+		COMMAND Qt6::windeployqt
+		ARGS $<TARGET_FILE:FG24>
+	)
+endif()
