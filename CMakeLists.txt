@@ -52,14 +52,14 @@ if(TARGET SDL2::SDL2main)
     target_link_libraries(FG24 PRIVATE SDL2::SDL2main)
 endif()
 
-# Link to the actual SDL2 library. SDL2::SDL2 is the shared SDL library, SDL2::SDL2-static is the static SDL libarary.
+# Link to the actual SDL2 library. SDL2::SDL2 is the shared SDL library, SDL2::SDL2-static is the static SDL libarary
 target_link_libraries(FG24 PRIVATE SDL2::SDL2)
 target_link_libraries(FG24 PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
 target_link_libraries(FG24 PRIVATE glm::glm)
 target_link_libraries(FG24 PRIVATE Qt6::Core Qt6::Widgets)
 
 if (WIN32)
-# Run windeployqt to make Qt find all necessary windows platform plugins and dependencies at the binary output directory
+# Run windeployqt on target file to make Qt find all necessary windows platform plugins and dependencies at that directory
 	add_custom_command(TARGET FG24 POST_BUILD 
 		COMMAND Qt6::windeployqt
 		ARGS $<TARGET_FILE:FG24>
