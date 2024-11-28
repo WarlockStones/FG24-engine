@@ -1,12 +1,9 @@
-#include "Editor.hpp"
 #include <QtWidgets>
 #include <cstdio>
 
-
-namespace FG24 {
-void Editor::InitQt() {
+int main(int argc, char* argv[]) {
 	int i = 0;
-	QApplication app(i, nullptr);
+	QApplication app(argc, argv);
 	QWidget window;
 	window.resize(320, 240);
 	window.show();
@@ -15,4 +12,3 @@ void Editor::InitQt() {
 	std::printf("end of InitQt\n");
 	app.exec();
 } 
-} // namespace FG24
