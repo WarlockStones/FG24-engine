@@ -9,14 +9,13 @@ set(CMAKE_CXX_EXTENSIONS NO)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
-# End of preamble
-
+### End of preamble ###
 add_subdirectory(${CMAKE_SOURCE_DIR}/engine)
 add_subdirectory(${CMAKE_SOURCE_DIR}/editor)
 
 # TODO: Test on windows
 add_custom_target(run
-  ./engine/FG24
+  ./engine/engine
 )
 
 add_custom_target(run-ed

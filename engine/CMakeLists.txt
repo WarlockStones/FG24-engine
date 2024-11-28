@@ -1,3 +1,5 @@
+project(engine)
+
 include_directories(${CMAKE_SOURCE_DIR}/includes)
 
 # 1. Look for a SDL2 package, 2. look for the SDL2 component and 3. fail if none can be found
@@ -13,7 +15,7 @@ add_definitions(${OPENGL_DEFINITIONS})
 
 find_package(glm CONFIG REQUIRED)
 
-add_executable(FG24
+add_executable(engine
 	"Main.cpp"
 	"Globals.cpp"
 	"glad/gl.c"
@@ -28,17 +30,17 @@ add_executable(FG24
 	"renderer/Shader.cpp"
 )
 
-target_include_directories(FG24 PRIVATE
+target_include_directories(engine PRIVATE
 	${CMAKE_SOURCE_DIR}/engine
 )
 
 # SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications
 if(TARGET SDL2::SDL2main)
     # It has an implicit dependency on SDL2 functions, so it MUST be added before SDL2::SDL2 (or SDL2::SDL2-static)
-    target_link_libraries(FG24 PRIVATE SDL2::SDL2main)
+    target_link_libraries(engine PRIVATE SDL2::SDL2main)
 endif()
 
 # Link to the actual SDL2 library. SDL2::SDL2 is the shared SDL library, SDL2::SDL2-static is the static SDL libarary
-target_link_libraries(FG24 PRIVATE SDL2::SDL2)
-target_link_libraries(FG24 PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
-target_link_libraries(FG24 PRIVATE glm::glm)
+target_link_libraries(engine PRIVATE SDL2::SDL2)
+target_link_libraries(engine PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
+target_link_libraries(engine PRIVATE glm::glm)
