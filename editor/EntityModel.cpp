@@ -2,8 +2,12 @@
 #include "EntityManager.hpp"
 
 EntityModel::EntityModel(QObject* parent)
-	: QAbstractListModel(parent){
+: QAbstractListModel(parent) {
 	defaultFont.setPointSize(14);
+}
+
+void EntityModel::init(EntityManager* entityManager) {
+	this->entityManager = entityManager;
 }
 
 int EntityModel::rowCount(const QModelIndex& parent) const {
@@ -24,7 +28,6 @@ QVariant EntityModel::data(const QModelIndex& index, int role) const {
 		}
 	case Qt::FontRole:
 		return defaultFont;
-		break;
 	case Qt::BackgroundRole:
 		if (row % 2) {
 			return QBrush(Qt::lightGray);
@@ -37,7 +40,7 @@ QVariant EntityModel::data(const QModelIndex& index, int role) const {
 }
 
 bool EntityModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-	// TODO: Implement this
+	// TODO: Implement this. Maybe it should only change name?
 	return false;
 }
 

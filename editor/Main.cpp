@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 	// The UI
 	QApplication app(argc, argv);
 	EntityModel entityModel;
-	entityModel.entityManager = &em;
+	entityModel.init(&em);
 	QListView listView;
 	listView.setModel(&entityModel);
 	listView.setSelectionRectVisible(true);

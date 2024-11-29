@@ -25,8 +25,9 @@ public:
 
 	Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-	EntityManager* entityManager = nullptr;
+	void init(EntityManager* entityManager);
 
 private:
+	EntityManager* entityManager = nullptr;
 	QFont defaultFont;
 };
