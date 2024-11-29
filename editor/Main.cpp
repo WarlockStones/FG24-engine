@@ -1,14 +1,33 @@
 #include <QtWidgets>
-#include <cstdio>
+#include <QApplication>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+
+#include "EntityModel.hpp"
+#include "EntityManager.hpp"
 
 int main(int argc, char* argv[]) {
-	int i = 0;
+	// The data
+	EntityManager em;
+	em.Init();
+
+	// The UI
 	QApplication app(argc, argv);
+	EntityModel entityModel;
+	entityModel.entityManager = &em;
+	QListView listView;
+	listView.setModel(&entityModel);
+	listView.show();
+
+	/*
 	QWidget window;
-	window.resize(320, 240);
+	window.resize(800, 600);
 	window.show();
 	window.setWindowTitle(
 		QApplication::translate("toplevel", "Top-level widget"));
-	std::printf("end of InitQt\n");
-	app.exec();
+	*/
+
+	return app.exec(); // Pass control and start Qt event loop
 } 

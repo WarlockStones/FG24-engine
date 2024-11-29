@@ -5,8 +5,11 @@ include_directories(${CMAKE_SOURCE_DIR}/includes)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
+
 add_executable(WorldEditor 
 	Main.cpp
+	EntityModel.cpp
+	EntityManager.cpp
 )
 
 target_link_libraries(WorldEditor PRIVATE Qt6::Core Qt6::Widgets)
@@ -18,3 +21,5 @@ if (WIN32)
 		ARGS $<TARGET_FILE:WorldEditor>
 	)
 endif()
+
+set_target_properties(WorldEditor PROPERTIES AUTOMOC TRUE)
