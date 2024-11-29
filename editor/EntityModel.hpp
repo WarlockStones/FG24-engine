@@ -11,7 +11,7 @@ class EntityModel : public QAbstractListModel {
 
 public:
     // ListModel must implement: Constructor, rowCount(), data()
-	explicit EntityModel (QObject* parent = nullptr);
+	explicit EntityModel (QObject* parent = nullptr, EntityManager* entityManager = nullptr);
     ~EntityModel() = default;
 
 	int rowCount(const QModelIndex& parent = QModelIndex()) const override;
@@ -24,8 +24,6 @@ public:
 				 int role = Qt::EditRole) override;
 
 	Qt::ItemFlags flags(const QModelIndex& index) const override;
-
-	void init(EntityManager* entityManager);
 
 private:
 	EntityManager* entityManager = nullptr;

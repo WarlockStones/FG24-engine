@@ -1,17 +1,13 @@
 #include "EntityModel.hpp"
 #include "EntityManager.hpp"
 
-EntityModel::EntityModel(QObject* parent)
-: QAbstractListModel(parent) {
+EntityModel::EntityModel(QObject* parent, EntityManager* entityManager)
+: QAbstractListModel(parent), entityManager(entityManager) {
 	defaultFont.setPointSize(14);
 }
 
-void EntityModel::init(EntityManager* entityManager) {
-	this->entityManager = entityManager;
-}
-
 int EntityModel::rowCount(const QModelIndex& parent) const {
-	if(entityManager) {
+	if (entityManager) {
 		return entityManager->GetEntityCount();
 	} 
 

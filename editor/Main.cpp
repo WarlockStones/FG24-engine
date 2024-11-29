@@ -5,23 +5,25 @@
 #include <vector>
 #include <memory>
 
-#include "EntityModel.hpp"
 #include "EntityManager.hpp"
+#include "MainWindow.hpp"
 
 int main(int argc, char* argv[]) {
 	// The data
 	EntityManager em;
 	em.Init();
 
-	// The UI
+	// The UI 
 	QApplication app(argc, argv);
-	EntityModel entityModel;
-	entityModel.init(&em);
-	QListView listView;
-	listView.setModel(&entityModel);
-	listView.setSelectionRectVisible(true);
-	listView.setUniformItemSizes(true); // Improves performance
-	listView.show();
+
+	// Main window
+	MainWindow window(nullptr, &em);
+	window.show();
+
+	// Selection
+	
+
+
 
 	/*
 	QWidget window;
