@@ -3,6 +3,7 @@
 
 EntityModel::EntityModel(QObject* parent)
 	: QAbstractListModel(parent){
+	defaultFont.setPointSize(14);
 }
 
 int EntityModel::rowCount(const QModelIndex& parent) const {
@@ -14,15 +15,24 @@ int EntityModel::rowCount(const QModelIndex& parent) const {
 }
 
 QVariant EntityModel::data(const QModelIndex& index, int role) const {
-	if (role == Qt::DisplayRole && entityManager) {
-	    return entityManager->GetEntityNameAtIndex(index.row());
+	auto row = index.row();
+	switch (role) {
+	case Qt::DisplayRole:
+		if (entityManager) {
+		    // Entities should always be listed in alphabetical order
+			return entityManager->GetEntityNameAtIndex(index.row());
+		}
+	case Qt::FontRole:
+		return defaultFont;
+		break;
+	case Qt::BackgroundRole:
+		if (row % 2) {
+			return QBrush(Qt::lightGray);
+		}
+	default:
+		break;
 	}
 
-	return QVariant();
-}
-
-QVariant EntityModel::headerData(int section, Qt::Orientation, int role) const {
-	// TODO: Implement this
 	return QVariant();
 }
 
@@ -32,6 +42,5 @@ bool EntityModel::setData(const QModelIndex& index, const QVariant& value, int r
 }
 
 Qt::ItemFlags EntityModel::flags(const QModelIndex& index) const {
-  // TODO: Implement this
-  return static_cast<Qt::ItemFlags>(0);
+	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
 }

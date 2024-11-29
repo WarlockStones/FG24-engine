@@ -19,6 +19,8 @@ int main(int argc, char* argv[]) {
 	entityModel.entityManager = &em;
 	QListView listView;
 	listView.setModel(&entityModel);
+	listView.setSelectionRectVisible(true);
+	listView.setUniformItemSizes(true); // Improves performance
 	listView.show();
 
 	/*
