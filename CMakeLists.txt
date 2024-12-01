@@ -18,6 +18,6 @@ add_custom_target(run
   ./engine/engine
 )
 
-add_custom_target(run-ed
+add_custom_target(runed # "run editor"
   ./editor/WorldEditor
 )
