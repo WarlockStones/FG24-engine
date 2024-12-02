@@ -26,7 +26,8 @@ QVariant EntityModel::data(const QModelIndex& index, int role) const {
 		return defaultFont;
 	case Qt::BackgroundRole:
 		if (row % 2) {
-			return QBrush(Qt::lightGray);
+			// TODO: This should take into account darkmode
+			// return QBrush(Qt::lightGray);
 		}
 	default:
 		break;
