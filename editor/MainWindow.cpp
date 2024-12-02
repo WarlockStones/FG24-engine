@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager)
 , listView(new QListView(this)) {
 	assert(entityManager);
 
+	this->resize(800, 600);
+
 	listView->setModel(entityModel);
 	listView->setSelectionRectVisible(true);
 	listView->setUniformItemSizes(true); // Improves performance if true
