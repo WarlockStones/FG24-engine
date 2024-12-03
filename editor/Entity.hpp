@@ -13,10 +13,15 @@ public:
     void AddProperty(std::string key, std::string value);
     std::optional<std::reference_wrapper<std::string>> GetValue(const std::string& key) const;
 
+	const std::string& GetName() const;
+
 	// Model for editor view
     // Transform for editor. Probably just a vec3 origin and mat4x4 rotation
   
 	// Should it have a name?
+private:
+	const std::string cachedName;
+	bool hasCachedName;
 
 };
 

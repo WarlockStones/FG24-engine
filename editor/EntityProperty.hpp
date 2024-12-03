@@ -6,9 +6,13 @@ namespace EntityPropertyKeys {
 	constexpr char origin[] = "origin";
 };
 
+// Map?? Keys to default values
+
 namespace EntityPropertyValues {
 	constexpr char defaultValue[] = "";
 	constexpr char noClassname[] = "undefined";
+	constexpr char noOrigin[] = "0 0 0";
+	constexpr char noRotation[] = "0 0 0";
 	constexpr char spawnFlags[] = "spawnflags";
 }
 
@@ -27,5 +31,4 @@ struct EntityProperty {
 			return property.key == key;
 	});
 	*/
-
-};
+}
