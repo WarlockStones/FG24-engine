@@ -13,6 +13,13 @@ int main(int argc, char* argv[]) {
 	EntityManager em;
 	em.Init();
 
+	for (const auto& entity : em.entities) {
+		auto name = entity.GetValue("classname");
+		if (name) {
+			std::cout<<name.value()<<'\n';
+		}
+	}
+
 	// The UI 
 	QApplication app(argc, argv);
 
@@ -21,7 +28,6 @@ int main(int argc, char* argv[]) {
 	window.show();
 
 	// Selection
-	
 
 
 

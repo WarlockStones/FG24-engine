@@ -1,5 +1,7 @@
 project(WorldEditor)
 
+set(CMAKE_CXX_STANDARD 20)
+
 # CMAKE_SOURCE_DIR will be top directory
 include_directories(${CMAKE_SOURCE_DIR}/includes)
 
@@ -11,7 +13,9 @@ add_executable(WorldEditor
 	EntityModel.cpp
 	EntityManager.cpp
 	MainWindow.cpp
- "EntityDelegate.cpp")
+	EntityDelegate.cpp
+	Entity.cpp
+)
 
 target_link_libraries(WorldEditor PRIVATE Qt6::Core Qt6::Widgets)
 

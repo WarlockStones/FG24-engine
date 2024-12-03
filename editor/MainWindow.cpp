@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager)
 	splitter->setStretchFactor(1, 1);
 	splitter->addWidget(listView);
 	splitter->addWidget(label);
-
 	
 	
 	// delegates

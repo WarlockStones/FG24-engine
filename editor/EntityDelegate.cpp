@@ -4,6 +4,7 @@
 #include "Entity.hpp"
 
 void EntityDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
+  /*
 	if (index.data().canConvert<Entity>()) {
 		Entity e = qvariant_cast<Entity>(index.data());
 
@@ -18,6 +19,7 @@ void EntityDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option
 	} else {
 		QStyledItemDelegate::paint(painter, option, index);
 	}
+*/
 }
 
 QSize EntityDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const {
