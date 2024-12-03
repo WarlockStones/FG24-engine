@@ -1,5 +1,6 @@
 #include "MainWindow.hpp"
 #include "EntityModel.hpp"
+#include "EntityPropertyModel.hpp"
 #include "EntityManager.hpp"
 
 #include <cstdio>
@@ -8,14 +9,17 @@
 #include <QSplitter>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QListView>
 
 MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager) 
 : entityManager(entityManager)
 , entityModel(new EntityModel(this, entityManager))
+, entityPropertyModel(new EntityPropertyModel(this, entityManager))
 , listView(new QListView(this)) {
 	assert(entityManager);
 
 	this->resize(800, 600);
+	this->setWindowTitle("World Editor");
 
 	listView->setModel(entityModel);
 	listView->setSelectionRectVisible(true);
@@ -25,17 +29,15 @@ MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager)
 	// TODO: add splitter for details view
 	// TODO: add these as member variables
 	// It should be a listView with a custom itemDelegate to handle component data
-	QVBoxLayout* layout = new QVBoxLayout(this);
-
-	QLabel* label = new QLabel(this);
-	label->setText("This is a test");
+	auto table = new QListView(this);
+	listView->setModel(entityPropertyModel);
 
 	QSplitter* splitter = new QSplitter(this);
 	setCentralWidget(splitter); // Central widget changes layout
 	splitter->setOrientation(Qt::Vertical);
 	splitter->setStretchFactor(1, 1);
 	splitter->addWidget(listView);
-	splitter->addWidget(label);
+	splitter->addWidget(table);
 	
 	
 	// delegates

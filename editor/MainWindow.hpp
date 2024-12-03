@@ -5,10 +5,11 @@ class QListView;
 class QItemSelection;
 class QStandardItemModel;
 class EntityModel;
+class EntityPropertyModel;
 class EntityManager;
 
 // This window hold the list of entities and the details menu.
-// This class manages all other views and models and the communcation between them
+// This class manages all other views and models and the communication between them
 class MainWindow : public QMainWindow {
 	Q_OBJECT
 public:
@@ -22,5 +23,6 @@ private slots:
 private:
 	EntityManager* entityManager;
 	EntityModel* entityModel;
+	EntityPropertyModel* entityPropertyModel;
 	QListView* listView;
 };

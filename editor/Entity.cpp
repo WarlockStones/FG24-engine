@@ -5,10 +5,11 @@
 #include <iostream>
 
 void Entity::AddProperty(std::string key, std::string value) {
-    // TODO: Add find function.
-    // Error: No matching for 'operator==' operand types are 'EntityProperty'
-    //        and 'const std::__cxx11::basic_string<char>'
-	auto it = std::find(properties.begin(), properties.end(), key);
+	// TODO make this find_if a function
+	auto it = std::find_if(properties.begin(), properties.end(),
+						[&](EntityProperty& property){
+			return property.key == key;
+	});
 
 	if (it != properties.end()) {
 		// TODO: it->SetValue(std::move(value));
@@ -18,12 +19,16 @@ void Entity::AddProperty(std::string key, std::string value) {
 	}
 }
 
-std::optional<std::string*> Entity::GetValue(const std::string& key) const {
-	const auto it = std::find(properties.begin(), properties.end(), key);
-	if (it != properties.end()) {
-	  std::cout <<"addr: "<<&it->value<<'\n';
-	  // return std::optional<std::reference_wrapper<std::string*>> {&it->value};
-	}
+std::optional<std::reference_wrapper<std::string>> Entity::GetValue(const std::string& key) const {
+	// TODO make this find_if a function
+	const auto it = std::find_if(properties.begin(), properties.end(),
+						[&](const EntityProperty& property){
+			return property.key == key;
+	});
 
-    return std::nullopt;
+	if (it != properties.end()) {
+		return std::optional<std::reference_wrapper<std::string>>(const_cast<std::string&>(it->value));
+	} else {
+		return std::nullopt;
+	}
 }

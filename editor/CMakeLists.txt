@@ -15,6 +15,8 @@ add_executable(WorldEditor
 	MainWindow.cpp
 	EntityDelegate.cpp
 	Entity.cpp
+	EntityPropertyModel.cpp
+	EntityProperty.cpp
 )
 
 target_link_libraries(WorldEditor PRIVATE Qt6::Core Qt6::Widgets)

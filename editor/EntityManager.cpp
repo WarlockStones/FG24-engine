@@ -5,7 +5,7 @@
 void EntityManager::Init() {
 	for (int i = 0; i < 10; i++) {
 		entities.push_back(Entity());
-		entities.back().AddProperty(EntityPropertyKeys::classname, "teacup");
+		entities.back().AddProperty(EntityPropertyKeys::className, "teacup");
 
 		std::string positionOffset = std::to_string(i * 10);
 		std::string origin = positionOffset;

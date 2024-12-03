@@ -19,7 +19,7 @@ public:
 	QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
     // Editable list models must implement setData(), flags() to return a
-	// value containging Qt::ItemIsEditable
+	// value containing Qt::ItemIsEditable
 	bool setData(const QModelIndex& index, const QVariant& value,
 				 int role = Qt::EditRole) override;
 
