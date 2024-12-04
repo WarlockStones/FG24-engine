@@ -19,14 +19,14 @@ QVariant EntityModel::data(const QModelIndex& index, int role) const {
 	switch (role) {
 	case Qt::DisplayRole:
 		if (entityManager) {
-			// Entities should always be listed in alphabetical order
+			// Entities should always be listed in alphabetical order. TODO: Sort them
 			return entityManager->GetEntityNameAtIndex(row).c_str();
 		}
 	case Qt::FontRole:
 		return defaultFont;
 	case Qt::BackgroundRole:
 		if (row % 2) {
-			// TODO: This should take into account darkmode
+			// TODO: This should take into account dark-mode
 			// return QBrush(Qt::lightGray);
 		}
 	default:

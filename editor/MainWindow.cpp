@@ -27,9 +27,7 @@ MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager)
 	listView->setUniformItemSizes(true); // Improves performance if true
 	listView->show();
 
-	// TODO: add splitter for details view
 	// TODO: add these as member variables
-	// It should be a listView with a custom itemDelegate to handle component data
 	auto table = new QTableView(this);
 	table->setModel(entityPropertyModel);
 	table->setSelectionBehavior(QAbstractItemView::SelectItems);

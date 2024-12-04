@@ -34,8 +34,8 @@ std::string_view GetValueOrDefault(const std::vector<EntityProperty>& properties
 }
 
 
-// Returning string_view in getter is bad. String_view becomes invalid as soon as underlying data is changed.
-// Getter functions should return const std::string&
+// Returning string_view in getter is bad. String_view becomes invalid as soon as underlying data is changed
+// Getter functions should return const T&
 const std::string& Entity::GetName() const {
 	if (!cachedName.has_value()) {
 		cachedName = GetValueOrDefault(properties, EntityPropertyKeys::className);
@@ -60,7 +60,6 @@ std::optional<std::string_view> Entity::GetValue(std::string_view key) const {
 	auto it = FindKey(properties, key);
 
 	if (it != properties.end()) {
-		// Just having some "fun" with modern c++ standard library features
 		return std::optional<std::string_view>(it->value);
 	} else {
 		return std::nullopt;

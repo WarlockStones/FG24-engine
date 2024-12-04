@@ -9,9 +9,7 @@ public:
 	int GetEntityCount();
 	const std::string& GetEntityNameAtIndex(std::size_t index);
 
-	Entity& GetSelectedEntity();
-
+	std::optional<std::reference_wrapper<Entity>> selectedEntity;
 	std::vector<Entity> entities;
 private:
-	std::optional<std::reference_wrapper<Entity>> SelectedEntity;
 };

@@ -15,13 +15,9 @@ public:
 
 	const std::string& GetName() const;
 
-	// Model for editor view
-    // Transform for editor. Probably just a vec3 origin and mat4x4 rotation
-  
-	// Should it have a name?
 private:
 	mutable std::optional<std::string> cachedName;
-
 };
+
 Q_DECLARE_METATYPE(Entity) // Allows Entity to be stored in a QVariant
 

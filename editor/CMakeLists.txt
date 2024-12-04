@@ -11,7 +11,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 add_executable(WorldEditor 
 	Main.cpp
 	Entity.cpp
-	EntityDelegate.cpp
 	EntityManager.cpp
 	EntityModel.cpp
 	EntityProperty.cpp

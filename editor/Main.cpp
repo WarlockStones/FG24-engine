@@ -27,8 +27,10 @@ int main(int argc, char* argv[]) {
 		if (bad) {
 			std::cout << "bad\n";
 		}
-		auto test = entity.GetValue(EntityPropertyKeys::test);
 	}
+
+	// TODO: add proper selection
+	em.selectedEntity = em.entities[0]; // Testing selection
 
 
 	// The UI 
