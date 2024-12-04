@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QListView>
+#include <QTableView>
 
 MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager) 
 : entityManager(entityManager)
@@ -29,8 +30,10 @@ MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager)
 	// TODO: add splitter for details view
 	// TODO: add these as member variables
 	// It should be a listView with a custom itemDelegate to handle component data
-	auto table = new QListView(this);
-	listView->setModel(entityPropertyModel);
+	auto table = new QTableView(this);
+	table->setModel(entityPropertyModel);
+	table->setSelectionBehavior(QAbstractItemView::SelectItems);
+	table->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QSplitter* splitter = new QSplitter(this);
 	setCentralWidget(splitter); // Central widget changes layout

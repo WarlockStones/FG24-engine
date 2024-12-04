@@ -10,13 +10,13 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
 add_executable(WorldEditor 
 	Main.cpp
-	EntityModel.cpp
-	EntityManager.cpp
-	MainWindow.cpp
-	EntityDelegate.cpp
 	Entity.cpp
-	EntityPropertyModel.cpp
+	EntityDelegate.cpp
+	EntityManager.cpp
+	EntityModel.cpp
 	EntityProperty.cpp
+	EntityPropertyModel.cpp
+	MainWindow.cpp
 )
 
 target_link_libraries(WorldEditor PRIVATE Qt6::Core Qt6::Widgets)

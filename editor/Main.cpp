@@ -17,16 +17,17 @@ int main(int argc, char* argv[]) {
 	for (const auto& entity : em.entities) {
 		auto name = entity.GetValue("classname");
 		if (name) {
-			std::cout<<"name: "<< name.value().get() << '\n';
+			std::cout<<"name: "<< name.value() << '\n';
 		}
 		auto origin = entity.GetValue("origin");
 		if (origin) {
-			std::cout << "origin: " << origin.value().get() << '\n';
+			std::cout << "origin: " << origin.value() << '\n';
 		}
 		auto bad = entity.GetValue("bad");
 		if (bad) {
 			std::cout << "bad\n";
 		}
+		auto test = entity.GetValue(EntityPropertyKeys::test);
 	}
 
 
@@ -36,18 +37,6 @@ int main(int argc, char* argv[]) {
 	// Main window
 	MainWindow window(nullptr, &em);
 	window.show();
-
-	// Selection
-
-
-
-	/*
-	QWidget window;
-	window.resize(800, 600);
-	window.show();
-	window.setWindowTitle(
-		QApplication::translate("toplevel", "Top-level widget"));
-	*/
 
 	return app.exec(); // Pass control and start Qt event loop
 } 

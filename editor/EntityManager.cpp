@@ -1,6 +1,9 @@
 #include "EntityManager.hpp"
 #include <iostream>
 #include "Entity.hpp"
+#include <cassert>
+#include <string>
+#include <utility>
 
 void EntityManager::Init() {
 	for (int i = 0; i < 10; i++) {
@@ -20,13 +23,7 @@ int EntityManager::GetEntityCount() {
 	return entities.size();
 }
 
-const char* EntityManager::GetEntityNameAtIndex(std::size_t index) {
-  /* DEPRECATED
-	 // TODO FIX THIS NOW THAT YOU HAVE INTRODUCED PROPERTIES
-	if (index < entities.size()) {
-		return entities[index].name.c_str();
-	}
-  */
-	
-	return "e";
+const std::string& EntityManager::GetEntityNameAtIndex(std::size_t index) {
+	assert(index < entities.size());
+	return entities[index].GetName();
 }

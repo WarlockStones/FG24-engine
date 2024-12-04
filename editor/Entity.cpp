@@ -4,66 +4,64 @@
 #include <iostream>
 
 // Try to find key in vector of EntityProperties
-std::vector<EntityProperty>::iterator FindKey(std::vector<EntityProperty>& properties, const std::string& key) {
+std::vector<EntityProperty>::iterator FindKey(std::vector<EntityProperty>& properties, std::string_view key) {
 	return std::find_if(properties.begin(), properties.end(),
 		[&](EntityProperty& property) {
 			return property.key == key;
 	});
 }
 
-std::vector<EntityProperty>::const_iterator FindKey(const std::vector<EntityProperty>& properties, const std::string& key) {
+std::vector<EntityProperty>::const_iterator FindKey(const std::vector<EntityProperty>& properties, std::string_view key) {
 	return std::find_if(properties.begin(), properties.end(),
 		[&](const EntityProperty& property) {
 			return property.key == key;
 	});
 }
 
-const std::string& GetValueOrDefault(const std::vector<EntityProperty>& properties, const std::string& key) {
-	// Print that key has no default value and return the defaultValue ""
+std::string_view GetValueOrDefault(const std::vector<EntityProperty>& properties, std::string_view key) {
 	auto it = FindKey(properties, key);
 
 	if (it != properties.end()) {
 		return it->value;
 	}
 
-	if (DefaultPropertyPair.contains(key.c_str())) { // TODO: Fix need to c_str();
-		return DefaultPropertyPair[key.c_str()]; // Return to temporary ref! WARNING!
+	if (DefaultPropertyPair.contains(key)) {
+		return DefaultPropertyPair[key]; 
 	} else {
-		std::cout<<"Warning: DefaultPropertyPair does not include \'"<<key<<"!\n";
+		std::cout<<"Warning: '"<<key<<"' has no default property!\n";
 		return EntityPropertyValues::defaultValue;
 	}
 }
 
 
+// Returning string_view in getter is bad. String_view becomes invalid as soon as underlying data is changed.
+// Getter functions should return const std::string&
 const std::string& Entity::GetName() const {
-	if (!hasCachedName) {
-	    // TODO: How to assign value from reference, aka. copy?
+	if (!cachedName.has_value()) {
 		cachedName = GetValueOrDefault(properties, EntityPropertyKeys::className);
-		hasCachedName = true; // bool is mutable
 	}
 
-
-	return cachedName;
+	return cachedName.value();
 }
 
-void Entity::AddProperty(std::string key, std::string value) {
+void Entity::AddProperty(std::string_view key, std::string_view value) {
+
 	auto it = FindKey(properties, key);
 
 	if (it != properties.end()) {
-		// TODO: it->SetValue(std::move(value));
-		it->value = std::move(value);
+		it->value = std::string(value);
 	} else {
-		properties.emplace_back(std::move(key), std::move(value));
+		// Construct property
+		properties.emplace_back(EntityProperty(std::string{ key }, std::string{ value }));
 	}
 }
 
-std::optional<std::reference_wrapper<std::string>> Entity::GetValue(const std::string& key) const {
-	// TODO make this find_if a function
+std::optional<std::string_view> Entity::GetValue(std::string_view key) const {
 	auto it = FindKey(properties, key);
 
 	if (it != properties.end()) {
 		// Just having some "fun" with modern c++ standard library features
-		return std::optional<std::reference_wrapper<std::string>>(const_cast<std::string&>(it->value));
+		return std::optional<std::string_view>(it->value);
 	} else {
 		return std::nullopt;
 	}

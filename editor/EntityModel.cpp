@@ -19,8 +19,8 @@ QVariant EntityModel::data(const QModelIndex& index, int role) const {
 	switch (role) {
 	case Qt::DisplayRole:
 		if (entityManager) {
-		    // Entities should always be listed in alphabetical order
-			return entityManager->GetEntityNameAtIndex(row);
+			// Entities should always be listed in alphabetical order
+			return entityManager->GetEntityNameAtIndex(row).c_str();
 		}
 	case Qt::FontRole:
 		return defaultFont;
