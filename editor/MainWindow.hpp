@@ -1,6 +1,7 @@
 #pragma once
 #include <QMainWindow>
 
+class QTableView;
 class QListView;
 class QItemSelection;
 class QStandardItemModel;
@@ -25,4 +26,5 @@ private:
 	EntityModel* entityModel;
 	EntityPropertyModel* entityPropertyModel;
 	QListView* listView;
+	QTableView* propertiesView;
 };

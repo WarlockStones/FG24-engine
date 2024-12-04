@@ -16,7 +16,8 @@ MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager)
 : entityManager(entityManager)
 , entityModel(new EntityModel(this, entityManager))
 , entityPropertyModel(new EntityPropertyModel(this, entityManager))
-, listView(new QListView(this)) {
+, listView(new QListView(this))
+, propertiesView(new QTableView(this)) {
 	assert(entityManager);
 
 	this->resize(800, 600);
@@ -27,21 +28,19 @@ MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager)
 	listView->setUniformItemSizes(true); // Improves performance if true
 	listView->show();
 
-	// TODO: add these as member variables
-	auto table = new QTableView(this);
-	table->setModel(entityPropertyModel);
-	table->setSelectionBehavior(QAbstractItemView::SelectItems);
-	table->setSelectionMode(QAbstractItemView::SingleSelection);
+	propertiesView->setModel(entityPropertyModel);
+	propertiesView->setSelectionBehavior(QAbstractItemView::SelectItems);
+	propertiesView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QSplitter* splitter = new QSplitter(this);
 	setCentralWidget(splitter); // Central widget changes layout
 	splitter->setOrientation(Qt::Vertical);
 	splitter->setStretchFactor(1, 1);
 	splitter->addWidget(listView);
-	splitter->addWidget(table);
+	splitter->addWidget(propertiesView);
 	
 	
-	// delegates
+	// Delegates
 	QItemSelectionModel* selectionModel = listView->selectionModel();
 	connect(selectionModel, &QItemSelectionModel::selectionChanged,
 			this, &MainWindow::selectionChangedSlot);
@@ -49,16 +48,16 @@ MainWindow::MainWindow(QWidget* parent, EntityManager* entityManager)
 
 MainWindow::~MainWindow() {
 	delete entityModel;
+	delete entityPropertyModel;
 	delete listView;
+	delete propertiesView;
 }
 
 void MainWindow::selectionChangedSlot(const QItemSelection& newSelection,
 									  const QItemSelection& oldSelection) {
 
-	const QModelIndex index = listView->selectionModel()->currentIndex();
-	QString selectedText = index.data(Qt::DisplayRole).toString();
+	const QModelIndex& index = listView->selectionModel()->currentIndex();
+	entityManager->selectedEntity = entityManager->entities[index.row()];
 
-	setWindowTitle(
-	  index.data(Qt::DisplayRole).toString()
-	);
+	propertiesView->viewport()->update();
 }
