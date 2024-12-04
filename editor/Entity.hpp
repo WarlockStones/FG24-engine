@@ -21,9 +21,8 @@ public:
 	// Should it have a name?
 private:
 	const std::string cachedName;
-	bool hasCachedName;
+	mutable bool hasCachedName;
 
 };
-
 Q_DECLARE_METATYPE(Entity) // Allows Entity to be stored in a QVariant
 

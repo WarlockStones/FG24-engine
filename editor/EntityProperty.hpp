@@ -1,3 +1,4 @@
+#include <unordered_map>
 namespace EntityPropertyKeys {
 	// constexpr std::string is bugged on msvc 17.20
 	// Using std::string_view would require explicit string construct i.e. e.AddProperty(std::string(EntityProperty::classname))
@@ -10,11 +11,17 @@ namespace EntityPropertyKeys {
 
 namespace EntityPropertyValues {
 	constexpr char defaultValue[] = "";
-	constexpr char noClassname[] = "undefined";
+	constexpr char noClassName[] = "undefined";
 	constexpr char noOrigin[] = "0 0 0";
 	constexpr char noRotation[] = "0 0 0";
 	constexpr char spawnFlags[] = "spawnflags";
 }
+
+std::unordered_map<const char*, const char*> DefaultPropertyPair = {
+	{EntityPropertyKeys::className, EntityPropertyValues::noClassName},
+	{EntityPropertyKeys::origin, EntityPropertyValues::noOrigin}
+	// {EntityPropertyKeys::, EntityPropertyValues::},
+};
 
 struct EntityProperty {
 	std::string key{};
@@ -31,4 +38,4 @@ struct EntityProperty {
 			return property.key == key;
 	});
 	*/
-}
+};
