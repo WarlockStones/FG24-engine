@@ -28,6 +28,19 @@ QVariant EntityPropertyModel::data(const QModelIndex& index, int role) const {
 	return QVariant();
 }
 
+QVariant EntityPropertyModel::headerData(int section, Qt::Orientation orientation, int role) const {
+	if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+		switch (section) {
+		case 0:
+			return QString("Property");
+		case 1:
+			return QString("Value");
+		}
+	}
+
+	return QVariant();
+}
+
 int EntityPropertyModel::rowCount(const QModelIndex& parent) const {
 	if (entityManager->selectedEntity.has_value()) {
 		return entityManager->selectedEntity.value().get().properties.size();
