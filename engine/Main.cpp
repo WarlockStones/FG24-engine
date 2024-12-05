@@ -4,7 +4,6 @@
 
 int main(int argv, char** args) {
 
-	/*
 	FG24::Session session;
 
 	if (session.Init() == 0) {
@@ -13,6 +12,6 @@ int main(int argv, char** args) {
 	}
 
 	std::printf("Main returned 0\n");
-	*/
+
 	return 0;
 }

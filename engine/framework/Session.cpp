@@ -30,10 +30,10 @@ bool Session::Init() {
 void Session::Start() {
 	// Or should I do some of this in the renderer? Factory pattern or something?
 
-	g_texturedShader = Shader::CompileShader("../assets/shaders/textured.vert",
-											 "../assets/shaders/textured.frag");
+	g_texturedShader = Shader::CompileShader("../../assets/shaders/textured.vert",
+											 "../../assets/shaders/textured.frag");
 	assert(g_texturedShader != 0);
-	g_arcadeTexture = Texture::LoadFromFile("../assets/textures/arcade_carpet.png");
+	g_arcadeTexture = Texture::LoadFromFile("../../assets/textures/arcade_carpet.png");
 	assert(g_arcadeTexture != 0);
 	g_triangleMesh = new Square();
 	g_triangle = new Actor(g_triangleMesh, g_texturedShader, g_arcadeTexture);
