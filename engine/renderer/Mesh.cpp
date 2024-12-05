@@ -47,8 +47,11 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
+}
+Mesh::Mesh(MeshData data) {
 
 }
+
 std::uint32_t Mesh::GetVBO() const {
 	return VBO;
 }

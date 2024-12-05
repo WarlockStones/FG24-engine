@@ -3,7 +3,7 @@
 #include <cstdio>
 
 namespace FG24 {
-static float vertices[]{
+float vertices[]{
 	-0.5f, -0.5f, 0.0f,
 	 0.5f, -0.5f, 0.0f,
 	 0.0f,  0.5f, 0.0f

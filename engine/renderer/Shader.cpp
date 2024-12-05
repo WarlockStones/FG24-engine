@@ -1,5 +1,5 @@
 #include "Shader.hpp"
-#include "utils/File.cpp"
+#include "utils/File.hpp"
 #include <cassert>
 #include <cstdio>
 #include <glad/gl.h>

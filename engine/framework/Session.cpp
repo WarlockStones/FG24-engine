@@ -38,6 +38,8 @@ void Session::Start() {
 	g_triangleMesh = new Square();
 	g_triangle = new Actor(g_triangleMesh, g_texturedShader, g_arcadeTexture);
 	assert(g_triangle);
+
+	File::LoadObjToMeshData("../../assets/mesh/flag.obj");
 }
 
 void Session::Update() {
