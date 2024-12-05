@@ -49,6 +49,7 @@ void Entity::AddProperty(std::string_view key, std::string_view value) {
 	auto it = FindKey(properties, key);
 
 	if (it != properties.end()) {
+		// TODO: Inform user that they are about to overwrite a value
 		it->value = std::string(value);
 	} else {
 		// Construct property
