@@ -98,22 +98,57 @@ MeshData LoadObjToMeshData(const char* path) {
 
 
 	std::FILE* file = std::fopen(path, "rb");
+	if (!file) {
+		std::fprintf(stderr, "No file!\n%s\n", path);
+	}
 	assert(file); // TODO: Error handling. return default MeshData
 
 	// There is no libc way of doing this, I guess I just have to read character by character
-	constexpr int maxLineLength = 128;
-	char buffer[maxLineLength];
+	constexpr int maxLineLength = 512;
+	char lineBuffer[maxLineLength];
 	std::size_t currentBufferLength = 0;
 	int c; // int is required to handle EOF
 	while ((c = std::fgetc(file)) != EOF) {
-		assert(currentBufferLength < maxLineLength); // TODO: handle this error by reporting to the user that the file is bad
-		buffer[currentBufferLength] = c;
+
+		// TODO: handle this error by reporting to the user that the file is bad
+		assert(currentBufferLength < maxLineLength); 
+		// std::putchar(c); // Debug print
+
+		lineBuffer[currentBufferLength] = c;
 		++currentBufferLength;
 		if (c == '\n') { // Is this multiplatform?
 			// Handle and clear the buffer
 			// Tokenize the buffer
+			std::putchar(c);
 
-			int b = buffer[0];
+			// f 1413/1629/8163 1412/1630/8164 1408/1631/8165 1407/1632/8166
+			// TODO: Check for n-gons
+
+			char* tokens[4]; // 
+			// At start of each word > > parse until ' 'white-space or '\n'
+			// I could replace space with '\0' and basically have an optimised
+			// multidimensional array!
+			// I can just as I parse, if i find a ' ' I change it to a '\0'
+			// Then hopefully I can securly translate the strings to a int/float
+			// And if I can not then I safely terminate and do not seg fault :-)
+
+			// TODO: Test if this crashes if you read bad data
+			// char myarray[5] = {'-', '1', '2', '3', '\0'};
+			// int i;
+			// sscanf(myarray, "%d", &i);
+
+
+			// v = xyz
+			// vn = i j k
+			// vt = uv w (both v and w are actually optional but I want 2 uv)
+
+			// Face element reference grouping
+			// FIRST: v1 indicies, then you can do the vt and vn groupings later
+			// f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 . . .
+			// faceSpecifies a face element and its vertex reference number. 
+			// vt is optional in f, so v1//vn1 is valid 1413//7210
+
+			int b = lineBuffer[0];
 			if (b == 'v') {
 				// Handle vertex
 				// Tokenize the buffer
@@ -122,7 +157,7 @@ MeshData LoadObjToMeshData(const char* path) {
 			} else if (b == 'vt') {
 				// Handle UV
 			} else if (b == 'vn') {
-				// Handle vertex normal
+				// Handle vertex normal. (Don't care about the optional w)
 			} else if (b == 'f') {
 				// Handle face index
 			}
@@ -131,6 +166,7 @@ MeshData LoadObjToMeshData(const char* path) {
 				// Loop the line
 			}
 
+			currentBufferLength = 0; // Reset the buffer
 		}
 	}
 
