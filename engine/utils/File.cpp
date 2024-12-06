@@ -104,6 +104,7 @@ static void ParseUVline(const char** tokens) {
 
 }
 
+// TODO: Do proper error handling
 MeshData LoadObjToMeshData(const char* path) {
 	// Load v. Always 3 floats on line
 	// Store first token as prefex
@@ -112,17 +113,22 @@ MeshData LoadObjToMeshData(const char* path) {
 
 	// TODO: Make this into a function that converts file paths
 	std::size_t pathlen = std::strlen(path);
-	assert(pathlen < 260);
+	if (pathlen < 260) {
+		// TODO: Do proper error handling
+		std::fprintf(stderr, "ERROR: Path to .obj file is too long!\n%s\n", path);
+		return MeshData();
+	}
+
 	char p[260];
 	std::memcpy(p, path, sizeof(path));
 	FormatFilePath(p, sizeof(path));
 
 
-	std::FILE* file = std::fopen(path, "rb");
-	if (!file) {
+	FileStream file(path, "rb");
+	if (!file.ptr) {
 		std::fprintf(stderr, "No file!\n%s\n", path);
+		return MeshData();
 	}
-	assert(file); // TODO: Error handling. return default MeshData
 
 	// There is no libc way of doing this, I guess I just have to read character by character
 	constexpr std::size_t maxLineLength = 512;
@@ -133,9 +139,13 @@ MeshData LoadObjToMeshData(const char* path) {
 	constexpr std::size_t maxTokens = 4;
 	char* tokens[maxTokens] {nullptr};
 	std::size_t tokenCount = 0;
-	while ((c = std::fgetc(file)) != EOF) {
+	while ((c = std::fgetc(file.ptr)) != EOF) {
 
 		// TODO: handle this error by reporting to the user that the file is bad
+		if (currentBufferLength < maxLineLength) {
+			std::fprintf(stderr, "Error: LoadObjToMeshData: A line in .obj is too long!\n");
+			return MeshData();
+		}
 		assert(currentBufferLength < maxLineLength); 
 
 		if (c == '\n' && currentBufferLength > 0) { 
