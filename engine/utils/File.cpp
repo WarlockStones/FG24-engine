@@ -104,16 +104,13 @@ static void ParseUVline(const char** tokens) {
 
 }
 
+// TODO: Utilise the safe versions of c-functions e.g. sscanf instead of scanf
 // TODO: Do proper error handling
 MeshData LoadObjToMeshData(const char* path) {
-	// Load v. Always 3 floats on line
-	// Store first token as prefex
-	// Check prefix if "v" else if "vt" etc etc
-	// tokenization to load annoying annoying faces f.
-
 	// TODO: Make this into a function that converts file paths
+	//       Or I should probably have a FilePath class, and handle common file-paths as literals '../../assets'.
 	std::size_t pathlen = std::strlen(path);
-	if (pathlen < 260) {
+	if (pathlen > 260) {
 		// TODO: Do proper error handling
 		std::fprintf(stderr, "ERROR: Path to .obj file is too long!\n%s\n", path);
 		return MeshData();
@@ -123,7 +120,6 @@ MeshData LoadObjToMeshData(const char* path) {
 	std::memcpy(p, path, sizeof(path));
 	FormatFilePath(p, sizeof(path));
 
-
 	FileStream file(path, "rb");
 	if (!file.ptr) {
 		std::fprintf(stderr, "No file!\n%s\n", path);
@@ -131,8 +127,9 @@ MeshData LoadObjToMeshData(const char* path) {
 	}
 
 	// There is no libc way of doing this, I guess I just have to read character by character
+	// TODO: Explain what is going on here. Why I am doing this to prepare reader for the following code
 	constexpr std::size_t maxLineLength = 512;
-	char lineBuffer[maxLineLength];
+	char lineBuffer[maxLineLength+1]; // +1 to accomondate for '\0'
 	std::size_t currentBufferLength = 0;
 	int c; // int is required to handle EOF
 	char previousChar = '0'; // not an empty space
@@ -142,33 +139,20 @@ MeshData LoadObjToMeshData(const char* path) {
 	while ((c = std::fgetc(file.ptr)) != EOF) {
 
 		// TODO: handle this error by reporting to the user that the file is bad
-		if (currentBufferLength < maxLineLength) {
+		if (currentBufferLength > maxLineLength) {
 			std::fprintf(stderr, "Error: LoadObjToMeshData: A line in .obj is too long!\n");
 			return MeshData();
 		}
 		assert(currentBufferLength < maxLineLength); 
 
+		// TODO: Change to switch case for readability?
 		if (c == '\n' && currentBufferLength > 0) { 
-			std::putchar(c);
-
-			// At this point lineBuffer should be filled with strings
-
-			// f 1413/1629/8163 1412/1630/8164 1408/1631/8165 1407/1632/8166
+			lineBuffer[currentBufferLength + 1] = '\0'; // To make sure last token is a null-terminated string
+			// At this point lineBuffer should be filled with null-terminated strings
+			// f'\0'111/222/333'\0'111/222/333'\0'111/222/333'\n''\0'
+			//                                                    ^^^ - the +1
 
 			// TODO: Check for n-gons
-
-			// At start of each word > > parse until ' 'white-space or '\n'
-			// I could replace space with '\0' and basically have an optimised
-			// multidimensional array!
-			// I can just as I parse, if i find a ' ' I change it to a '\0'
-			// Then hopefully I can security translate the strings to a int/float
-			// And if I can not then I safely terminate and do not seg fault :-)
-
-			// TODO: Test if this crashes if you read bad data
-			// EXAMPLE:
-				// char myarray[5] = {'-', '1', '2', '3', '\0'};
-				// int i;
-				// sscanf(myarray, "%d", &i);
 
 			// v = xyz
 			// vn = i j k
@@ -180,45 +164,55 @@ MeshData LoadObjToMeshData(const char* path) {
 			// faceSpecifies a face element and its vertex reference number. 
 			// vt is optional in f, so v1//vn1 is valid 1413//7210
 
-			// TODO: Utilize the tokens!
-			int b = lineBuffer[0];
-			if (b == 'v') {
-				// Handle vertex
-				// Tokenize the buffer
-				// AM I REALLY GOING TO WRITE A TOKENIZER IN C?!
-
-			} else if (b == 'vt') {
+			if (std::strcmp(lineBuffer, "v") == 0) {
+				// Read 3 tokens. The x y z floats
+				for (int i = 0; i < 3; ++i) {
+					if (tokens[i] == nullptr) {
+						std::fprintf(stderr, "Error: LoadObjToMeshData: Found invalid vertex data!\n");
+						return MeshData();
+					}
+					// TODO:: Allocate the data for MeshData
+					float value{};
+					if (std::sscanf(tokens[i], "%f", &value) > 0)	{
+						std::printf("vertex token '%d' = '%f'\n", i, value);
+					} else {
+						std::fprintf(stderr, "Error: LoadObjMeshData: Failed to read vertex float data!\n");
+						return MeshData();
+					}
+				}
+			}
+			else if (std::strcmp(lineBuffer, "vt") == 0) {
 				// Handle UV
-			} else if (b == 'vn') {
+			} else if (std::strcmp(lineBuffer, "vn") == 0) {
 				// Handle vertex normal. (Don't care about the optional w)
-			} else if (b == 'f') {
+			} else if (std::strcmp(lineBuffer, "f") == 0) {
 				// Handle face index
 			}
 
-			for (int i = 0; i < currentBufferLength; ++i) {
-				// Loop the line
+			// Reset buffer length and tokens
+			currentBufferLength = 0; 
+			for (int i = 0; i < tokenCount; ++i) {
+				tokens[i] == nullptr;
 			}
+			tokenCount = 0; 
 
-			currentBufferLength = 0; // Reset the buffer
 
 		} else if (c == ' ') {
+			// Tokenize the lineBuffer and use it as an array of null-terimanted c-strings
 			lineBuffer[currentBufferLength] = '\0';
 			++currentBufferLength;
-		} else if (std::isspace) {
-			// Ignore
-		} else if (std::isalnum(c) || c == '-') { // Found a valid symbol
-			// Add pointer to configure multidimensional array
-			if (previousChar == '\0' && tokenCount < maxTokens) {
+		}  else if (std::isalnum(c) || c == '-' || c == '.') { // Found a valid symbol
+			if (previousChar == ' ' && tokenCount < maxTokens) {
+				// Found a new word after some spaces
+				// Add pointer to new token. Using tokens and lineBuffer as a multidimensional array
 				tokens[tokenCount] = &lineBuffer[currentBufferLength];
 				++tokenCount;
 			}
 			lineBuffer[currentBufferLength] = c;
 			++currentBufferLength;
 		}
-
 		previousChar = c;
 	}
-
 
 	return MeshData();
 }
