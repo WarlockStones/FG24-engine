@@ -4,10 +4,27 @@
 #include <utility>
 #include <cstring>
 #include <cassert>
+#include <cctype>
 #include "renderer/Mesh.hpp"
 
 namespace FG24 {
 namespace File {
+
+// RAII c FILE*. This class is local to this file
+static class FileStream {
+public:
+	FILE* ptr = nullptr;
+	FileStream(const char* path, const char* mode)
+		: ptr(std::fopen(path, mode)) {
+	}
+
+	~FileStream() {
+		if (ptr != nullptr) {
+			fclose(ptr);
+		}
+	}
+};
+
 void FormatFilePath(char* s, std::size_t size) {
 #ifdef _WIN32
 	for (size_t i = 0; i < size; i++) {
@@ -41,22 +58,22 @@ const char* LoadTextFile(const char* path) {
 	FormatFilePath(p, sizeof(path));
 
 	// TODO: Consider using std::fopen_s instead - MSVC warning
-	std::FILE* file = std::fopen(path, "r");
-	if (Check(file == nullptr, "fopen()")) {
+	FileStream file(path, "r");
+	if (Check(file.ptr == nullptr, "fopen()")) {
 		return nullptr;
 	}
 		
-	int result = std::fseek(file, 0, SEEK_END);
+	int result = std::fseek(file.ptr, 0, SEEK_END);
 	if (Check(result != 0, "fseek()")) {
 		return nullptr;
 	}
 
-	std::int32_t fileSize = std::ftell(file);
+	std::int32_t fileSize = std::ftell(file.ptr);
 	if (Check(fileSize == -1L, "ftell()"))  {
 		return nullptr;
 	}
 
-	result = std::fseek(file, 0, SEEK_SET);
+	result = std::fseek(file.ptr, 0, SEEK_SET);
 	if (Check(result != 0, "fseek()")) {
 		return nullptr;
 	}
@@ -67,20 +84,24 @@ const char* LoadTextFile(const char* path) {
 
 	// TODO: Read count is wrong when not using UNIX formatted file
 	std::size_t readCount = std::fread(
-		static_cast<char*>(text), sizeof(char), static_cast<std::size_t>(fileSize), file);
+		static_cast<char*>(text), sizeof(char), static_cast<std::size_t>(fileSize), file.ptr);
 	if (Check(readCount != static_cast<std::size_t>(fileSize), "fread()")) {
 
-		std::ferror(file);
+		std::ferror(file.ptr);
 		std::fprintf(stderr, "Read count: %zd is not file size %I32d\n", readCount, fileSize);
 		return nullptr;
 	}
 
 	text[fileSize] = '\0';
 
-	std::fclose(file);
 	std::printf("Successfully read file of size %I32d\n", fileSize);
 
 	return text;
+}
+
+// TODO: Should return something
+static void ParseUVline(const char** tokens) {
+
 }
 
 MeshData LoadObjToMeshData(const char* path) {
@@ -104,39 +125,40 @@ MeshData LoadObjToMeshData(const char* path) {
 	assert(file); // TODO: Error handling. return default MeshData
 
 	// There is no libc way of doing this, I guess I just have to read character by character
-	constexpr int maxLineLength = 512;
+	constexpr std::size_t maxLineLength = 512;
 	char lineBuffer[maxLineLength];
 	std::size_t currentBufferLength = 0;
 	int c; // int is required to handle EOF
+	char previousChar = '0'; // not an empty space
+	constexpr std::size_t maxTokens = 4;
+	char* tokens[maxTokens] {nullptr};
+	std::size_t tokenCount = 0;
 	while ((c = std::fgetc(file)) != EOF) {
 
 		// TODO: handle this error by reporting to the user that the file is bad
 		assert(currentBufferLength < maxLineLength); 
-		// std::putchar(c); // Debug print
 
-		lineBuffer[currentBufferLength] = c;
-		++currentBufferLength;
-		if (c == '\n') { // Is this multiplatform?
-			// Handle and clear the buffer
-			// Tokenize the buffer
+		if (c == '\n' && currentBufferLength > 0) { 
 			std::putchar(c);
 
+			// At this point lineBuffer should be filled with strings
+
 			// f 1413/1629/8163 1412/1630/8164 1408/1631/8165 1407/1632/8166
+
 			// TODO: Check for n-gons
 
-			char* tokens[4]; // 
 			// At start of each word > > parse until ' 'white-space or '\n'
 			// I could replace space with '\0' and basically have an optimised
 			// multidimensional array!
 			// I can just as I parse, if i find a ' ' I change it to a '\0'
-			// Then hopefully I can securly translate the strings to a int/float
+			// Then hopefully I can security translate the strings to a int/float
 			// And if I can not then I safely terminate and do not seg fault :-)
 
 			// TODO: Test if this crashes if you read bad data
-			// char myarray[5] = {'-', '1', '2', '3', '\0'};
-			// int i;
-			// sscanf(myarray, "%d", &i);
-
+			// EXAMPLE:
+				// char myarray[5] = {'-', '1', '2', '3', '\0'};
+				// int i;
+				// sscanf(myarray, "%d", &i);
 
 			// v = xyz
 			// vn = i j k
@@ -148,6 +170,7 @@ MeshData LoadObjToMeshData(const char* path) {
 			// faceSpecifies a face element and its vertex reference number. 
 			// vt is optional in f, so v1//vn1 is valid 1413//7210
 
+			// TODO: Utilize the tokens!
 			int b = lineBuffer[0];
 			if (b == 'v') {
 				// Handle vertex
@@ -167,7 +190,23 @@ MeshData LoadObjToMeshData(const char* path) {
 			}
 
 			currentBufferLength = 0; // Reset the buffer
+
+		} else if (c == ' ') {
+			lineBuffer[currentBufferLength] = '\0';
+			++currentBufferLength;
+		} else if (std::isspace) {
+			// Ignore
+		} else if (std::isalnum(c) || c == '-') { // Found a valid symbol
+			// Add pointer to configure multidimensional array
+			if (previousChar == '\0' && tokenCount < maxTokens) {
+				tokens[tokenCount] = &lineBuffer[currentBufferLength];
+				++tokenCount;
+			}
+			lineBuffer[currentBufferLength] = c;
+			++currentBufferLength;
 		}
+
+		previousChar = c;
 	}
 
 
