@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include "Filepath.hpp"
 namespace FG24 {
 	// Use std::unique_ptr? use std::string? use own wrapper class?
 	// Own wrapper class could contain a dynamically allocated fixed size const char*
@@ -13,7 +14,8 @@ namespace File {
 	void FormatFilePath(char* s, std::size_t size);
 
 	// An awfully specific function
-	MeshData LoadObjToMeshData(const char* path);
+	MeshData LoadObjToMeshData(Filepath filepath);
+	MeshData OldParseObj(const char* path); // Just for archiving sake
 };
 
 } // namespace FG24

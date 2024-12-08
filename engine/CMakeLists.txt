@@ -20,6 +20,8 @@ add_executable(engine
 	"Globals.cpp"
 	"glad/gl.c"
 	"utils/File.cpp"
+	"utils/Filepath.cpp"
+	"utils/Memory.cpp"
 	"framework/Session.cpp"
 	"framework/KeyInput.cpp"
 	"framework/Actor.cpp"
@@ -28,7 +30,7 @@ add_executable(engine
 	"renderer/Mesh.cpp"
 	"renderer/Texture.cpp"
 	"renderer/Shader.cpp"
- "utils/Memory.cpp")
+)
 
 target_include_directories(engine PRIVATE
 	${CMAKE_SOURCE_DIR}/engine

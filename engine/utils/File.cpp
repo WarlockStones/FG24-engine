@@ -7,11 +7,13 @@
 #include <cctype>
 #include "renderer/Mesh.hpp"
 
+#include "Filepath.hpp"
+
 namespace FG24 {
 namespace File {
 
 // RAII c FILE*. This class is local to this file
-static class FileStream {
+class FileStream {
 public:
 	FILE* ptr = nullptr;
 	FileStream(const char* path, const char* mode)
@@ -69,6 +71,7 @@ const char* LoadTextFile(const char* path) {
 	}
 
 	std::int32_t fileSize = std::ftell(file.ptr);
+
 	if (Check(fileSize == -1L, "ftell()"))  {
 		return nullptr;
 	}
@@ -99,16 +102,123 @@ const char* LoadTextFile(const char* path) {
 	return text;
 }
 
-// TODO: Should return something
-static void ParseUVline(const char** tokens) {
+// TODO: This should return something, ptr to v data?
+void ParseV(const char* token) {
+	token = std::strtok(nullptr, " "); // Tokenize to next past index
+	// Read x y z values for vertex data
+	for (int i = 0; i < 3; ++i) {
+		if (token) {
+			// TODO: Create vector data
+			float value{};
+			if (std::sscanf(token, "%f", &value) > 0) {
+				// std::printf("%f\n", value);
+			} else {
+				std::fprintf(stderr, "Error: ParseV: invalid vertex data!\n");
+			}
 
+			token = std::strtok(nullptr, " ");
+		} else {
+			// TODO: Error handling
+			std::fprintf(stderr, "Error: ParseV: Found bad vertex data!\n");
+		}
+	}
 }
 
-// TODO: Utilise the safe versions of c-functions e.g. sscanf instead of scanf
-// TODO: Do proper error handling
-MeshData LoadObjToMeshData(const char* path) {
-	// TODO: Make this into a function that converts file paths
-	//       Or I should probably have a FilePath class, and handle common file-paths as literals '../../assets'.
+// TODO: Error checking tokenizer
+// TODO: Get values to MeshData somehow
+void ParseF(char* token) {
+	token = std::strtok(nullptr, " "); // Tokenize to next past index
+
+	// Parse indicies v1 v2 v3
+	// Each face contains at least 3 values
+	// f 1412/1641/8183 1417/1639/8184 1409/1640/8185 1408/1642/8186
+	//   ^v1  ^vt  ^vn  ^v2            ^v3            ^v4
+
+	std::size_t maxValues = 8; // If more than 8 values per face, tell artists to do their job
+	char* fTokens[maxValues] {nullptr};
+	int faceCount = 0;
+	// for (; token && maxValues < 8; faceCount++) { // less idiomatic but more C
+	while (token != nullptr && faceCount < 8) {
+		fTokens[faceCount] = token;
+	    faceCount++;
+		token = std::strtok(nullptr, " ");
+	}
+	if (faceCount == 4) {
+		// TODO: Triangulate quads and inform user of this action
+	}
+	else if (faceCount > 4) {
+		std::printf ("Mesh has n-gons. Please fix...\n");
+	}
+
+	// Tokenize the /
+	int v[maxValues] {};
+	int vt[maxValues] {};
+	int vn[maxValues] {};
+	// Loop through all values and tokenize them further
+	for (int i = 0; i < faceCount && fTokens[i] != nullptr; ++i) {
+		// This needs to be tokenized 3 times. v, vt, vn.
+		char* t = std::strtok(fTokens[i], "/");
+
+		static auto getInt = [](char* token) {
+			int result = 0;
+			if (token) {
+				if (std::sscanf(token, "%d", &result) > 0) {
+				} else {
+					std::fprintf(stderr, "Error: could not turn face string into int!\n");
+				}
+			} else {
+				// TODO: handle .obj files with // like '111//111 222/222/222 333//333'
+			    // if '//' ignore. Vertex texture coordinate indicies are optional
+				std::fprintf(stderr, "Error: attepmting to tokenize a bad face token string!\n");
+				std::fprintf(stderr, "Maybe the .obj file has a face wavlue with '//'?\n");
+			}
+			return result;
+		};
+
+		v[i] = getInt(t);
+		t = std::strtok(nullptr, "/");
+		vt[i] = getInt(t);
+		t = std::strtok(nullptr, "/");
+		vn[i] = getInt(t);
+	}
+
+	// TODO: create face data
+
+	return;
+}
+
+MeshData LoadObjToMeshData(Filepath filepath) {
+	// Utilise the save versions of c-functions sscanf instead of scanf
+	// Do proper error handling
+    const char* path = filepath.GetPath();
+
+    FileStream file(path, "rb");
+	if (!file.ptr) {
+		std::fprintf(stderr, "No file!\n%s\n", path);
+		return MeshData();
+	} 
+
+	constexpr std::size_t bufMax = 256;
+	for (char buf[bufMax]; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
+		// Tokenize
+		char* token = std::strtok(buf, " "); // Get prefix
+		if (token) {
+			if (std::strcmp(token, "v") == 0) {
+				ParseV(token);
+			} else if (std::strcmp(token, "vt") == 0) {
+				// Handle UV
+			} else if (std::strcmp(token, "vn") == 0) {
+				// Handle vertex normal. (Don't care about the optional w)
+			} else if (std::strcmp(token, "f")  == 0) {
+				ParseF(token);
+			}
+		}
+	}
+	
+	return MeshData();
+}
+
+MeshData OldParseObj(const char* path) {
 	std::size_t pathlen = std::strlen(path);
 	if (pathlen > 260) {
 		// TODO: Do proper error handling
@@ -148,18 +258,16 @@ MeshData LoadObjToMeshData(const char* path) {
 		// TODO: Change to switch case for readability?
 		if (c == '\n' && currentBufferLength > 0) { 
 			lineBuffer[currentBufferLength + 1] = '\0'; // To make sure last token is a null-terminated string
-			// At this point lineBuffer should be filled with null-terminated strings
+			// lineBuffer should be tokenized with null-terminated strings
 			// f'\0'111/222/333'\0'111/222/333'\0'111/222/333'\n''\0'
 			//                                                    ^^^ - the +1
 
-			// TODO: Check for n-gons
+			// TODO: Check for n-gons and triangulate quads
 
-			// v = xyz
-			// vn = i j k
+			// v = xy
 			// vt = uv w (both v and w are actually optional but I want 2 uv)
+			// vn = i j k
 
-			// Face element reference grouping
-			// FIRST: v1 indicies, then you can do the vt and vn groupings later
 			// f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 . . .
 			// faceSpecifies a face element and its vertex reference number. 
 			// vt is optional in f, so v1//vn1 is valid 1413//7210
@@ -191,8 +299,8 @@ MeshData LoadObjToMeshData(const char* path) {
 
 			// Reset buffer length and tokens
 			currentBufferLength = 0; 
-			for (int i = 0; i < tokenCount; ++i) {
-				tokens[i] == nullptr;
+			for (std::size_t i = 0; i < tokenCount; ++i) {
+				tokens[i] = nullptr;
 			}
 			tokenCount = 0; 
 
