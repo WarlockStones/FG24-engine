@@ -4,6 +4,7 @@
 namespace FG24 {
 class Actor;
 class Mesh;
+class MeshData;
 
 // just temporary thing
 extern bool g_runGameLoop;
@@ -16,6 +17,7 @@ extern Actor*			g_triangle;
 extern std::uint32_t	g_texturedShader;
 extern std::uint32_t	g_arcadeTexture;
 extern Mesh*			g_triangleMesh;
+extern MeshData			g_flagData;
 
 
 // Inputs

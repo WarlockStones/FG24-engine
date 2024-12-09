@@ -105,17 +105,14 @@ const char* LoadTextFile(const char* path) {
 }
 
 // TODO: This should return something, ptr to v data?
-void ParseV(FILE* fp, const std::fpos_t pos) {
-  
+Vertex ParseV(char* token) {
 
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
 	// Read x y z values for vertex data
+	float vert[3]{};
 	for (int i = 0; i < 3; ++i) {
 		if (token) {
-			// TODO: Create vector data
-			float value{};
-			if (std::sscanf(token, "%f", &value) > 0) {
-				// std::printf("%f\n", value);
+			if (std::sscanf(token, "%f", &vert[i]) > 0) {
 			} else {
 				std::fprintf(stderr, "Error: ParseV: invalid vertex data!\n");
 			}
@@ -126,45 +123,36 @@ void ParseV(FILE* fp, const std::fpos_t pos) {
 			std::fprintf(stderr, "Error: ParseV: Found bad vertex data!\n");
 		}
 	}
+
+	Vertex v;
+	v.x = vert[0];
+	v.y = vert[1];
+	v.z = vert[2];
+
+	return v;
 }
 
 // TODO: Error checking tokenizer
-// TODO: Get values to MeshData somehow. Return Face?
-Face ParseF(FILE* fp, const fpos_t pos) {
-    if (std::fsetpos(fp, &pos) != 0) {
-		if (std::ferror(fp)) {
-			std::fprintf(stderr, "fsetpos() failed ParseF File.cpp\n");
-			return Face();
-		}
-	}
-	
-	constexpr std::size_t bufMax = 256;
-	char buf[bufMax];
-	if (std::fgets(buf, bufMax, fp) == nullptr) {
-		std::fprintf(stderr, "fgets() fialed ParseF File.cpp\n");
-	}
+Face ParseF(char* token) {
 
 	// Tokenize
-	char* token = std::strtok(buf, " "); // Get prefix
-	std::printf("TOKEN: %s\n",token);
-	return Face();
+	token = std::strtok(nullptr, " "); // Get prefix
 
 	// Parse indicies v1 v2 v3
 	// Each face contains at least 3 values
 	// f 1412/1641/8183 1417/1639/8184 1409/1640/8185 1408/1642/8186
 	//   ^v1  ^vt  ^vn  ^v2            ^v3            ^v4
 
-	std::size_t maxValues = 8; // If more than 8 values per face, tell artists to do their job
+	constexpr std::size_t maxValues = 8; // If more than 8 values per face, tell artists to do their job
 	char* fTokens[maxValues] {nullptr};
 	std::size_t faceCount = 0; // TODO rename to indicesCount or numIndices;
-	// for (; token && maxValues < 8; faceCount++) { // less idiomatic but more C
 	while (token != nullptr && faceCount < maxValues) {
 		fTokens[faceCount] = token;
 	    faceCount++;
 		token = std::strtok(nullptr, " ");
 	}
 	if (faceCount == 4) {
-		// TODO: Triangulate quads and inform user of this action
+		// TODO: Triangulate quads and inform the user of this action
 	}
 	else if (faceCount > 4) {
 		std::printf ("Mesh has n-gons. Please fix...\n");
@@ -209,9 +197,8 @@ Face ParseF(FILE* fp, const fpos_t pos) {
 	return face; // move instead of copy?
 }
 
+// TODO: Better error handling
 MeshData LoadObjToMeshData(Filepath filepath) {
-	// Utilise the save versions of c-functions sscanf instead of scanf
-	// Do proper error handling
     const char* path = filepath.GetPath();
 
     FileStream file(path, "rb");
@@ -220,62 +207,54 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 		return MeshData();
 	} 
 
-	// Read prefix and count how many prefixes
-	// Store positions to that 
-	// TODO: remove use of std::vector :-)
-	std::vector<std::fpos_t> vPos(1000), fPos(1000); // For now we just store vertex and faces
-	constexpr std::size_t bufMax = 256;
-	for (char buf[bufMax]; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
-		// Look for 
-		char* token = std::strtok(buf, " "); // Get prefix
-		if (token) { 
-			if (std::strcmp(token, "v") == 0) {
-			    std::fpos_t pos;
-				std::fgetpos(file.ptr, &pos);
-				vPos.push_back(pos);
-			} else if (std::strcmp(token, "f") == 0) {
-			    std::fpos_t pos;
-				std::fgetpos(file.ptr, &pos);
-				fPos.push_back(pos);
-			}
-		}
-	}
+	// If the file has meta data, read and allocate necessary size instead of std::vector
+	std::vector<Vertex> vertices;
+	vertices.reserve(1024);
+	std::vector<Face> faces;
+	faces.reserve(1024);
 
-	std::printf("vPos count = %ld\n", vPos.size());
-	std::printf("fPos count = %ld\n", fPos.size());
-
-	Vertex* vertices = new Vertex[vPos.size()];
-	Face* faces = new Face[fPos.size()];
-	
-	
-	return MeshData();
-	// Allocate arrays
-
-	// TODO: FIX THIS VVVVVV MONDAY
-	for (size_t i = 0; i < vPos.size(); ++i) {
-		vertices[i] = ParseV(file.ptr, vPos[i]);
-	}
-
-	/*
 	constexpr std::size_t bufMax = 256;
 	for (char buf[bufMax]; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
 		// Tokenize
 		char* token = std::strtok(buf, " "); // Get prefix
 		if (token) {
 			if (std::strcmp(token, "v") == 0) {
-				ParseV(token);
+				vertices.push_back(ParseV(token));
 			} else if (std::strcmp(token, "vt") == 0) {
 				// Handle UV
 			} else if (std::strcmp(token, "vn") == 0) {
-				// Handle vertex normal. (Don't care about the optional w)
+				// Handle vertex normal
 			} else if (std::strcmp(token, "f")  == 0) {
-				ParseF(token);
+				faces.push_back(ParseF(token));
 			}
 		}
 	}
-	*/
-	
-	return MeshData();
+
+#if false
+	for (const auto& v : vertices) {
+		std::printf("%f %f %f \n", v.x, v.y, v.z);
+	}
+	for (const auto& f : faces) {
+		for (std::size_t i = 0; i < f.numIndices; ++i) {
+			std::printf("%u %u %u  ", f.v[i], f.vt[i], f.vn[i]);
+		}
+		std::printf("\n");
+	}
+#endif
+
+	Vertex* v = new Vertex[vertices.size()];
+	std::copy(vertices.begin(), vertices.end(), v);
+
+	Face* f = new Face[faces.size()];
+	std::copy(faces.begin(), faces.end(), f);
+
+	MeshData data;
+	data.vertices = v;
+	data.faces = f;
+	data.normals = nullptr;
+	data.UVs = nullptr;
+
+	return data;
 }
 
 MeshData OldParseObj(const char* path) {
@@ -299,7 +278,7 @@ MeshData OldParseObj(const char* path) {
 	// There is no libc way of doing this, I guess I just have to read character by character
 	// TODO: Explain what is going on here. Why I am doing this to prepare reader for the following code
 	constexpr std::size_t maxLineLength = 512;
-	char lineBuffer[maxLineLength+1]; // +1 to accomondate for '\0'
+	char lineBuffer[maxLineLength+1]; // +1 to accommodate for '\0'
 	std::size_t currentBufferLength = 0;
 	int c; // int is required to handle EOF
 	char previousChar = '0'; // not an empty space
