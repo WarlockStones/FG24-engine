@@ -202,8 +202,9 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	// I did not want to loop twice to do that.
 	std::vector<Vertex> vertices;
 	vertices.reserve(1024);
-	std::vector<Face> faces;
-	faces.reserve(1024);
+	// std::vector<Face> faces;
+	std::vector<std::uint32_t> ind; // Face indices
+	ind.reserve(1024);
 
 	constexpr std::size_t bufMax = 256;
 	for (char buf[bufMax]; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
@@ -217,52 +218,40 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 			} else if (std::strcmp(token, "vn") == 0) {
 				// Handle vertex normal
 			} else if (std::strcmp(token, "f")  == 0) {
-				faces.push_back(ParseF(token));
+				Face face = ParseF(token);
+				ind.push_back(face.v[0]);
+				ind.push_back(face.v[1]);
+				ind.push_back(face.v[2]);
 			}
 		}
 	}
 
-	// Debug print
-#if false
-	for (const auto& v : vertices) {
-		std::printf("%f %f %f \n", v.x, v.y, v.z);
-	}
-	for (const auto& f : faces) {
-		for (std::size_t i = 0; i < f.numIndices; ++i) {
-			std::printf("%u %u %u  ", f.v[i], f.vt[i], f.vn[i]);
-		}
-		std::printf("\n");
-	}
-#endif
-
 	Vertex* v = new Vertex[vertices.size()];
 	std::copy(vertices.begin(), vertices.end(), v);
 
-	Face* f = new Face[faces.size()];
-	std::copy(faces.begin(), faces.end(), f);
+	std::uint32_t* indices = new std::uint32_t[ind.size()*3];
+	std::copy(ind.begin(), ind.end(), indices);
 
 	MeshData data;
 	data.vertices = v;
 	data.numVertices = vertices.size();
 
-	data.faces = f;
-	data.numFaces = faces.size();
+	data.indices = indices;
+	data.numIndices = ind.size();
 
 	data.normals = nullptr;
 
 	data.UVs = nullptr;
 
+	std::printf("Printing the stuff in File.cpp: \n");
 	for (std::size_t i = 0; i < data.numVertices; ++i) {
 		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
 	}
-	std::printf("\n");
-	for (std::size_t i = 0; i < data.numFaces; ++i) {
-		for (std::size_t j = 0; j < data.faces[i].numIndices; j++) {
-			std::printf("%u ", data.faces[i].v[j]);
-		}
-		std::printf("\n");
+	std::printf("Printing indices in File.cpp\n");
+	for (int i = 0; i < ind.size(); ++i) {
+		std::printf("%u ", indices[i]);
 	}
-
+	std::printf("\n");
 
 	return data;
 }

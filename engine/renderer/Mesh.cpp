@@ -3,6 +3,7 @@
 #include <SDL2/SDL_opengl.h>
 #include <cassert>
 
+#include <cstdio> // Debug print
 namespace FG24 {
 
 Mesh::Mesh(const float* vertices, std::size_t vertexSize) {
@@ -20,6 +21,17 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize) {
 
 Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* indices,
 	std::size_t indicesSize) {
+	std::printf("vertexSize: %lu. indiciesSize: %lu\n", vertexSize, indicesSize);
+	for (std::size_t i = 0; i < vertexSize / sizeof(vertices); ++i) {
+		std::printf("%f ", vertices[i]);
+	}
+	std::printf("\nindices:...\n");
+	for (std::size_t i = 0; i < indicesSize / sizeof(indices); ++i) {
+		std::printf("%u ", indices[i]);
+	}
+	std::printf("\n");
+
+
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertexSize, vertices, GL_STATIC_DRAW);
@@ -40,9 +52,12 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 
 
 	// Texture coordinates (aka. UV)
+	// TODO: Enable after testing MeshData bug
+	/*
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
 						  reinterpret_cast<void*>(6 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	*/
 
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -51,11 +66,28 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 
 Mesh::Mesh(MeshData data) {
 	auto numVertices = data.numVertices;
+	std::printf("MeshData num vertices: %lu\n", numVertices);
 	// numIndicies = data.numFaces. // TODO: Get num indicies not number of faces!
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	auto vertSize = sizeof(data.vertices) * numVerticies;
+	std::printf("MeshData.......\n");
+	for (std::size_t i = 0; i < numVertices; ++i) {
+		std::printf("%f %f %f", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
+	}
+	std::printf("\n");
+	std::printf("Indices: \n");
+	for (std::size_t i = 0; i < data.numIndices; ++i) {
+	  std::printf("%u ", data.indices[i]);
+	}
+	std::printf("\n");
+
+	// Vert size became 32, should be 128?
+	// OBS! Do not do sizeof (data.indices) instead do what the type of indices is!
+	auto vertSize = sizeof(float) * 3 * numVertices; // 
+	auto indSize = sizeof(std::uint32_t) * data.numIndices; //
+	std::printf("MeshData: vertexSize: %lu. indiciesSize: %lu\n", vertSize, indSize);
+	// TODO: do not hard-code 128!
 	glBufferData(GL_ARRAY_BUFFER, vertSize, data.vertices, GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, &VAO);
@@ -68,13 +100,7 @@ Mesh::Mesh(MeshData data) {
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-	// FIX: Should be size of face's indicies value not all faces...
-	// Change 24 to value that is size of data faces indicies * size of indices
-	// That is the bug. all of the zeros. It reads the zero as a valid thing and uses that so the first 24 bytes worth of indicies are:
-	// BUG: 0 1 3 0 0 0 0 0. The bug is in the parsing of the data when it creates a new MeshData object
-
-	// IndiciesSize 24. VertSize 128. Vert Count = 4. face-vertex-indicies count 6
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 24, data.faces->v, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(std::uint32_t) * data.numIndices, data.indices, GL_STATIC_DRAW);
 }
 
 std::uint32_t Mesh::GetVBO() const {

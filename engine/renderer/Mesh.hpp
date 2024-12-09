@@ -36,8 +36,12 @@ struct MeshData {
 	std::size_t numNormals{};
 	Normal* normals = nullptr;
 
-	std::size_t numFaces{};
-	Face* faces = nullptr;
+	// OpenGL wants all vertices AND face-index-grouping values as continous arrays
+	std::size_t numIndices;
+	std::uint32_t* indices = nullptr; // Face.v value
+
+  // std::size_t numFaces{};
+  // Face* faces = nullptr;
 };
 
 class Mesh {
