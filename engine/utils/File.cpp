@@ -139,10 +139,9 @@ Face ParseF(char* token) {
 	// Each face contains at least 3 values
 	// f 111/111/111 222/222/222 333/333/333 ...
 
-	constexpr std::size_t maxValues = 8; // If more than 8 values per face, tell artists to do their job
-	char* fTokens[maxValues] {nullptr};
+	char* fTokens[128] {nullptr}; // Realistically no face will have 128
 	std::size_t faceCount = 0; // TODO: rename to indicesCount or numIndices; This is all 1 face
-	while (token != nullptr && faceCount < maxValues) {
+	while (token != nullptr) {
 		fTokens[faceCount] = token;
 		faceCount++;
 		token = std::strtok(nullptr, " ");
@@ -156,9 +155,11 @@ Face ParseF(char* token) {
 
 	// Tokenize the /
 	Face face;
-	face.numIndices = faceCount;
+	face.numIndices = 3; // Hard coded to only be 3
 	// Loop through all values and tokenize 3 more times for v, vt, vn
-	for (std::size_t i = 0; i < faceCount && fTokens[i] != nullptr; ++i) {
+	// TODO: Handle more than 3 face indicies stuff
+	for (std::size_t i = 0; i < 3 && fTokens[i] != nullptr; ++i) {
+
 		static auto getInt = [](char* token) {
 			std::uint32_t result = 0;
 			if (token) {
@@ -169,6 +170,7 @@ Face ParseF(char* token) {
 			} else {
 				// TODO: handle .obj files with // like '111//111 222/222/222 333//333'
 				// if '//' ignore. Vertex texture coordinate indicies are optional
+				// TODO: Handle .obj files with no / like '1 2 3'. no token '/'
 				std::fprintf(stderr, "Error: attempting to tokenize a bad face token string!\n");
 				std::fprintf(stderr, "Maybe the .obj file has a face value with '//'?\n");
 			}
@@ -241,9 +243,26 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 
 	MeshData data;
 	data.vertices = v;
+	data.numVertices = vertices.size();
+
 	data.faces = f;
+	data.numFaces = faces.size();
+
 	data.normals = nullptr;
+
 	data.UVs = nullptr;
+
+	for (std::size_t i = 0; i < data.numVertices; ++i) {
+		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
+	}
+	std::printf("\n");
+	for (std::size_t i = 0; i < data.numFaces; ++i) {
+		for (std::size_t j = 0; j < data.faces[i].numIndices; j++) {
+			std::printf("%u ", data.faces[i].v[j]);
+		}
+		std::printf("\n");
+	}
+
 
 	return data;
 }

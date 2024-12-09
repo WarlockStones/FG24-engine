@@ -16,7 +16,7 @@ Actor* g_triangle{};
 std::uint32_t		g_texturedShader{};
 std::uint32_t		g_arcadeTexture{};
 Mesh*				g_triangleMesh{};
-MeshData			g_flagData;
+Actor*				g_flag{};
 
 // Key inputs
 int g_yvel = 0;

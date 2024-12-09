@@ -26,7 +26,12 @@ void Actor::Draw() {
 		glBindTexture(GL_TEXTURE_2D, texture);
 	}
 
-	if (mesh->GetEBO() > 0) {
+	if (mesh->numVertices > 0) { // MeshData
+		// TODO Change to dynamic indicies amount for other mesh that is not square
+		// Change 6 with variable that is 6 for square.obj
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
+	}
+	else if (mesh->GetEBO() > 0) {
 		// Draw the square. It has an EBO and 6 vertices
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
 	} else if (mesh->GetEBO() == 0) {

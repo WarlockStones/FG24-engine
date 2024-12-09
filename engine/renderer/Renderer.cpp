@@ -50,7 +50,8 @@ void Renderer::Draw() {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	g_triangle->Draw();
+	// g_triangle->Draw();
+	g_flag->Draw();
 
 	SDL_GL_SwapWindow(window);
 }

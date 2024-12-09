@@ -38,7 +38,9 @@ void Session::Start() {
 	g_triangleMesh = new Square();
 	g_triangle = new Actor(g_triangleMesh, g_texturedShader, g_arcadeTexture);
 	assert(g_triangle);
-	g_flagData = FG24::File::LoadObjToMeshData("../../assets/mesh/flag.obj");
+	MeshData flagData = FG24::File::LoadObjToMeshData("../../assets/mesh/square.obj");
+	Mesh* flagMesh = new Mesh(flagData);
+	g_flag = new Actor(flagMesh, g_texturedShader, g_arcadeTexture);
 }
 
 void Session::Update() {

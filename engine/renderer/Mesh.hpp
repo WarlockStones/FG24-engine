@@ -19,20 +19,24 @@ struct Normal {
 };
 
 struct Face {
-private:
-	static constexpr std::size_t max = 8; // Must be same as .obj loader max
-public:
-	// TODO: A Face should only be 3. Introduce triangularization in .obj loader
+	static constexpr std::size_t max = 3;
 	std::size_t numIndices = 0;
-	std::uint32_t v[max], vt[max], vn[max]; // Indicies
+	std::uint32_t v[max]{}, vt[max]{}, vn[max]{}; // Indicies
 };
 
 // Collection of pointers to dynamically allocated arrays of vertices, UVs, normals, and faces
 struct MeshData {
 	// Owning pointers. Should probably make them std::unique_ptr
+	std::size_t numVertices{};
 	Vertex* vertices = nullptr;
+
+	std::size_t numUVs{};
 	UV* UVs = nullptr;
+
+	std::size_t numNormals{};
 	Normal* normals = nullptr;
+
+	std::size_t numFaces{};
 	Face* faces = nullptr;
 };
 
@@ -48,6 +52,8 @@ public:
 	std::uint32_t GetVBO() const;
 	std::uint32_t GetVAO() const;
 	std::uint32_t GetEBO() const;
+	std::size_t numVertices = 0;
+	std::size_t numIndicies = 0;
 private:
 	std::uint32_t VBO{}; // Stores verticies
 	std::uint32_t VAO{}; // Stores vertex attributes
