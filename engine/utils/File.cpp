@@ -1,15 +1,13 @@
 #include "File.hpp"
 #include <cstdio>
 #include <cstdint>
-#include <utility>
 #include <cstring>
 #include <cassert>
 #include <cctype>
+#include <utility> // c++
+#include <vector>  // c++
 #include "renderer/Mesh.hpp"
-
 #include "Filepath.hpp"
-
-#include <vector>
 
 namespace FG24 {
 namespace File {
@@ -138,17 +136,15 @@ Face ParseF(char* token) {
 	// Tokenize
 	token = std::strtok(nullptr, " "); // Get prefix
 
-	// Parse indicies v1 v2 v3
 	// Each face contains at least 3 values
-	// f 1412/1641/8183 1417/1639/8184 1409/1640/8185 1408/1642/8186
-	//   ^v1  ^vt  ^vn  ^v2            ^v3            ^v4
+	// f 111/111/111 222/222/222 333/333/333 ...
 
 	constexpr std::size_t maxValues = 8; // If more than 8 values per face, tell artists to do their job
 	char* fTokens[maxValues] {nullptr};
-	std::size_t faceCount = 0; // TODO rename to indicesCount or numIndices;
+	std::size_t faceCount = 0; // TODO: rename to indicesCount or numIndices; This is all 1 face
 	while (token != nullptr && faceCount < maxValues) {
 		fTokens[faceCount] = token;
-	    faceCount++;
+		faceCount++;
 		token = std::strtok(nullptr, " ");
 	}
 	if (faceCount == 4) {
@@ -172,9 +168,9 @@ Face ParseF(char* token) {
 				}
 			} else {
 				// TODO: handle .obj files with // like '111//111 222/222/222 333//333'
-			    // if '//' ignore. Vertex texture coordinate indicies are optional
-				std::fprintf(stderr, "Error: attepmting to tokenize a bad face token string!\n");
-				std::fprintf(stderr, "Maybe the .obj file has a face wavlue with '//'?\n");
+				// if '//' ignore. Vertex texture coordinate indicies are optional
+				std::fprintf(stderr, "Error: attempting to tokenize a bad face token string!\n");
+				std::fprintf(stderr, "Maybe the .obj file has a face value with '//'?\n");
 			}
 			return result;
 		};
@@ -187,27 +183,21 @@ Face ParseF(char* token) {
 		face.vn[i] = getInt(t);
 	}
 
-	/*
-	for (std::size_t i = 0; i < face.numIndices; ++i) {
-		std::printf("%d %d %d | ", face.v[i], face.vt[i], face.vn[i]);
-	}
-	std::printf("\n");
-	*/
-
 	return face; // move instead of copy?
 }
 
 // TODO: Better error handling
 MeshData LoadObjToMeshData(Filepath filepath) {
-    const char* path = filepath.GetPath();
+	const char* path = filepath.GetPath();
 
-    FileStream file(path, "rb");
+	FileStream file(path, "rb");
 	if (!file.ptr) {
 		std::fprintf(stderr, "No file!\n%s\n", path);
 		return MeshData();
 	} 
 
 	// If the file has meta data, read and allocate necessary size instead of std::vector
+	// I did not want to loop twice to do that.
 	std::vector<Vertex> vertices;
 	vertices.reserve(1024);
 	std::vector<Face> faces;
@@ -230,6 +220,7 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 		}
 	}
 
+	// Debug print
 #if false
 	for (const auto& v : vertices) {
 		std::printf("%f %f %f \n", v.x, v.y, v.z);
