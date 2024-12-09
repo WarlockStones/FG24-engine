@@ -9,6 +9,8 @@
 
 #include "Filepath.hpp"
 
+#include <vector>
+
 namespace FG24 {
 namespace File {
 
@@ -103,7 +105,9 @@ const char* LoadTextFile(const char* path) {
 }
 
 // TODO: This should return something, ptr to v data?
-void ParseV(const char* token) {
+void ParseV(FILE* fp, const std::fpos_t pos) {
+  
+
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
 	// Read x y z values for vertex data
 	for (int i = 0; i < 3; ++i) {
@@ -125,9 +129,25 @@ void ParseV(const char* token) {
 }
 
 // TODO: Error checking tokenizer
-// TODO: Get values to MeshData somehow
-void ParseF(char* token) {
-	token = std::strtok(nullptr, " "); // Tokenize to next past index
+// TODO: Get values to MeshData somehow. Return Face?
+Face ParseF(FILE* fp, const fpos_t pos) {
+    if (std::fsetpos(fp, &pos) != 0) {
+		if (std::ferror(fp)) {
+			std::fprintf(stderr, "fsetpos() failed ParseF File.cpp\n");
+			return Face();
+		}
+	}
+	
+	constexpr std::size_t bufMax = 256;
+	char buf[bufMax];
+	if (std::fgets(buf, bufMax, fp) == nullptr) {
+		std::fprintf(stderr, "fgets() fialed ParseF File.cpp\n");
+	}
+
+	// Tokenize
+	char* token = std::strtok(buf, " "); // Get prefix
+	std::printf("TOKEN: %s\n",token);
+	return Face();
 
 	// Parse indicies v1 v2 v3
 	// Each face contains at least 3 values
@@ -136,9 +156,9 @@ void ParseF(char* token) {
 
 	std::size_t maxValues = 8; // If more than 8 values per face, tell artists to do their job
 	char* fTokens[maxValues] {nullptr};
-	int faceCount = 0;
+	std::size_t faceCount = 0; // TODO rename to indicesCount or numIndices;
 	// for (; token && maxValues < 8; faceCount++) { // less idiomatic but more C
-	while (token != nullptr && faceCount < 8) {
+	while (token != nullptr && faceCount < maxValues) {
 		fTokens[faceCount] = token;
 	    faceCount++;
 		token = std::strtok(nullptr, " ");
@@ -151,18 +171,14 @@ void ParseF(char* token) {
 	}
 
 	// Tokenize the /
-	int v[maxValues] {};
-	int vt[maxValues] {};
-	int vn[maxValues] {};
-	// Loop through all values and tokenize them further
-	for (int i = 0; i < faceCount && fTokens[i] != nullptr; ++i) {
-		// This needs to be tokenized 3 times. v, vt, vn.
-		char* t = std::strtok(fTokens[i], "/");
-
+	Face face;
+	face.numIndices = faceCount;
+	// Loop through all values and tokenize 3 more times for v, vt, vn
+	for (std::size_t i = 0; i < faceCount && fTokens[i] != nullptr; ++i) {
 		static auto getInt = [](char* token) {
-			int result = 0;
+			std::uint32_t result = 0;
 			if (token) {
-				if (std::sscanf(token, "%d", &result) > 0) {
+				if (std::sscanf(token, "%ul", &result) > 0) {
 				} else {
 					std::fprintf(stderr, "Error: could not turn face string into int!\n");
 				}
@@ -175,16 +191,22 @@ void ParseF(char* token) {
 			return result;
 		};
 
-		v[i] = getInt(t);
+		char* t = std::strtok(fTokens[i], "/");
+		face.v[i] = getInt(t);
 		t = std::strtok(nullptr, "/");
-		vt[i] = getInt(t);
+		face.vt[i] = getInt(t);
 		t = std::strtok(nullptr, "/");
-		vn[i] = getInt(t);
+		face.vn[i] = getInt(t);
 	}
 
-	// TODO: create face data
+	/*
+	for (std::size_t i = 0; i < face.numIndices; ++i) {
+		std::printf("%d %d %d | ", face.v[i], face.vt[i], face.vn[i]);
+	}
+	std::printf("\n");
+	*/
 
-	return;
+	return face; // move instead of copy?
 }
 
 MeshData LoadObjToMeshData(Filepath filepath) {
@@ -198,6 +220,43 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 		return MeshData();
 	} 
 
+	// Read prefix and count how many prefixes
+	// Store positions to that 
+	// TODO: remove use of std::vector :-)
+	std::vector<std::fpos_t> vPos(1000), fPos(1000); // For now we just store vertex and faces
+	constexpr std::size_t bufMax = 256;
+	for (char buf[bufMax]; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
+		// Look for 
+		char* token = std::strtok(buf, " "); // Get prefix
+		if (token) { 
+			if (std::strcmp(token, "v") == 0) {
+			    std::fpos_t pos;
+				std::fgetpos(file.ptr, &pos);
+				vPos.push_back(pos);
+			} else if (std::strcmp(token, "f") == 0) {
+			    std::fpos_t pos;
+				std::fgetpos(file.ptr, &pos);
+				fPos.push_back(pos);
+			}
+		}
+	}
+
+	std::printf("vPos count = %ld\n", vPos.size());
+	std::printf("fPos count = %ld\n", fPos.size());
+
+	Vertex* vertices = new Vertex[vPos.size()];
+	Face* faces = new Face[fPos.size()];
+	
+	
+	return MeshData();
+	// Allocate arrays
+
+	// TODO: FIX THIS VVVVVV MONDAY
+	for (size_t i = 0; i < vPos.size(); ++i) {
+		vertices[i] = ParseV(file.ptr, vPos[i]);
+	}
+
+	/*
 	constexpr std::size_t bufMax = 256;
 	for (char buf[bufMax]; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
 		// Tokenize
@@ -214,6 +273,7 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 			}
 		}
 	}
+	*/
 	
 	return MeshData();
 }

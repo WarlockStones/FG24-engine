@@ -28,6 +28,8 @@ int main(int argv, char** args) {
 	}
 	*/
 
+	std::printf("%ld\n", sizeof(FG24::Face) + sizeof(FG24::Normal) + sizeof(FG24::UV) + sizeof(FG24::Vertex));
+	std::printf("%ld\n", sizeof(FG24::MeshData));
 	FG24::File::LoadObjToMeshData("../../assets/mesh/flag.obj");
 
 	/*

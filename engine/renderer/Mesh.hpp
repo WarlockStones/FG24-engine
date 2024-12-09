@@ -15,21 +15,20 @@ struct UV {
 };
 
 struct Normal {
-	float x, y, z;
+	float i, j, k;
 };
 
-// A face built from three vertex indices
 struct Face {
-	// An obj face can contain three or more vertices. 3=normal tri, 4=quads, More than that = n-gon.
-	// OpenGL likes triangles, So I am only going to support faces that are triangles.
-	std::uint32_t a[3], b[3], c[3]; 
+private:
+	static constexpr std::size_t max = 8; // Must be same as .obj loader max
+public:
+	// TODO: A Face should only be 3. Introduce triangularization in .obj loader
+	std::size_t numIndices = 0;
+	std::uint32_t v[max], vt[max], vn[max]; // Indicies
 };
 
 // Collection of pointers to dynamically allocated arrays of vertices, UVs, normals, and faces
 struct MeshData {
-	// TODO: Arrays of Vertices, UVs, Normals, and Faces.
-	// OBJ: v = vertex, vn = vertexnormal, vt = vertextexture(uv), f = face/index
-
 	// Owning pointers. Should probably make them std::unique_ptr
 	Vertex* vertices = nullptr;
 	UV* UVs = nullptr;
