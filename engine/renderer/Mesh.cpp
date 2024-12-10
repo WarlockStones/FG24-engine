@@ -6,6 +6,8 @@
 #include <cstdio> // Debug print
 namespace FG24 {
 
+// TODO: Mesh should not be doing fancy OpenGL stuff in constructor.
+// TODO: Remove this
 Mesh::Mesh(const float* vertices, std::size_t vertexSize) {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -19,18 +21,9 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize) {
 	glEnableVertexAttribArray(0);
 }
 
+// VertSq in SimpleShapes.cpp. TODO: Remove this
 Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* indices,
 	std::size_t indicesSize) {
-	std::printf("vertexSize: %lu. indiciesSize: %lu\n", vertexSize, indicesSize);
-	for (std::size_t i = 0; i < vertexSize / sizeof(vertices); ++i) {
-		std::printf("%f ", vertices[i]);
-	}
-	std::printf("\nindices:...\n");
-	for (std::size_t i = 0; i < indicesSize / sizeof(indices); ++i) {
-		std::printf("%u ", indices[i]);
-	}
-	std::printf("\n");
-
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -40,7 +33,7 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 	glBindVertexArray(VAO);
 
 	// Vertex attributes for textured square only
-	
+
 	// Vertex position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
 						  reinterpret_cast<void*>(0));
@@ -50,48 +43,46 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float),
 	//					  reinterpret_cast<void *>(3 * sizeof(float)));
 
-
 	// Texture coordinates (aka. UV)
-	// TODO: Enable after testing MeshData bug
-	/*
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
 						  reinterpret_cast<void*>(6 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	*/
 
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
 }
 
-Mesh::Mesh(MeshData data) {
-	auto numVertices = data.numVertices;
-	std::printf("MeshData num vertices: %lu\n", numVertices);
-	// numIndicies = data.numFaces. // TODO: Get num indicies not number of faces!
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+Mesh::Mesh(const MeshData& data) {
+	numVertices = data.numVertices;
+	numIndices = data.numIndices;
 
-	std::printf("MeshData.......\n");
+	std::size_t vertSize = sizeof(Vertex) * numVertices; 
+	// Do not do sizeof the member (data.indices), instead use the type
+	std::size_t indSize = sizeof(std::uint32_t) * data.numIndices; // test something
+
+#ifdef false
+	std::printf("MeshData num vertices: %lu\n", data.numVertices);
+	std::printf("MeshData: vertexSize: %lu. indiciesSize: %lu\n", vertSize, indSize);
 	for (std::size_t i = 0; i < numVertices; ++i) {
 		std::printf("%f %f %f", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
 	}
 	std::printf("\n");
-	std::printf("Indices: \n");
+	std::printf("MeshData Indices: %lu\n", data.numIndices);
 	for (std::size_t i = 0; i < data.numIndices; ++i) {
 	  std::printf("%u ", data.indices[i]);
 	}
-	std::printf("\n");
+	std::printf("..\n");
+#endif
 
-	// Vert size became 32, should be 128?
-	// OBS! Do not do sizeof (data.indices) instead do what the type of indices is!
-	auto vertSize = sizeof(float) * 3 * numVertices; // 
-	auto indSize = sizeof(std::uint32_t) * data.numIndices; //
-	std::printf("MeshData: vertexSize: %lu. indiciesSize: %lu\n", vertSize, indSize);
-	// TODO: do not hard-code 128!
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
 	glBufferData(GL_ARRAY_BUFFER, vertSize, data.vertices, GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+
 	// Vertex position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 						  reinterpret_cast<void*>(0));
@@ -99,8 +90,8 @@ Mesh::Mesh(MeshData data) {
 
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(std::uint32_t) * data.numIndices, data.indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indSize, data.indices, GL_STATIC_DRAW);
+	std::printf("End");
 }
 
 std::uint32_t Mesh::GetVBO() const {

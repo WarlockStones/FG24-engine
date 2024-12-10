@@ -17,6 +17,7 @@ class FileStream {
 public:
 	FILE* ptr = nullptr;
 	FileStream(const char* path, const char* mode)
+		// TODO: Consider using std::fopen_s instead - MSVC warning
 		: ptr(std::fopen(path, mode)) {
 	}
 
@@ -36,7 +37,6 @@ void FormatFilePath(char* s, std::size_t size) {
 	}
 #endif
 }
-
 
 const char* LoadTextFile(const char* path) {
 	// TODO: Measure lambda vs static function
@@ -59,7 +59,6 @@ const char* LoadTextFile(const char* path) {
 	std::memcpy(p, path, sizeof(path));
 	FormatFilePath(p, sizeof(path));
 
-	// TODO: Consider using std::fopen_s instead - MSVC warning
 	FileStream file(path, "r");
 	if (Check(file.ptr == nullptr, "fopen()")) {
 		return nullptr;
@@ -97,14 +96,12 @@ const char* LoadTextFile(const char* path) {
 
 	text[fileSize] = '\0';
 
-	std::printf("Successfully read file of size %I32d\n", fileSize);
+	// std::printf("Successfully read file of size %I32d\n", fileSize);
 
 	return text;
 }
 
-// TODO: This should return something, ptr to v data?
 Vertex ParseV(char* token) {
-
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
 	// Read x y z values for vertex data
 	float vert[3]{};
@@ -139,7 +136,7 @@ Face ParseF(char* token) {
 	// Each face contains at least 3 values
 	// f 111/111/111 222/222/222 333/333/333 ...
 
-	char* fTokens[128] {nullptr}; // Realistically no face will have 128
+	char* fTokens[512] {nullptr}; // Realistically no face will have 512
 	std::size_t faceCount = 0; // TODO: rename to indicesCount or numIndices; This is all 1 face
 	while (token != nullptr) {
 		fTokens[faceCount] = token;
@@ -157,7 +154,7 @@ Face ParseF(char* token) {
 	Face face;
 	face.numIndices = 3; // Hard coded to only be 3
 	// Loop through all values and tokenize 3 more times for v, vt, vn
-	// TODO: Handle more than 3 face indicies stuff
+	// TODO: Handle more than 3 entries
 	for (std::size_t i = 0; i < 3 && fTokens[i] != nullptr; ++i) {
 
 		static auto getInt = [](char* token) {
@@ -243,6 +240,7 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 
 	data.UVs = nullptr;
 
+#ifdef false
 	std::printf("Printing the stuff in File.cpp: \n");
 	for (std::size_t i = 0; i < data.numVertices; ++i) {
 		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
@@ -252,7 +250,8 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 		std::printf("%u ", indices[i]);
 	}
 	std::printf("\n");
-
+#endif
+	
 	return data;
 }
 

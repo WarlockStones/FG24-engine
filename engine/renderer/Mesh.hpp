@@ -40,8 +40,8 @@ struct MeshData {
 	std::size_t numIndices;
 	std::uint32_t* indices = nullptr; // Face.v value
 
-  // std::size_t numFaces{};
-  // Face* faces = nullptr;
+	// std::size_t numFaces{};
+	// Face* faces = nullptr;
 };
 
 class Mesh {
@@ -51,13 +51,15 @@ public:
 
 	// For drawing a square using indices and EBO
 	Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* indices, std::size_t indicesSize);
-	Mesh(MeshData);
+
+	// For mesh data loaded from file
+	Mesh(const MeshData& data);
 
 	std::uint32_t GetVBO() const;
 	std::uint32_t GetVAO() const;
 	std::uint32_t GetEBO() const;
 	std::size_t numVertices = 0;
-	std::size_t numIndicies = 0;
+	std::size_t numIndices = 0;
 private:
 	std::uint32_t VBO{}; // Stores verticies
 	std::uint32_t VAO{}; // Stores vertex attributes
