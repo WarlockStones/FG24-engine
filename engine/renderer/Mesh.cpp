@@ -91,7 +91,6 @@ Mesh::Mesh(const MeshData& data) {
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indSize, data.indices, GL_STATIC_DRAW);
-	std::printf("End");
 }
 
 std::uint32_t Mesh::GetVBO() const {
