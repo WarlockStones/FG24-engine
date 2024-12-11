@@ -55,14 +55,14 @@ public:
 	// For mesh data loaded from file
 	Mesh(const MeshData& data);
 
-	std::uint32_t GetVBO() const;
-	std::uint32_t GetVAO() const;
-	std::uint32_t GetEBO() const;
-	std::size_t numVertices = 0;
-	std::size_t numIndices = 0;
+	void Draw(std::uint32_t shaderID);
+
+	std::size_t numIndices = 0; // Used later for OpenGL draw calls
 private:
+	// OpenGL IDs
 	std::uint32_t VBO{}; // Stores verticies
 	std::uint32_t VAO{}; // Stores vertex attributes
 	std::uint32_t EBO{}; // Stores indicies
 };
-}
+
+} // namespace FG24

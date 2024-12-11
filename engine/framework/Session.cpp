@@ -39,11 +39,11 @@ void Session::Start() {
 	g_triangle = new Actor(g_triangleMesh, g_texturedShader, g_arcadeTexture);
 	assert(g_triangle);
 	MeshData flagData = FG24::File::LoadObjToMeshData("../../assets/mesh/cube.obj");
-	Mesh* flagMesh = new Mesh(flagData);
+	Mesh* flagMesh = new Mesh(flagData); // TODO: Fix so that flagMesh (the cube) renders correctly
 	Cube* cube = new Cube();
 	g_flag = new Actor(cube, g_texturedShader, g_arcadeTexture);
 
-#ifdef false
+#if false
 	// Testing serialization
 	// If save file for this actor exists, load it.
 	Vec3 v;

@@ -60,17 +60,16 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 }
 
 Mesh::Mesh(const MeshData& data) {
-	numVertices = data.numVertices;
 	numIndices = data.numIndices;
 
-	std::size_t vertSize = sizeof(Vertex) * numVertices; 
+	std::size_t vertSize = sizeof(Vertex) * data.numVertices; 
 	// Do not do sizeof the member (data.indices), instead use the type
 	std::size_t indSize = sizeof(std::uint32_t) * data.numIndices; // test something
 
 #if true
 	std::printf("MeshData num vertices: %lu\n", data.numVertices);
 	std::printf("MeshData: vertexSize: %lu. indiciesSize: %lu\n", vertSize, indSize);
-	for (std::size_t i = 0; i < numVertices; ++i) {
+	for (std::size_t i = 0; i < data.numVertices; ++i) {
 		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
 	}
 	std::printf("\n");
@@ -99,13 +98,24 @@ Mesh::Mesh(const MeshData& data) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indSize, data.indices, GL_STATIC_DRAW);
 }
 
-std::uint32_t Mesh::GetVBO() const {
-	return VBO;
-}
-std::uint32_t Mesh::GetVAO() const {
-	return VAO;
-}
-std::uint32_t Mesh::GetEBO() const {
-	return EBO;
+void Mesh::Draw(std::uint32_t shaderID) {
+	assert(shaderID != 0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
+	glUseProgram(shaderID);
+
+	glBindVertexArray(VAO);
+
+	if (numIndices > 0) { // MeshData
+		glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);  
+	}
+	else if (EBO > 0) { // Just an EBO but nothing from MeshData
+		// Draw the square. It has an EBO and 6 vertices
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
+	} else if (EBO == 0) {
+		// glDrawArrays(GL_TRIANGLES, 0, 3); // Draw triangle which has only 3 vertices
+		glDrawArrays(GL_TRIANGLES, 0, 36); // Draw SimpleShapes.cpp Cube
+	}
+	
+	glBindVertexArray(0); // Unbind
 }
 } // namespace FG24

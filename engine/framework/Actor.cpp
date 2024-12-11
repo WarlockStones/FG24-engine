@@ -12,35 +12,18 @@ Actor::Actor(Mesh* mesh, std::uint32_t shader, std::uint32_t texture) :
 	mesh(mesh), shader(shader), texture(texture) {
 }
 void Actor::Draw() {
-	assert(mesh->GetVAO());
-	assert(mesh->GetVBO());
-	assert(shader != 0);
+	// Set shader and character specific things here 
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
-
-	glUseProgram(shader);
-
-	glBindVertexArray(mesh->GetVAO());
 	if (texture != 0) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 	}
 
-	if (mesh->numVertices > 0) { // MeshData
-		// TODO Change to dynamic indicies amount for other mesh that is not square
-		// Change 6 with variable that is 6 for square.obj
-		glDrawElements(GL_TRIANGLES, mesh->numIndices, GL_UNSIGNED_INT, 0);  
-	}
-	else if (mesh->GetEBO() > 0) {
-		// Draw the square. It has an EBO and 6 vertices
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
-	} else if (mesh->GetEBO() == 0) {
-		// Draw the triangle. it has no EBO and only 3 vertices
-		// glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawArrays(GL_TRIANGLES, 0, 36); // Draw SimpleShapes.cpp Cube
-	}
-	
-	glBindVertexArray(0); // Unbind
+	// Use shader and do shader stuff
+
+	mesh->Draw(shader);
+
+	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture
 }
 
 constexpr int ActorVersion = 1; // For serialization

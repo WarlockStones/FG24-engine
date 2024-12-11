@@ -10,6 +10,7 @@ STRUCTURE
 - Flow? Engine update > Renderer but has to get all game objects to draw and shaders and...
 - Make sure constructors are as simple as possible.
 
+- Go over name. OpenGL IDs like ShaderID should not be called Shader. Be explicit if it is an OpenGL ID or a class object
 
 - Remove usage of glm::vec3 and use own Vec3 class that can interface with
 glm::vec3 functions.

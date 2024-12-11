@@ -59,8 +59,6 @@ void Renderer::Draw() {
 	// This should be set per model basis
 	// I have not decided where to put this, so for now it is just here. Matrixes and stuff
 	///////////////////////////////////////////////////////////////////////////////////////
-	// transform = glm::rotate(transform, (float)SDL_GetTicks() / 100, glm::vec3(0.0f, 0.0f, 1.0f));
-
 	// Space / Coordinate systems
 	// Local (aka. object) space > World space > View (aka. eye) space > Clip space > Screen space.
 	//                >>Model Matrix>>	>>VIEW MATRIX>>>	>> PROJECTION MATRIX >> 
@@ -83,11 +81,11 @@ void Renderer::Draw() {
 		static_cast<float>(g_windowWidth) / static_cast<float>(g_windowHeight), // Aspect ratio
 		0.1f, 100.0f); // near, far planes of the frustrum
 
+	// TODO: Move into actor object i.e move into g_flag
 	Shader::Use(g_texturedShader);
 	Shader::SetMat4(g_texturedShader, "model", model);
 	Shader::SetMat4(g_texturedShader, "view", view);
 	Shader::SetMat4(g_texturedShader, "projection", proj);
-
 	g_flag->Draw();
 
 	SDL_GL_SwapWindow(window);
