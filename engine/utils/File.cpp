@@ -98,6 +98,7 @@ const char* LoadTextFile(const char* path) {
 
 	// std::printf("Successfully read file of size %I32d\n", fileSize);
 
+	// TODO: Construct the object in return value or move? Or just use unique_ptr?
 	return text;
 }
 

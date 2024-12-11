@@ -8,16 +8,21 @@ STRUCTURE
 	But then what is a trigger volume?
 
 - Flow? Engine update > Renderer but has to get all game objects to draw and shaders and...
-- Make sure constructors are as simple as possible
+- Make sure constructors are as simple as possible.
+
+
+- Remove usage of glm::vec3 and use own Vec3 class that can interface with
+glm::vec3 functions.
+
 
 CONVENTION
 ----------
-What parts of C++ std to allow? unique_ptr?
+What parts of C++ std to allow? unique_ptr? iostream? 
 
 RENDERER
 ========
 - Add cube.
-- Add mesh class that handles VBO, VAO, EBO, shaders, OpenGL stuff .
+- Add mesh class that handles VBO, VAO, EBO, shaders, OpenGL stuff.
 - Add shader class to parse and feed shaders to the mesh.
 - Add floating camera.
 - Improve shader code with error handling.

@@ -42,6 +42,7 @@ void Session::Start() {
 	Mesh* flagMesh = new Mesh(flagData);
 	g_flag = new Actor(flagMesh, g_texturedShader, g_arcadeTexture);
 
+#ifdef false
 	// Testing serialization
 	// If save file for this actor exists, load it.
 	Vec3 v;
@@ -74,6 +75,7 @@ void Session::Start() {
 	std::printf("scl: %f %f %f\n", scl.x, scl.y, scl.z);
 
 	if (fp) std::fclose(fp);
+#endif
 }
 
 void Session::Update() {
