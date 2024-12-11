@@ -44,6 +44,8 @@ bool Renderer::Init() {
 		return false;
 	}
 
+	glEnable(GL_DEPTH_TEST);
+
 	return true;
 }
 
@@ -65,7 +67,8 @@ void Renderer::Draw() {
 
 	// Model matrix = local to world space
 	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
-	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // "Lay on ground"
+	model = glm::rotate(model, (float)SDL_GetTicks() / 1000, glm::vec3(0.0f, 0.0f, 1.0f)); // Spin
 
 	// View matrix (camera) Move the entire scene around inversed to where we want camera to move
 	// OpenGL is right-handed system so positive x is right, positive y is up. positive z is backwards.

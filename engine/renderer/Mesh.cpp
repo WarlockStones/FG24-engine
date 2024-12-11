@@ -7,7 +7,7 @@
 namespace FG24 {
 
 // TODO: Mesh should not be doing fancy OpenGL stuff in constructor.
-// TODO: Remove this
+// For cube in SimpleShapes.cpp TODO: Remove this
 Mesh::Mesh(const float* vertices, std::size_t vertexSize) {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -15,10 +15,16 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize) {
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	// Vertex attributes for triangle only
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+
+	// Vertex attributes for SimpleShape.cpp Cube only
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
 		reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
+
+	// Texture coordinates (aka. UV)
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+						  reinterpret_cast<void*>(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 }
 
 // VertSq in SimpleShapes.cpp. TODO: Remove this
@@ -61,11 +67,11 @@ Mesh::Mesh(const MeshData& data) {
 	// Do not do sizeof the member (data.indices), instead use the type
 	std::size_t indSize = sizeof(std::uint32_t) * data.numIndices; // test something
 
-#ifdef false
+#if true
 	std::printf("MeshData num vertices: %lu\n", data.numVertices);
 	std::printf("MeshData: vertexSize: %lu. indiciesSize: %lu\n", vertSize, indSize);
 	for (std::size_t i = 0; i < numVertices; ++i) {
-		std::printf("%f %f %f", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
+		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
 	}
 	std::printf("\n");
 	std::printf("MeshData Indices: %lu\n", data.numIndices);

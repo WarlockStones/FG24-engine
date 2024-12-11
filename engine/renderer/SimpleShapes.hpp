@@ -12,4 +12,9 @@ public:
 	Square();
 };
 
+class Cube : public Mesh {
+public:
+	Cube();
+};
+
 } // namespace FG24

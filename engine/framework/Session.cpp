@@ -38,9 +38,10 @@ void Session::Start() {
 	g_triangleMesh = new Square();
 	g_triangle = new Actor(g_triangleMesh, g_texturedShader, g_arcadeTexture);
 	assert(g_triangle);
-	MeshData flagData = FG24::File::LoadObjToMeshData("../../assets/mesh/square.obj");
+	MeshData flagData = FG24::File::LoadObjToMeshData("../../assets/mesh/cube.obj");
 	Mesh* flagMesh = new Mesh(flagData);
-	g_flag = new Actor(flagMesh, g_texturedShader, g_arcadeTexture);
+	Cube* cube = new Cube();
+	g_flag = new Actor(cube, g_texturedShader, g_arcadeTexture);
 
 #ifdef false
 	// Testing serialization
