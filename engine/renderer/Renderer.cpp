@@ -57,17 +57,33 @@ void Renderer::Draw() {
 	// This should be set per model basis
 	// I have not decided where to put this, so for now it is just here. Matrixes and stuff
 	///////////////////////////////////////////////////////////////////////////////////////
-	// Transformation
-	glm::mat4 transform = glm::mat4(1.0f); // Initialize identity matrix first
-	transform = glm::translate(transform, glm::vec3(0.5f, 0.5f, 0.0f)); // move position to top right
-	// You must glm::translate before you glm::rotate!
-	transform = glm::rotate(transform, (float)SDL_GetTicks() / 100, glm::vec3(0.0f, 0.0f, 1.0f));
-	transform = glm::scale(transform, glm::vec3(0.5f));
+	// transform = glm::rotate(transform, (float)SDL_GetTicks() / 100, glm::vec3(0.0f, 0.0f, 1.0f));
 
-	// Space / Coordinates
+	// Space / Coordinate systems
+	// Local (aka. object) space > World space > View (aka. eye) space > Clip space > Screen space.
+	//                >>Model Matrix>>	>>VIEW MATRIX>>>	>> PROJECTION MATRIX >> 
+
+	// Model matrix = local to world space
+	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
+	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	// View matrix (camera) Move the entire scene around inversed to where we want camera to move
+	// OpenGL is right-handed system so positive x is right, positive y is up. positive z is backwards.
+	// So translate scene towards negative z-axis
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); // Move "camera"/view back -3f
+
+	// Projection matrix. Perspective or Orthographic
+	// TODO: Move perspective function call away from update loop, it only needs to run once
+	glm::mat4 proj = glm::perspective(
+		glm::radians(45.0f), // FOV
+		static_cast<float>(g_windowWidth) / static_cast<float>(g_windowHeight), // Aspect ratio
+		0.1f, 100.0f); // near, far planes of the frustrum
 
 	Shader::Use(g_texturedShader);
-	Shader::SetMat4(g_texturedShader, "transform", transform);
+	Shader::SetMat4(g_texturedShader, "model", model);
+	Shader::SetMat4(g_texturedShader, "view", view);
+	Shader::SetMat4(g_texturedShader, "projection", proj);
 
 	g_flag->Draw();
 
