@@ -41,6 +41,39 @@ void Session::Start() {
 	MeshData flagData = FG24::File::LoadObjToMeshData("../../assets/mesh/square.obj");
 	Mesh* flagMesh = new Mesh(flagData);
 	g_flag = new Actor(flagMesh, g_texturedShader, g_arcadeTexture);
+
+	// Testing serialization
+	// If save file for this actor exists, load it.
+	Vec3 v;
+	v.x = 7000;
+	v.y = 10;
+	v.z = 10;
+	g_flag->transform.location = v;
+
+	FILE* fp = std::fopen("../../assets/flag.sav", "rb"); 
+	if (fp) { // Fails if file does not exist since it uses "r" - read mode
+		std::printf("Reading...");
+		g_flag->ReadFrom(fp);
+	} else {
+		fp = std::fopen("../../assets/flag.sav", "wb"); // Open for writing
+		if (fp) {
+			std::printf("Writing...\n");
+			g_flag->WriteTo(fp);
+		} else {
+			std::printf("Error: failed to open file for flag asset save\n");
+		}
+	}
+
+	std::printf("Vec3 size = %lu\n", sizeof(Vec3));
+	std::printf("float size = %lu\n", sizeof(float));
+	const Vec3& loc = g_flag->transform.location;
+	const Vec3& rot= g_flag->transform.rotation;
+	const Vec3& scl= g_flag->transform.scale;
+	std::printf("loc: %f %f %f\n", loc.x, loc.y, loc.z);
+	std::printf("rot: %f %f %f\n", rot.x, rot.y, rot.z);
+	std::printf("scl: %f %f %f\n", scl.x, scl.y, scl.z);
+
+	if (fp) std::fclose(fp);
 }
 
 void Session::Update() {

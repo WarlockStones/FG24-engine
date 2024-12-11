@@ -42,4 +42,21 @@ void Actor::Draw() {
 	glBindVertexArray(0); // Unbind
 }
 
+constexpr int ActorVersion = 1; // For serialization
+bool Actor::WriteTo(FILE* file) const {
+	int version = ActorVersion;
+	std::fwrite(&version, sizeof(int), 1, file);
+	transform.WriteTo(file);
+
+	return true;
+}
+
+bool Actor::ReadFrom(FILE* file) {
+	int version = 0;
+	std::fread(&version, sizeof(int), 1, file);
+	transform.ReadFrom(file);
+
+	return true;
+}
+
 } // namespace FG24
