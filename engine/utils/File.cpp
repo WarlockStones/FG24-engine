@@ -103,6 +103,7 @@ const char* LoadTextFile(const char* path) {
 }
 
 Vertex ParseV(char* token) {
+	token = std::strtok(token, " "); 
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
 	// Read x y z values for vertex data
 	float vert[3]{};
@@ -128,8 +129,154 @@ Vertex ParseV(char* token) {
 	return v;
 }
 
+struct FaceIndexElement {
+	int v, vt, vn;
+};
+
+bool AddToCorrectBuffer(const char* buf, int elementCount, int vIndex, FaceIndexElement* out) {
+	switch (elementCount) {
+		case 0: 
+			std::sscanf(buf, "%d", &out[vIndex].v);
+			return true;
+			break;
+		case 1:
+			std::sscanf(buf, "%d", &out[vIndex].vt);
+			return true;
+			break;
+		case 2:
+			std::sscanf(buf, "%d", &out[vIndex].vn);
+			return true;
+			break;
+		default:
+			// Error
+			return false;
+			break;
+	}
+}
+
+Face ParseF(const char* str) {
+	// elements,  e1, e2, e3 
+	// v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
+	// vertex 1,  vertex 2,  vertex 3
+
+	// TODO: Handle \r\n ? atleast at c == ' ', i should probably c == isWhiteSpace; ?? >> TEST! <<
+
+	// TODO: Handle optional //. std::optional might be good
+
+	constexpr int vMax = 12;
+	FaceIndexElement f[vMax]{};
+	int vIndex = 0;
+	int numCount = 0;
+	int elementCount = 0;
+	constexpr int bufSize = 124;
+	char buf[bufSize];
+	for (std::size_t i = 0; str[i] != '\0'; ++i) {
+		char c = str[i];
+
+		std::putchar(str[i]);
+
+		if (std::isdigit(c)) { // Found a valid symbol
+			if (numCount < bufSize - 1) {
+				buf[numCount] = c;
+				buf[numCount + 1] = '\0';
+				++numCount;
+			}
+		} else if (c == '/') {
+			AddToCorrectBuffer(buf, elementCount, vIndex, f);
+			++elementCount;
+			numCount = 0;
+		} else if (c == ' ') {
+			if (elementCount > 0) {
+				++vIndex;
+				AddToCorrectBuffer(buf, elementCount, vIndex, f);
+			}
+			numCount = 0;
+			elementCount = 0;
+		}
+	}
+
+	int vertexCount = vIndex + 1;
+	std::printf("VertexCount: %d\n", vertexCount);
+	// if vertexCount == 4; triangulate
+	// if vertexCount > 4; triangulate? complain
+	for (int i = 0; i < vertexCount; ++i) {
+		std::printf("%d %d %d\n", f[i].v, f[i].vt, f[i].vn);
+	}
+
+	// TODO: Do some sort of error checking, maybe?
+	return Face();
+}
+
+
+// TODO: Better error handling
+MeshData LoadObjToMeshData(Filepath filepath) {
+	const char* path = filepath.GetPath();
+
+	FileStream file(path, "rb");
+	if (!file.ptr) {
+		std::fprintf(stderr, "No file!\n%s\n", path);
+		return MeshData();
+	} 
+
+	// If the file has meta data, read and allocate necessary size instead of std::vector
+	// I did not want to loop twice to do that.
+	std::vector<Vertex> vertices;
+	vertices.reserve(1024);
+	// std::vector<Face> faces;
+	std::vector<std::uint32_t> ind; // Face indices
+	ind.reserve(1024);
+
+	constexpr std::size_t bufMax = 256;
+	for (char buf[bufMax]{}; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
+		char prefix[3] = { buf[0], buf[1] , '\0' };
+		if (std::strcmp(prefix, "v ") == 0) {
+			vertices.push_back(ParseV(buf));
+		} else if (std::strcmp(prefix, "vt") == 0) {
+			// Handle UV
+		} else if (std::strcmp(prefix, "vn") == 0) {
+			// Handle vertex normal
+		} else if (std::strcmp(prefix, "f ")  == 0) {
+			Face face = ParseF(buf);
+			ind.push_back(face.v[0]);
+			ind.push_back(face.v[1]);
+			ind.push_back(face.v[2]);
+		}
+	}
+
+	Vertex* v = new Vertex[vertices.size()];
+	std::copy(vertices.begin(), vertices.end(), v);
+
+	std::uint32_t* indices = new std::uint32_t[ind.size()*3];
+	std::copy(ind.begin(), ind.end(), indices);
+
+	MeshData data;
+	data.vertices = v;
+	data.numVertices = vertices.size();
+
+	data.indices = indices;
+	data.numIndices = ind.size();
+
+	data.normals = nullptr;
+
+	data.UVs = nullptr;
+
+#ifdef false
+	std::printf("Printing the stuff in File.cpp: \n");
+	for (std::size_t i = 0; i < data.numVertices; ++i) {
+		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
+	}
+	std::printf("Printing indices in File.cpp\n");
+	for (int i = 0; i < ind.size(); ++i) {
+		std::printf("%u ", indices[i]);
+	}
+	std::printf("\n");
+#endif
+	
+	return data;
+}
+
 // TODO: Error checking tokenizer
-Face ParseF(char* token) {
+Face ParseFOld(char* token) {
 
 	// Tokenize
 	token = std::strtok(nullptr, " "); // Get prefix
@@ -186,75 +333,6 @@ Face ParseF(char* token) {
 	return face; // move instead of copy?
 }
 
-// TODO: Better error handling
-MeshData LoadObjToMeshData(Filepath filepath) {
-	const char* path = filepath.GetPath();
-
-	FileStream file(path, "rb");
-	if (!file.ptr) {
-		std::fprintf(stderr, "No file!\n%s\n", path);
-		return MeshData();
-	} 
-
-	// If the file has meta data, read and allocate necessary size instead of std::vector
-	// I did not want to loop twice to do that.
-	std::vector<Vertex> vertices;
-	vertices.reserve(1024);
-	// std::vector<Face> faces;
-	std::vector<std::uint32_t> ind; // Face indices
-	ind.reserve(1024);
-
-	constexpr std::size_t bufMax = 256;
-	for (char buf[bufMax]; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
-		// Tokenize
-		char* token = std::strtok(buf, " "); // Get prefix
-		if (token) {
-			if (std::strcmp(token, "v") == 0) {
-				vertices.push_back(ParseV(token));
-			} else if (std::strcmp(token, "vt") == 0) {
-				// Handle UV
-			} else if (std::strcmp(token, "vn") == 0) {
-				// Handle vertex normal
-			} else if (std::strcmp(token, "f")  == 0) {
-				Face face = ParseF(token);
-				ind.push_back(face.v[0]);
-				ind.push_back(face.v[1]);
-				ind.push_back(face.v[2]);
-			}
-		}
-	}
-
-	Vertex* v = new Vertex[vertices.size()];
-	std::copy(vertices.begin(), vertices.end(), v);
-
-	std::uint32_t* indices = new std::uint32_t[ind.size()*3];
-	std::copy(ind.begin(), ind.end(), indices);
-
-	MeshData data;
-	data.vertices = v;
-	data.numVertices = vertices.size();
-
-	data.indices = indices;
-	data.numIndices = ind.size();
-
-	data.normals = nullptr;
-
-	data.UVs = nullptr;
-
-#ifdef false
-	std::printf("Printing the stuff in File.cpp: \n");
-	for (std::size_t i = 0; i < data.numVertices; ++i) {
-		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
-	}
-	std::printf("Printing indices in File.cpp\n");
-	for (int i = 0; i < ind.size(); ++i) {
-		std::printf("%u ", indices[i]);
-	}
-	std::printf("\n");
-#endif
-	
-	return data;
-}
 
 MeshData OldParseObj(const char* path) {
 	std::size_t pathlen = std::strlen(path);
