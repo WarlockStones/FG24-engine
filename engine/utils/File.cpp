@@ -130,6 +130,7 @@ Vertex ParseV(char* token) {
 }
 
 struct FaceIndexElement {
+	// an .obj can have negative value for face element indices!
 	int v, vt, vn;
 };
 
@@ -159,21 +160,24 @@ Face ParseF(const char* str) {
 	// v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
 	// vertex 1,  vertex 2,  vertex 3
 
-	// TODO: Handle \r\n ? atleast at c == ' ', i should probably c == isWhiteSpace; ?? >> TEST! <<
+	// TODO: Handle optional elements. Something like std::optional might be good
+	// TODO: Handle optional vt syntax 1//1 2//2 3//3
 
-	// TODO: Handle optional //. std::optional might be good
+	// TODO: Change AddToCorrectBuffer to be a static lambda and measure performance difference.
+	// A static lambda would be cleaner since this is just a helper function for this function
 
 	constexpr int vMax = 12;
 	FaceIndexElement f[vMax]{};
-	int vIndex = 0;
+	int vertexCount = 0;
 	int numCount = 0;
 	int elementCount = 0;
 	constexpr int bufSize = 124;
 	char buf[bufSize];
 	for (std::size_t i = 0; str[i] != '\0'; ++i) {
+		assert((str[i] == '/' && str[i + 1] == '/') == false); // Parser can not yet handle "//"
 		char c = str[i];
 
-		std::putchar(str[i]);
+		// std::printf("|%c|", str[i]);
 
 		if (std::isdigit(c)) { // Found a valid symbol
 			if (numCount < bufSize - 1) {
@@ -182,29 +186,47 @@ Face ParseF(const char* str) {
 				++numCount;
 			}
 		} else if (c == '/') {
-			AddToCorrectBuffer(buf, elementCount, vIndex, f);
+			AddToCorrectBuffer(buf, elementCount, vertexCount, f);
 			++elementCount;
 			numCount = 0;
-		} else if (c == ' ') {
-			if (elementCount > 0) {
-				++vIndex;
-				AddToCorrectBuffer(buf, elementCount, vIndex, f);
+		} else if (c == ' ' || c == '\n') {
+			if (numCount > 0) {
+				AddToCorrectBuffer(buf, elementCount, vertexCount, f);
+				++vertexCount;
 			}
 			numCount = 0;
 			elementCount = 0;
 		}
 	}
 
-	int vertexCount = vIndex + 1;
-	std::printf("VertexCount: %d\n", vertexCount);
+	// TODO: Triangulate
 	// if vertexCount == 4; triangulate
 	// if vertexCount > 4; triangulate? complain
+
+#if FALSE
+	std::printf("VertexCount: %d\n", vertexCount);
 	for (int i = 0; i < vertexCount; ++i) {
 		std::printf("%d %d %d\n", f[i].v, f[i].vt, f[i].vn);
 	}
+#endif
 
 	// TODO: Do some sort of error checking, maybe?
-	return Face();
+	// Check that the face has an element for v.
+
+	// Check that the face optional elements are consistent.
+	// i.e: 1//1 2/2/ BAD!
+	// i.e: 1 2 3/3/3 BAD!
+
+	// TODO: Mark vt and vn if they exists. std::optional?
+	// For now only return vertex indices.
+	Face face; // TODO: Change Face struct to be nicer and more fit for this operation
+				// Face struct does not really do much atm. It is not used for much
+	for (int i = 0; i < 3; ++i) {
+		face.v[i] = f[i].v;
+		face.vt[i] = f[i].vt;
+		face.vn[i] = f[i].vn;
+	}
+	return face;
 }
 
 
@@ -271,7 +293,8 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	}
 	std::printf("\n");
 #endif
-	
+
+	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices
 	return data;
 }
 

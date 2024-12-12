@@ -41,7 +41,7 @@ void Session::Start() {
 	MeshData flagData = FG24::File::LoadObjToMeshData("../../assets/mesh/cube.obj");
 	Mesh* flagMesh = new Mesh(flagData); // TODO: Fix so that flagMesh (the cube) renders correctly
 	Cube* cube = new Cube();
-	g_flag = new Actor(cube, g_texturedShader, g_arcadeTexture);
+	g_flag = new Actor(flagMesh, g_texturedShader, g_arcadeTexture);
 
 #if false
 	// Testing serialization

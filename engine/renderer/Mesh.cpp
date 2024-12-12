@@ -100,7 +100,7 @@ Mesh::Mesh(const MeshData& data) {
 
 void Mesh::Draw(std::uint32_t shaderID) {
 	assert(shaderID != 0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
 	glUseProgram(shaderID);
 
 	glBindVertexArray(VAO);
