@@ -60,25 +60,11 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 }
 
 Mesh::Mesh(const MeshData& data) {
-	numIndices = data.numIndices;
+	numVertexIndices = data.numVertexIndices;
 
 	std::size_t vertSize = sizeof(Vertex) * data.numVertices; 
 	// Do not do sizeof the member (data.indices), instead use the type
-	std::size_t indSize = sizeof(std::uint32_t) * data.numIndices; // test something
-
-#if true
-	std::printf("MeshData num vertices: %lu\n", data.numVertices);
-	std::printf("MeshData: vertexSize: %lu. indiciesSize: %lu\n", vertSize, indSize);
-	for (std::size_t i = 0; i < data.numVertices; ++i) {
-		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
-	}
-	std::printf("\n");
-	std::printf("MeshData Indices: %lu\n", data.numIndices);
-	for (std::size_t i = 0; i < data.numIndices; ++i) {
-	  std::printf("%u ", data.indices[i]);
-	}
-	std::printf("..\n");
-#endif
+	std::size_t vertIndSize = sizeof(std::uint32_t) * data.numVertexIndices; // test something
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -95,7 +81,7 @@ Mesh::Mesh(const MeshData& data) {
 
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indSize, data.indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertIndSize, data.vertexIndices, GL_STATIC_DRAW);
 }
 
 void Mesh::Draw(std::uint32_t shaderID) {
@@ -105,8 +91,8 @@ void Mesh::Draw(std::uint32_t shaderID) {
 
 	glBindVertexArray(VAO);
 
-	if (numIndices > 0) { // MeshData
-		glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);  
+	if (numVertexIndices > 0) { // MeshData
+		glDrawElements(GL_TRIANGLES, numVertexIndices, GL_UNSIGNED_INT, 0);  
 	}
 	else if (EBO > 0) { // Just an EBO but nothing from MeshData
 		// Draw the square. It has an EBO and 6 vertices

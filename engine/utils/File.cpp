@@ -130,53 +130,69 @@ Vertex ParseV(char* token) {
 }
 
 struct FaceIndexElement {
-	// an .obj can have negative value for face element indices!
-	int v, vt, vn;
+	int v, uv, vn;
 };
 
-bool AddToCorrectBuffer(const char* buf, int elementCount, int vIndex, FaceIndexElement* out) {
-	switch (elementCount) {
-		case 0: 
-			std::sscanf(buf, "%d", &out[vIndex].v);
-			return true;
-			break;
-		case 1:
-			std::sscanf(buf, "%d", &out[vIndex].vt);
-			return true;
-			break;
-		case 2:
-			std::sscanf(buf, "%d", &out[vIndex].vn);
-			return true;
-			break;
-		default:
-			// Error
-			return false;
-			break;
-	}
-}
+struct Face { // TODO: Remove need for this Face struct
+	static constexpr std::size_t max = 3;
+	bool hasUV = false;
+	bool hasNormal = false;
+	std::size_t numIndices = 0;
+	std::int32_t v[max]{}, uv[max]{}, vn[max]{}; // Indicies
+};
 
 Face ParseF(const char* str) {
 	// elements,  e1, e2, e3 
 	// v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
 	// vertex 1,  vertex 2,  vertex 3
 
-	// TODO: Handle optional elements. Something like std::optional might be good
 	// TODO: Handle optional vt syntax 1//1 2//2 3//3
+	// TODO: Range check arrays
+    // TODO: Check for inconsistent face element indices. i.e 1/1/1 2//2 3/3/3
 
-	// TODO: Change AddToCorrectBuffer to be a static lambda and measure performance difference.
-	// A static lambda would be cleaner since this is just a helper function for this function
+	// A lambda can read values of constexpr variables without capturing it
+	constexpr std::uint8_t vBit  = 0b001;
+	constexpr std::uint8_t uvBit = 0b010;
+	constexpr std::uint8_t vnBit = 0b100;
 
-	constexpr int vMax = 12;
+	static auto AddToCorrectBuffer = [](
+		const char* buf,
+		int elementCount,
+		int vIndex,
+		FaceIndexElement* out) {
+			switch (elementCount) {
+				case 0: 
+					std::sscanf(buf, "%d", &out[vIndex].v);
+					return vBit; 
+					break;
+				case 1:
+					std::sscanf(buf, "%d", &out[vIndex].uv);
+					return uvBit; 
+					break;
+				case 2:
+					std::sscanf(buf, "%d", &out[vIndex].vn);
+					return vnBit;
+					break;
+				default:
+					// Error
+					break;
+			}
+			return std::uint8_t(0b000);
+	};
+
+	constexpr int vMax = 48; // Arbitrarily sets max to 48
 	FaceIndexElement f[vMax]{};
+	std::uint8_t elements = 0b000;
 	int vertexCount = 0;
 	int numCount = 0;
 	int elementCount = 0;
 	constexpr int bufSize = 124;
 	char buf[bufSize];
 	for (std::size_t i = 0; str[i] != '\0'; ++i) {
-		assert((str[i] == '/' && str[i + 1] == '/') == false); // Parser can not yet handle "//"
-		char c = str[i];
+		// Parser can not yet handle "//"
+		assert((str[i] == '/' && str[i + 1] == '/') == false); 
 
+		char c = str[i];
 		// std::printf("|%c|", str[i]);
 
 		if (std::isdigit(c)) { // Found a valid symbol
@@ -186,12 +202,12 @@ Face ParseF(const char* str) {
 				++numCount;
 			}
 		} else if (c == '/') {
-			AddToCorrectBuffer(buf, elementCount, vertexCount, f);
+			elements |= AddToCorrectBuffer(buf, elementCount, vertexCount, f);
 			++elementCount;
 			numCount = 0;
 		} else if (c == ' ' || c == '\n') {
 			if (numCount > 0) {
-				AddToCorrectBuffer(buf, elementCount, vertexCount, f);
+				elements |= AddToCorrectBuffer(buf, elementCount, vertexCount, f);
 				++vertexCount;
 			}
 			numCount = 0;
@@ -203,29 +219,29 @@ Face ParseF(const char* str) {
 	// if vertexCount == 4; triangulate
 	// if vertexCount > 4; triangulate? complain
 
-#if FALSE
+#if false
 	std::printf("VertexCount: %d\n", vertexCount);
 	for (int i = 0; i < vertexCount; ++i) {
-		std::printf("%d %d %d\n", f[i].v, f[i].vt, f[i].vn);
+		std::printf("%d %d %d\n", f[i].v, f[i].uv, f[i].vn);
 	}
 #endif
 
-	// TODO: Do some sort of error checking, maybe?
-	// Check that the face has an element for v.
+	Face face; 
 
-	// Check that the face optional elements are consistent.
-	// i.e: 1//1 2/2/ BAD!
-	// i.e: 1 2 3/3/3 BAD!
+	if (elements & uvBit) {
+	  face.hasUV = true;
+	}
+	if (elements & vnBit) {
+	  face.hasNormal = true;
+	}
 
-	// TODO: Mark vt and vn if they exists. std::optional?
-	// For now only return vertex indices.
-	Face face; // TODO: Change Face struct to be nicer and more fit for this operation
-				// Face struct does not really do much atm. It is not used for much
+	// TODO: Remove need of face and this awkward operation
 	for (int i = 0; i < 3; ++i) {
 		face.v[i] = f[i].v;
-		face.vt[i] = f[i].vt;
+		face.uv[i] = f[i].uv;
 		face.vn[i] = f[i].vn;
 	}
+
 	return face;
 }
 
@@ -244,9 +260,13 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	// I did not want to loop twice to do that.
 	std::vector<Vertex> vertices;
 	vertices.reserve(1024);
-	// std::vector<Face> faces;
-	std::vector<std::uint32_t> ind; // Face indices
-	ind.reserve(1024);
+
+	std::vector<std::int32_t> vInd;
+	vInd.reserve(1024);
+	std::vector<std::int32_t> uvInd;
+	uvInd.reserve(1024);
+	std::vector<std::int32_t> vnInd;
+	vnInd.reserve(1024);
 
 	constexpr std::size_t bufMax = 256;
 	for (char buf[bufMax]{}; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
@@ -259,209 +279,99 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 			// Handle vertex normal
 		} else if (std::strcmp(prefix, "f ")  == 0) {
 			Face face = ParseF(buf);
-			ind.push_back(face.v[0]);
-			ind.push_back(face.v[1]);
-			ind.push_back(face.v[2]);
+			vInd.push_back(face.v[0]);
+			vInd.push_back(face.v[1]);
+			vInd.push_back(face.v[2]);
+
+			// TODO: Face needs to tell if it has any uvInds or vnInds.
+			if (face.hasUV) {
+				uvInd.push_back(face.uv[0]);
+				uvInd.push_back(face.uv[1]);
+				uvInd.push_back(face.uv[2]);
+			}
+			if (face.hasNormal) {
+				vnInd.push_back(face.vn[0]);
+				vnInd.push_back(face.vn[1]);
+				vnInd.push_back(face.vn[2]);
+			}
 		}
+	}
+
+	// TODO: Error check that the Face Index Elmenets vectors are of equal size
+	// i.e Check that the face optional elements are consistent.
+	// i.e: f 1//1 2/2/ BAD!
+	// i.e: f 1 2 3/3/3 BAD!
+	// Face element indices error checks
+	if (vInd.size() == 0) {
+		std::fprintf(stderr, "Error: Parsed 0 face vertex indices!\n");
+		return MeshData();
+	}
+
+	// TODO: Is this a valid error? Check .obj specification
+	if (uvInd.size() != vnInd.size()) {
+		std::fprintf(stderr, "Error: The amount of UV idices != amount normal indices!\n");
+		std::fprintf(stderr, "There may have been an issue with parsing face index elements.\n");
+
+		return MeshData();
 	}
 
 	Vertex* v = new Vertex[vertices.size()];
 	std::copy(vertices.begin(), vertices.end(), v);
 
-	std::uint32_t* indices = new std::uint32_t[ind.size()*3];
-	std::copy(ind.begin(), ind.end(), indices);
+	std::int32_t* vertexIndices = new std::int32_t[vInd.size()];
+	std::copy(vInd.begin(), vInd.end(), vertexIndices);
+
+	std::int32_t* uvIndices = nullptr;
+	if (uvInd.size() > 0) {
+	  uvIndices = new std::int32_t[uvInd.size()];
+	  std::copy(uvInd.begin(), uvInd.end(), uvIndices);
+	}
+	std::int32_t* normalIndices = nullptr;
+	if (vnInd.size() > 0) {
+	  normalIndices = new std::int32_t[vnInd.size()];
+	  std::copy(vnInd.begin(), vnInd.end(), normalIndices);
+	}
 
 	MeshData data;
 	data.vertices = v;
 	data.numVertices = vertices.size();
 
-	data.indices = indices;
-	data.numIndices = ind.size();
-
+	// TODO: Add support for Normals and UV/Vertex Texture coordinates
 	data.normals = nullptr;
-
 	data.UVs = nullptr;
 
-#ifdef false
+	data.vertexIndices = vertexIndices;
+	data.numVertexIndices = vInd.size();
+
+	data.numUVIndices = uvInd.size();
+	data.UVIndices = uvIndices;
+  
+	data.numNormalIndices = vnInd.size();
+	data.normalIndices = normalIndices; 
+	
+
+#if true
 	std::printf("Printing the stuff in File.cpp: \n");
 	for (std::size_t i = 0; i < data.numVertices; ++i) {
 		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
 	}
-	std::printf("Printing indices in File.cpp\n");
-	for (int i = 0; i < ind.size(); ++i) {
-		std::printf("%u ", indices[i]);
+	std::printf("vertex indices:\n");
+	for (std::size_t i = 0; i < data.numVertexIndices; ++i) {
+		std::printf("%d ", data.vertexIndices[i]);
 	}
-	std::printf("\n");
+	std::printf("\nuv indices:\n");
+	for (std::size_t i = 0; i < data.numUVIndices; ++i) {
+		std::printf("%d ", data.UVIndices[i]);
+	}
+	std::printf("\nnormal indices:\n");
+	for (std::size_t i = 0; i < data.numNormalIndices; ++i) {
+		std::printf("%d ", data.normalIndices[i]);
+	}
+	std::printf("\nEnd of File.cpp\n");
 #endif
 
 	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices
 	return data;
-}
-
-// TODO: Error checking tokenizer
-Face ParseFOld(char* token) {
-
-	// Tokenize
-	token = std::strtok(nullptr, " "); // Get prefix
-
-	// Each face contains at least 3 values
-	// f 111/111/111 222/222/222 333/333/333 ...
-
-	char* fTokens[512] {nullptr}; // Realistically no face will have 512
-	std::size_t faceCount = 0; // TODO: rename to indicesCount or numIndices; This is all 1 face
-	while (token != nullptr) {
-		fTokens[faceCount] = token;
-		faceCount++;
-		token = std::strtok(nullptr, " ");
-	}
-	if (faceCount == 4) {
-		// TODO: Triangulate quads and inform the user of this action
-	}
-	else if (faceCount > 4) {
-		std::printf ("Mesh has n-gons. Please fix...\n");
-	}
-
-	// Tokenize the /
-	Face face;
-	face.numIndices = 3; // Hard coded to only be 3
-	// Loop through all values and tokenize 3 more times for v, vt, vn
-	// TODO: Handle more than 3 entries
-	for (std::size_t i = 0; i < 3 && fTokens[i] != nullptr; ++i) {
-
-		static auto getInt = [](char* token) {
-			std::uint32_t result = 0;
-			if (token) {
-				if (std::sscanf(token, "%ul", &result) > 0) {
-				} else {
-					std::fprintf(stderr, "Error: could not turn face string into int!\n");
-				}
-			} else {
-				// TODO: handle .obj files with // like '111//111 222/222/222 333//333'
-				// if '//' ignore. Vertex texture coordinate indicies are optional
-				// TODO: Handle .obj files with no / like '1 2 3'. no token '/'
-				std::fprintf(stderr, "Error: attempting to tokenize a bad face token string!\n");
-				std::fprintf(stderr, "Maybe the .obj file has a face value with '//'?\n");
-			}
-			return result;
-		};
-
-		char* t = std::strtok(fTokens[i], "/");
-		face.v[i] = getInt(t);
-		t = std::strtok(nullptr, "/");
-		face.vt[i] = getInt(t);
-		t = std::strtok(nullptr, "/");
-		face.vn[i] = getInt(t);
-	}
-
-	return face; // move instead of copy?
-}
-
-
-MeshData OldParseObj(const char* path) {
-	std::size_t pathlen = std::strlen(path);
-	if (pathlen > 260) {
-		// TODO: Do proper error handling
-		std::fprintf(stderr, "ERROR: Path to .obj file is too long!\n%s\n", path);
-		return MeshData();
-	}
-
-	char p[260];
-	std::memcpy(p, path, sizeof(path));
-	FormatFilePath(p, sizeof(path));
-
-	FileStream file(path, "rb");
-	if (!file.ptr) {
-		std::fprintf(stderr, "No file!\n%s\n", path);
-		return MeshData();
-	}
-
-	// There is no libc way of doing this, I guess I just have to read character by character
-	// TODO: Explain what is going on here. Why I am doing this to prepare reader for the following code
-	constexpr std::size_t maxLineLength = 512;
-	char lineBuffer[maxLineLength+1]; // +1 to accommodate for '\0'
-	std::size_t currentBufferLength = 0;
-	int c; // int is required to handle EOF
-	char previousChar = '0'; // not an empty space
-	constexpr std::size_t maxTokens = 4;
-	char* tokens[maxTokens] {nullptr};
-	std::size_t tokenCount = 0;
-	while ((c = std::fgetc(file.ptr)) != EOF) {
-
-		// TODO: handle this error by reporting to the user that the file is bad
-		if (currentBufferLength > maxLineLength) {
-			std::fprintf(stderr, "Error: LoadObjToMeshData: A line in .obj is too long!\n");
-			return MeshData();
-		}
-		assert(currentBufferLength < maxLineLength); 
-
-		// TODO: Change to switch case for readability?
-		if (c == '\n' && currentBufferLength > 0) { 
-			lineBuffer[currentBufferLength + 1] = '\0'; // To make sure last token is a null-terminated string
-			// lineBuffer should be tokenized with null-terminated strings
-			// f'\0'111/222/333'\0'111/222/333'\0'111/222/333'\n''\0'
-			//                                                    ^^^ - the +1
-
-			// TODO: Check for n-gons and triangulate quads
-
-			// v = xy
-			// vt = uv w (both v and w are actually optional but I want 2 uv)
-			// vn = i j k
-
-			// f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 . . .
-			// faceSpecifies a face element and its vertex reference number. 
-			// vt is optional in f, so v1//vn1 is valid 1413//7210
-
-			if (std::strcmp(lineBuffer, "v") == 0) {
-				// Read 3 tokens. The x y z floats
-				for (int i = 0; i < 3; ++i) {
-					if (tokens[i] == nullptr) {
-						std::fprintf(stderr, "Error: LoadObjToMeshData: Found invalid vertex data!\n");
-						return MeshData();
-					}
-					// TODO:: Allocate the data for MeshData
-					float value{};
-					if (std::sscanf(tokens[i], "%f", &value) > 0)	{
-						std::printf("vertex token '%d' = '%f'\n", i, value);
-					} else {
-						std::fprintf(stderr, "Error: LoadObjMeshData: Failed to read vertex float data!\n");
-						return MeshData();
-					}
-				}
-			}
-			else if (std::strcmp(lineBuffer, "vt") == 0) {
-				// Handle UV
-			} else if (std::strcmp(lineBuffer, "vn") == 0) {
-				// Handle vertex normal. (Don't care about the optional w)
-			} else if (std::strcmp(lineBuffer, "f") == 0) {
-				// Handle face index
-			}
-
-			// Reset buffer length and tokens
-			currentBufferLength = 0; 
-			for (std::size_t i = 0; i < tokenCount; ++i) {
-				tokens[i] = nullptr;
-			}
-			tokenCount = 0; 
-
-
-		} else if (c == ' ') {
-			// Tokenize the lineBuffer and use it as an array of null-terimanted c-strings
-			lineBuffer[currentBufferLength] = '\0';
-			++currentBufferLength;
-		}  else if (std::isalnum(c) || c == '-' || c == '.') { // Found a valid symbol
-			if (previousChar == ' ' && tokenCount < maxTokens) {
-				// Found a new word after some spaces
-				// Add pointer to new token. Using tokens and lineBuffer as a multidimensional array
-				tokens[tokenCount] = &lineBuffer[currentBufferLength];
-				++tokenCount;
-			}
-			lineBuffer[currentBufferLength] = c;
-			++currentBufferLength;
-		}
-		previousChar = c;
-	}
-
-	return MeshData();
 }
 
 } // namespace File

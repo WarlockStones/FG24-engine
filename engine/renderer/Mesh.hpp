@@ -18,12 +18,6 @@ struct Normal {
 	float i, j, k;
 };
 
-struct Face {
-	static constexpr std::size_t max = 3;
-	std::size_t numIndices = 0;
-	std::uint32_t v[max]{}, vt[max]{}, vn[max]{}; // Indicies
-};
-
 // Collection of pointers to dynamically allocated arrays of vertices, UVs, normals, and faces
 struct MeshData {
 	// Owning pointers. Should probably make them std::unique_ptr
@@ -37,11 +31,14 @@ struct MeshData {
 	Normal* normals = nullptr;
 
 	// OpenGL wants all vertices AND face-index-grouping values as continous arrays
-	std::size_t numIndices;
-	std::uint32_t* indices = nullptr; // Face.v value
+	std::size_t numVertexIndices = 0;
+	std::int32_t* vertexIndices = nullptr;
 
-	// std::size_t numFaces{};
-	// Face* faces = nullptr;
+	std::size_t numUVIndices = 0;
+	std::int32_t* UVIndices = nullptr;
+  
+	std::size_t numNormalIndices = 0;
+	std::int32_t* normalIndices = nullptr;
 };
 
 class Mesh {
@@ -57,7 +54,7 @@ public:
 
 	void Draw(std::uint32_t shaderID);
 
-	std::size_t numIndices = 0; // Used later for OpenGL draw calls
+	std::size_t numVertexIndices = 0; // Used later for OpenGL draw calls
 private:
 	// OpenGL IDs
 	std::uint32_t VBO{}; // Stores verticies
