@@ -13,7 +13,7 @@
 #include "renderer/SimpleShapes.hpp"
 #include "renderer/Shader.hpp"
 #include "renderer/Texture.hpp"
-#include "framework/Actor.hpp"
+#include "framework/Entity.hpp"
 
 namespace FG24 {
 bool Session::Init() {
@@ -36,16 +36,16 @@ void Session::Start() {
 	g_arcadeTexture = Texture::LoadFromFile("../../assets/textures/arcade_carpet.png");
 	assert(g_arcadeTexture != 0);
 	g_triangleMesh = new Square();
-	g_triangle = new Actor(g_triangleMesh, g_texturedShader, g_arcadeTexture);
+	g_triangle = new Entity(g_triangleMesh, g_texturedShader, g_arcadeTexture);
 	assert(g_triangle);
 	MeshData flagData = FG24::File::LoadObjToMeshData("../../assets/mesh/cube.obj");
 	Mesh* flagMesh = new Mesh(flagData); // TODO: Fix so that flagMesh (the cube) renders correctly
 	Cube* cube = new Cube();
-	g_flag = new Actor(flagMesh, g_texturedShader, g_arcadeTexture);
+	g_flag = new Entity(flagMesh, g_texturedShader, g_arcadeTexture);
 
 #if false
 	// Testing serialization
-	// If save file for this actor exists, load it.
+	// If save file for this entity exists, load it.
 	Vec3 v;
 	v.x = 7000;
 	v.y = 10;

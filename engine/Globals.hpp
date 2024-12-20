@@ -2,7 +2,7 @@
 #include <cstdint>
 
 namespace FG24 {
-class Actor;
+class Entity;
 class Mesh;
 class MeshData;
 
@@ -13,11 +13,11 @@ extern double g_deltaTime;
 extern int g_windowWidth;
 extern int g_windowHeight;
 
-extern Actor*			g_triangle;
+extern Entity*			g_triangle;
 extern std::uint32_t	g_texturedShader;
 extern std::uint32_t	g_arcadeTexture;
 extern Mesh*			g_triangleMesh;
-extern Actor*			g_flag;
+extern Entity*			g_flag;
 
 // Inputs
 extern int g_yvel;

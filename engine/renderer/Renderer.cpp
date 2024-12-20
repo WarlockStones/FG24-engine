@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 #include <cstdio>
 #include "Globals.hpp"
-#include "framework/Actor.hpp"
+#include "framework/Entity.hpp"
 #include "Shader.hpp"
 
 
@@ -81,7 +81,7 @@ void Renderer::Draw() {
 		static_cast<float>(g_windowWidth) / static_cast<float>(g_windowHeight), // Aspect ratio
 		0.1f, 100.0f); // near, far planes of the frustrum
 
-	// TODO: Move into actor object i.e move into g_flag
+	// TODO: Move into entity object i.e move into g_flag
 	Shader::Use(g_texturedShader);
 	Shader::SetMat4(g_texturedShader, "model", model);
 	Shader::SetMat4(g_texturedShader, "view", view);

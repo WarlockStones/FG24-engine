@@ -7,11 +7,11 @@ namespace FG24 {
 class Material;
 class Mesh;
 
-// Actor is a thing in the world that has graphics and can be drawn
-class Actor : public IWritable {
+// An Entity is a thing in the game world
+class Entity : public IWritable {
 public:
-	Actor(Mesh* mesh, std::uint32_t shader, std::uint32_t texture = 0);
-	~Actor() = default;
+	Entity(Mesh* mesh, std::uint32_t shader, std::uint32_t texture = 0);
+	~Entity() = default;
 	void Draw();
 
 	// TODO maybe virtual in the future?

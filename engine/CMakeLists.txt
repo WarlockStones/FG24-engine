@@ -24,7 +24,7 @@ add_executable(engine
 	"utils/Memory.cpp"
 	"framework/Session.cpp"
 	"framework/KeyInput.cpp"
-	"framework/Actor.cpp"
+	"framework/Entity.cpp"
 	"renderer/Renderer.cpp"
 	"renderer/SimpleShapes.cpp"
 	"renderer/Mesh.cpp"
