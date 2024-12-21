@@ -245,6 +245,7 @@ Face ParseF(const char* str) {
 	return face;
 }
 
+// TODO: Error handling
 UV ParseVT(char* token) {
 	token = std::strtok(token, " ");
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
@@ -271,6 +272,32 @@ UV ParseVT(char* token) {
 	return uv;
 }
 
+// TODO: Error handling
+Normal ParseVN(char* token) {
+	token = std::strtok(token, " ");
+	token = std::strtok(nullptr, " "); // Tokenize to next past index
+	// Read i j k values as vertex texture coordinates
+	float data[3]{};
+	for (int i = 0; i < 3; ++i) {
+		if (token) {
+			if (std::sscanf(token, "%f", &data[i]) <= 0) {
+				std::fprintf(stderr, "Error: ParseVN: invalid vertex normal data!\n");
+			}
+
+			token = std::strtok(nullptr, " ");
+		} else {
+			// i j k are not optional. There must be 3 values
+			std::fprintf(stderr, "Error: ParseVN: invalid vertex normal data!\n");
+		}
+	}
+
+	Normal n;
+	n.i = data[0];
+	n.j = data[1];
+	n.k = data[2];
+	return n;
+}
+
 
 // TODO: Better error handling
 MeshData LoadObjToMeshData(Filepath filepath) {
@@ -290,6 +317,9 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	std::vector<UV> UVs;
 	UVs.reserve(512);
 
+	std::vector<Normal> normals;
+	normals.reserve(512);
+
 	std::vector<std::int32_t> vInd;
 	vInd.reserve(512);
 	std::vector<std::int32_t> uvInd;
@@ -305,7 +335,7 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 		} else if (std::strcmp(prefix, "vt") == 0) {
 			UVs.push_back(ParseVT(buf));
 		} else if (std::strcmp(prefix, "vn") == 0) {
-			// Handle vertex normal
+			normals.push_back(ParseVN(buf));
 		} else if (std::strcmp(prefix, "f ")  == 0) {
 			Face face = ParseF(buf);
 			vInd.push_back(face.v[0]);
@@ -349,6 +379,9 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	UV* uv = new UV[UVs.size()];
 	std::copy(UVs.begin(), UVs.end(), uv);
 
+	Normal* n = new Normal[normals.size()];
+	std::copy(normals.begin(), normals.end(), n);
+
 	std::int32_t* vertexIndices = new std::int32_t[vInd.size()];
 	std::copy(vInd.begin(), vInd.end(), vertexIndices);
 
@@ -370,8 +403,8 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	data.UVs = uv;
 	data.numUVs = UVs.size();
 
-	// TODO: Add support for Normals
-	data.normals = nullptr;
+	data.normals = n;
+	data.numNormals = normals.size();
 
 	data.vertexIndices = vertexIndices;
 	data.numVertexIndices = vInd.size();
@@ -391,6 +424,11 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	std::printf("uv:\n");
 	for (std::size_t i = 0; i < data.numUVs; ++i) {
 		std::printf("%f %f\n", data.UVs[i].u, data.UVs[i].v);
+	}
+	std::printf("n:\n");
+	for (std::size_t i = 0; i < data.numNormals; ++i) {
+	  const auto& x = data.normals[i];
+	  std::printf("%f %f %f\n", x.i, x.j, x.k);
 	}
 	std::printf("vertex indices:\n");
 	for (std::size_t i = 0; i < data.numVertexIndices; ++i) {
