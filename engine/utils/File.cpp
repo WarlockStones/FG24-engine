@@ -245,6 +245,32 @@ Face ParseF(const char* str) {
 	return face;
 }
 
+UV ParseVT(char* token) {
+	token = std::strtok(token, " ");
+	token = std::strtok(nullptr, " "); // Tokenize to next past index
+	// Read u v w values as vertex texture coordinates
+	float uvw[3]{};
+	for (int i = 0; i < 3; ++i) {
+		if (token) {
+			if (std::sscanf(token, "%f", &uvw[i]) <= 0) {
+				std::fprintf(stderr, "Error: ParseVT: invalid vertex texture data!\n");
+			}
+
+			token = std::strtok(nullptr, " ");
+		} else if (i == 0) {
+			// v and w are optional but there must always be an u value
+			std::fprintf(stderr, "Error: ParseVT: failed to tokenize vt 'u' value!\n");
+		}
+	}
+	
+	// std::printf("ParseVT: %f %f %f\n", uvw[0], uvw[1], uvw[2]);
+	// There is no support for the optional w value.
+	UV uv;
+	uv.u = uvw[0];
+	uv.v = uvw[1];
+	return uv;
+}
+
 
 // TODO: Better error handling
 MeshData LoadObjToMeshData(Filepath filepath) {
@@ -259,14 +285,17 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	// If the file has meta data, read and allocate necessary size instead of std::vector
 	// I did not want to loop twice to do that.
 	std::vector<Vertex> vertices;
-	vertices.reserve(1024);
+	vertices.reserve(512);
+	
+	std::vector<UV> UVs;
+	UVs.reserve(512);
 
 	std::vector<std::int32_t> vInd;
-	vInd.reserve(1024);
+	vInd.reserve(512);
 	std::vector<std::int32_t> uvInd;
-	uvInd.reserve(1024);
+	uvInd.reserve(512);
 	std::vector<std::int32_t> vnInd;
-	vnInd.reserve(1024);
+	vnInd.reserve(512);
 
 	constexpr std::size_t bufMax = 256;
 	for (char buf[bufMax]{}; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
@@ -274,7 +303,7 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 		if (std::strcmp(prefix, "v ") == 0) {
 			vertices.push_back(ParseV(buf));
 		} else if (std::strcmp(prefix, "vt") == 0) {
-			// Handle UV
+			UVs.push_back(ParseVT(buf));
 		} else if (std::strcmp(prefix, "vn") == 0) {
 			// Handle vertex normal
 		} else if (std::strcmp(prefix, "f ")  == 0) {
@@ -283,7 +312,6 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 			vInd.push_back(face.v[1]);
 			vInd.push_back(face.v[2]);
 
-			// TODO: Face needs to tell if it has any uvInds or vnInds.
 			if (face.hasUV) {
 				uvInd.push_back(face.uv[0]);
 				uvInd.push_back(face.uv[1]);
@@ -318,6 +346,9 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	Vertex* v = new Vertex[vertices.size()];
 	std::copy(vertices.begin(), vertices.end(), v);
 
+	UV* uv = new UV[UVs.size()];
+	std::copy(UVs.begin(), UVs.end(), uv);
+
 	std::int32_t* vertexIndices = new std::int32_t[vInd.size()];
 	std::copy(vInd.begin(), vInd.end(), vertexIndices);
 
@@ -336,9 +367,11 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	data.vertices = v;
 	data.numVertices = vertices.size();
 
-	// TODO: Add support for Normals and UV/Vertex Texture coordinates
+	data.UVs = uv;
+	data.numUVs = UVs.size();
+
+	// TODO: Add support for Normals
 	data.normals = nullptr;
-	data.UVs = nullptr;
 
 	data.vertexIndices = vertexIndices;
 	data.numVertexIndices = vInd.size();
@@ -351,9 +384,13 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	
 
 #if true
-	std::printf("Printing the stuff in File.cpp: \n");
+	std::printf("--- Printing the stuff in File.cpp: ---\n");
 	for (std::size_t i = 0; i < data.numVertices; ++i) {
 		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
+	}
+	std::printf("uv:\n");
+	for (std::size_t i = 0; i < data.numUVs; ++i) {
+		std::printf("%f %f\n", data.UVs[i].u, data.UVs[i].v);
 	}
 	std::printf("vertex indices:\n");
 	for (std::size_t i = 0; i < data.numVertexIndices; ++i) {
@@ -367,7 +404,7 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	for (std::size_t i = 0; i < data.numNormalIndices; ++i) {
 		std::printf("%d ", data.normalIndices[i]);
 	}
-	std::printf("\nEnd of File.cpp\n");
+	std::printf("\n--- End of File.cpp ---\n");
 #endif
 
 	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices

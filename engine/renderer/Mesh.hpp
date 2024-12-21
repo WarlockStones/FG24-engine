@@ -11,7 +11,7 @@ struct Vertex {
 };
 
 struct UV {
-	float U, V;
+	float u, v;
 };
 
 struct Normal {
