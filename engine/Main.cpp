@@ -2,11 +2,13 @@
 #include "framework/Session.hpp"
 #include <cstdio>
 
-#include "utils/File.hpp"
-#include "renderer/Mesh.hpp"
-
+#include "utils/Memory.hpp"
 
 int main(int argv, char** args) {
+
+    auto kb = FG24::Memory::GetAvailableKilobytes();
+	std::printf("Avialable KBs: %lu\n", kb);
+	std::printf("Avialable MBs: %lu\n", kb/1000);
 
 	FG24::Session session;
 

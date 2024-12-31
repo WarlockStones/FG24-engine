@@ -3,9 +3,7 @@
 
 namespace FG24 {
 namespace Memory {
-
-// Change to "GetAvailableKilobytes"
-bool HasMemoryAvailable(std::uint64_t mebibytes);
-}
-
-}
+	// Returns available RAM in metric kilobytes (available RAM / 1000)
+	std::uint64_t GetAvailableKilobytes();
+} // Memory
+} // FG24

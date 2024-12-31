@@ -25,12 +25,13 @@ add_executable(engine
 	"framework/Session.cpp"
 	"framework/KeyInput.cpp"
 	"framework/Entity.cpp"
+	"framework/Transform.cpp"
 	"renderer/Renderer.cpp"
 	"renderer/SimpleShapes.cpp"
 	"renderer/Mesh.cpp"
 	"renderer/Texture.cpp"
 	"renderer/Shader.cpp"
- "framework/Transform.cpp")
+)
 
 target_include_directories(engine PRIVATE
 	${CMAKE_SOURCE_DIR}/engine

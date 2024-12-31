@@ -3,31 +3,41 @@
 #include <cstdint>
 #include <cstdlib> // For std::abort
 #include <cstdio>
+
 #ifdef _WIN32
 #include <windows.h>
+#elif __linux__
+#include <sys/sysinfo.h>
 #endif
 
 namespace FG24 {
 namespace Memory {
 #ifdef _WIN32
-bool HasMemoryAvailable(std::uint64_t mebibytes) {
+std::uint64_t GetAvailableKilobytes() {
 	MEMORYSTATUSEX statex; 
 	statex.dwLength = sizeof(statex);
+
 	// TODO: Do proper error handling
 	// GlobalMemoryStatusEx returns false if failed.
 	assert(GlobalMemoryStatusEx(&statex)); 
 
-	// Return an error and let the caller handle it. Maybe just don't load the mesh or something
+	// Return an error and let the caller handle it. 
+	// Maybe just don't load the mesh or something
 	
-	auto remainingMebiBytes = statex.ullAvailPhys / (1024 * 1024);
-	return mebibytes < remainingMebiBytes;
+	return statex.ullAvailPhys / 1000;
 }
+#elif __linux__
+std::uint64_t GetAvailableKilobytes() {
+	struct sysinfo info;
 
-#else 
-bool HasMemoryAvailable(std::uint64_t mebibytes) {
-	std::fprintf(stderr, "Has memeory available is not yet implemented on non-windows machines!\n");
-	std::abort();
+	if (sysinfo(&info) == -1) {
+		// TODO: Handle error
+		return 0;
+	} else {
+		return info.freeram / 1000;
+	}
 }
 #endif
-}
-}
+
+} // Memory
+} // FG24
