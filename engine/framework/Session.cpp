@@ -15,7 +15,14 @@
 #include "renderer/Texture.hpp"
 #include "framework/Entity.hpp"
 
+// Temp testing
+#include "framework/ExampleManager.hpp"
+#include "framework/Message.hpp"
+
 namespace FG24 {
+
+ExampleManager manager;
+
 bool Session::Init() {
 	renderer = new Renderer();
 
@@ -43,8 +50,15 @@ void Session::Start() {
 	Cube* cube = new Cube();
 	g_flag = new Entity(flagMesh, g_texturedShader, g_arcadeTexture);
 
-#if false
-	// Testing serialization
+	// Testing message queing
+	manager.QueueMessage(new IntMessage(12));
+	manager.QueueMessage(new IntMessage(13));
+	manager.QueueMessage(new FloatMessage(3.0f));
+	manager.ProcessMessages();
+	manager.QueueMessage(new FloatMessage(20.0f));
+	manager.ProcessMessages();
+
+#if false // Test serialization
 	// If save file for this entity exists, load it.
 	Vec3 v;
 	v.x = 7000;

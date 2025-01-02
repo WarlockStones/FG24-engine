@@ -26,6 +26,7 @@ add_executable(engine
 	"framework/KeyInput.cpp"
 	"framework/Entity.cpp"
 	"framework/Transform.cpp"
+	"framework/ExampleManager.cpp"
 	"renderer/Renderer.cpp"
 	"renderer/SimpleShapes.cpp"
 	"renderer/Mesh.cpp"
