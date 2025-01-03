@@ -39,6 +39,10 @@ void KeyInput::ProcessInput() {
 			g_xvel = -1;
 			break;
 
+			case SDLK_1:
+			g_action1 = true;
+			break;
+
 			default:
 			break;
 			}

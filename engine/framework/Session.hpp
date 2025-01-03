@@ -1,8 +1,10 @@
 #pragma once
+#include <thread>
 
 namespace FG24 {
 class Renderer;
 class KeyInput;
+class ExampleManager;
 
 class Session {
 public:
@@ -15,5 +17,7 @@ public:
 private:
 	Renderer* renderer{};
 	KeyInput* keyInput{};
+
+	ExampleManager* exampleManager;
 };
 }

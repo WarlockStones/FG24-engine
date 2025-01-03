@@ -22,5 +22,6 @@ extern Entity*			g_flag;
 // Inputs
 extern int g_yvel;
 extern int g_xvel;
+extern bool g_action1;
 }
 

@@ -21,10 +21,9 @@
 
 namespace FG24 {
 
-ExampleManager manager;
-
 bool Session::Init() {
 	renderer = new Renderer();
+	exampleManager = new ExampleManager();
 
 	if (renderer->Init() == false) {
 		std::fprintf(stderr, "Error: Session failed to initialize Renderer!\n");
@@ -50,13 +49,8 @@ void Session::Start() {
 	Cube* cube = new Cube();
 	g_flag = new Entity(flagMesh, g_texturedShader, g_arcadeTexture);
 
-	// Testing message queing
-	manager.QueueMessage(new IntMessage(12));
-	manager.QueueMessage(new IntMessage(13));
-	manager.QueueMessage(new FloatMessage(3.0f));
-	manager.ProcessMessages();
-	manager.QueueMessage(new FloatMessage(20.0f));
-	manager.ProcessMessages();
+	exampleManager->StartThread();
+	
 
 #if false // Test serialization
 	// If save file for this entity exists, load it.
@@ -94,6 +88,14 @@ void Session::Start() {
 }
 
 void Session::Update() {
+	// Testing sending messages to manager on another thread
+	if (g_action1) {
+	    std::uint32_t ms = SDL_GetTicks();
+		float s = static_cast<float>(ms) / 1000.0f;
+		printf("Session is sending a message\n");
+		exampleManager->QueueMessage(new FloatMessage(s));
+		g_action1 = false;
+	}
 }
 
 void Session::GameLoop() {
@@ -117,7 +119,9 @@ void Session::GameLoop() {
 }
 
 Session::~Session() {
+	delete exampleManager;
 	delete renderer;
+	delete keyInput;
 	std::printf("Session destructor done\n");
 }
 

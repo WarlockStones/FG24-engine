@@ -21,5 +21,6 @@ Entity*				g_flag{};
 // Key inputs
 int g_yvel = 0;
 int g_xvel = 0;
+bool g_action1 = false;
 }
 

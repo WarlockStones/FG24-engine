@@ -1,11 +1,30 @@
 #include "ExampleManager.hpp"
 #include "Message.hpp"
 #include <cstdio>
+#include <mutex>
+#include <thread>
+
+#include "Globals.hpp" // For g_runGameLoop
 
 namespace FG24 {
  
 void ExampleManager::QueueMessage(Message* message) {
+    // std::this_thread::sleep_for(std::chrono::seconds(2)); // Simulate delay for testing
+	std::lock_guard<std::mutex> guard(messageQueueMutex); // RAII mutex lock/unlock
 	messages.push(message);
+}
+
+void ExampleManager::StartThread() {
+	thread = std::thread(&ExampleManager::Update, this);
+}
+
+void ExampleManager::Update() {
+	// TODO: Add some sort of tick-rate
+    while (g_runGameLoop) {
+		std::this_thread::sleep_for(std::chrono::seconds(1)); // To not blow CPU usage to 100%
+		std::printf("ExampleManager tick...\n");
+		ProcessMessages();
+	}
 }
 
 void ExampleManager::ProcessMessages() {
@@ -32,4 +51,11 @@ void ExampleManager::ProcessMessage(Message* message) {
 		}
 	}
 }
+
+ExampleManager::~ExampleManager() {
+	if (thread.joinable()) {
+		thread.join();
+	}
+}
+
 } // namespace FG24
