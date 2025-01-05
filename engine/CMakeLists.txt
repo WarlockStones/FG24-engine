@@ -22,6 +22,7 @@ add_executable(engine
 	"utils/File.cpp"
 	"utils/Filepath.cpp"
 	"utils/Memory.cpp"
+	"utils/ThreadPool.cpp"
 	"framework/Session.cpp"
 	"framework/KeyInput.cpp"
 	"framework/Entity.cpp"

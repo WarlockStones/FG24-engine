@@ -3,12 +3,19 @@
 #include <cstdio>
 
 #include "utils/Memory.hpp"
+#include "utils/ThreadPool.hpp"
+
+#include <any>
+#include "tests/ThreadTest.hpp"
+
 
 int main(int argv, char** args) {
-
     auto kb = FG24::Memory::GetAvailableKilobytes();
 	std::printf("Avialable KBs: %lu\n", kb);
 	std::printf("Avialable MBs: %lu\n", kb/1000);
+
+	// ThreadTest::RunIncrementTest();
+
 
 	FG24::Session session;
 
@@ -16,7 +23,8 @@ int main(int argv, char** args) {
 		session.Start();
 		session.GameLoop();
 	}
-
+	
+	FG24::ThreadPool::Close();
 	std::printf("Main returned 0\n");
 	return 0;
 }

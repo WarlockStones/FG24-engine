@@ -106,10 +106,12 @@ void Session::GameLoop() {
 	while (g_runGameLoop) {
 		KeyInput::ProcessInput();
 
+		// TODO: Fix this. It is not blocking!
 		// Block game loop if running too fast
 		std::uint32_t timeToWait = millisecondsPerFrame - 
 			static_cast<std::uint32_t>(SDL_GetTicks() - millisecondsPreviousFrame);
 		if (timeToWait > 0 && timeToWait <= millisecondsPerFrame) {
+		  std::printf("x");
 			SDL_Delay(timeToWait);
 		}
 
