@@ -124,31 +124,25 @@ Mesh::Mesh(const MeshData& data) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertIndSize, data.vertexIndices, GL_STATIC_DRAW);
 	
-	// Debug print the data given to OpenGL
-	// For each vertex index print the data of that index.
-
-	// index: 0 1 2 = first face: triangle 1. -> What is its values 
-	// numVertices = 8.
-	// numIndices = numVertexIndices = 36
-	// f1: 5 1 4
-	// f2: 5 1 8
+#if true // Debug print
 	int faceNum = 0;
 	for (int i = 0; i < numVertexIndices; i += 3) {
 		std::printf("Face %d\n", faceNum+1);
 
 		// Print vertex position for that face
-		auto v1 = data.vertices[data.vertexIndices[i] - 1]; // - 1 because vertexIndices starts at 1 not 0
+		auto v1 = data.vertices[data.vertexIndices[i]]; 
 		std::printf("\tVert 1: %fx %fy %fz\n", v1.x, v1.y, v1.z);
 
-		auto v2 = data.vertices[data.vertexIndices[i+1] - 1];
+		auto v2 = data.vertices[data.vertexIndices[i+1]];
 		std::printf("\tVert 2: %fx %fy %fz\n", v2.x, v2.y, v2.z);
 
-		auto v3 = data.vertices[data.vertexIndices[i+2] - 1];
+		auto v3 = data.vertices[data.vertexIndices[i+2]];
 		std::printf("\tVert 3: %fx %fy %fz\n", v3.x, v3.y, v3.z);
 		
 		faceNum++;
 	}
 	std::printf("----\n");
+#endif
 }
 
 void Mesh::Draw(std::uint32_t shaderID) {

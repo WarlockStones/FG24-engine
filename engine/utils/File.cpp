@@ -141,9 +141,7 @@ struct Face { // TODO: Remove need for this Face struct
 	std::int32_t v[max]{}, uv[max]{}, vn[max]{}; // Indicies
 };
 
-constexpr std::uint8_t vBit  = 0b001;
-constexpr std::uint8_t uvBit = 0b010;
-constexpr std::uint8_t vnBit = 0b100;
+
 Face ParseF(const char* str) {
 	// elements,  e1, e2, e3 
 	// v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
@@ -155,22 +153,30 @@ Face ParseF(const char* str) {
 
 	// A lambda can read values of constexpr variables without capturing it
 
-	static auto AddToCorrectBuffer = [](
+	// Bit patterns used to document which types of index elements found
+	constexpr std::uint8_t vBit  = 0b001;
+	constexpr std::uint8_t uvBit = 0b010;
+	constexpr std::uint8_t vnBit = 0b100;
+
+	static auto AddToCorrectBuffer = [vBit, uvBit, vnBit](
 		const char* buf,
 		int elementCount,
 		int vIndex,
 		FaceIndexElement* out) {
 			switch (elementCount) {
-				case 0: 
-					std::sscanf(buf, "%d", &out[vIndex].v);
+				case 0:
+					std::sscanf(buf, "%d", &out[vIndex].v); 
+					--out[vIndex].v; // .obj indexing starts at 1, not 0
 					return vBit; 
 					break;
 				case 1:
 					std::sscanf(buf, "%d", &out[vIndex].uv);
+					--out[vIndex].uv;
 					return uvBit; 
 					break;
 				case 2:
 					std::sscanf(buf, "%d", &out[vIndex].vn);
+					--out[vIndex].vn;
 					return vnBit;
 					break;
 				default:
@@ -182,7 +188,7 @@ Face ParseF(const char* str) {
 
 	constexpr int vMax = 48; // Arbitrarily sets max to 48
 	FaceIndexElement f[vMax]{};
-	std::uint8_t elements = 0b000;
+	std::uint8_t elementTypesFound = 0b000;
 	int vertexCount = 0;
 	int numCount = 0;
 	int elementCount = 0;
@@ -190,6 +196,7 @@ Face ParseF(const char* str) {
 	char buf[bufSize];
 	for (std::size_t i = 0; str[i] != '\0'; ++i) {
 		// Parser can not yet handle "//"
+	    // TODO: This should not be an assert! It is an user error
 		assert((str[i] == '/' && str[i + 1] == '/') == false); 
 
 		char c = str[i];
@@ -202,12 +209,12 @@ Face ParseF(const char* str) {
 				++numCount;
 			}
 		} else if (c == '/') {
-			elements |= AddToCorrectBuffer(buf, elementCount, vertexCount, f);
+			elementTypesFound |= AddToCorrectBuffer(buf, elementCount, vertexCount, f);
 			++elementCount;
 			numCount = 0;
 		} else if (c == ' ' || c == '\n') {
 			if (numCount > 0) {
-				elements |= AddToCorrectBuffer(buf, elementCount, vertexCount, f);
+				elementTypesFound |= AddToCorrectBuffer(buf, elementCount, vertexCount, f);
 				++vertexCount;
 			}
 			numCount = 0;
@@ -228,10 +235,10 @@ Face ParseF(const char* str) {
 
 	Face face; 
 
-	if (elements & uvBit) {
+	if (elementTypesFound & uvBit) {
 	  face.hasUV = true;
 	}
-	if (elements & vnBit) {
+	if (elementTypesFound & vnBit) {
 	  face.hasNormal = true;
 	}
 
