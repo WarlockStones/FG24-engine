@@ -5,6 +5,7 @@
 #include <queue>
 #include <cstdio>
 #include <optional>
+#include <cassert>
 
 #include "Globals.hpp"
 
@@ -23,6 +24,7 @@ void Init() {
 			std::optional<Task> t = std::nullopt;
 			// TODO: Using this global means I have to set it to true before 
 			// calling this Init function. Look for alternative to closing this
+			// ??: task.enum == stop; return out of while loop
 			while (g_runGameLoop) { 
 				// Get a new task from the queue in a thread safe manner
 				taskMutex.lock();
@@ -45,6 +47,7 @@ void Init() {
 }
 
 void Submit(Task work) {
+	assert(!threads.empty());
 	std::lock_guard<std::mutex> guard(taskMutex);
 	tasks.push(work);
 }
