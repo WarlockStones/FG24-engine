@@ -21,6 +21,7 @@ struct Normal {
 // Collection of pointers to dynamically allocated arrays of vertices, UVs, normals, and faces
 struct MeshData {
 	// Owning pointers. Should probably make them std::unique_ptr
+	// TODO: Rename vertexPositions? Figure out indexing and this whole thing
 	std::size_t numVertices{};
 	Vertex* vertices = nullptr;
 
@@ -30,7 +31,7 @@ struct MeshData {
 	std::size_t numNormals{};
 	Normal* normals = nullptr;
 
-	// OpenGL wants all vertices AND face-index-grouping values as continous arrays
+	// OpenGL wants all vertices AND face-index-grouping values as continuous arrays
 	std::size_t numVertexIndices = 0;
 	std::int32_t* vertexIndices = nullptr;
 
