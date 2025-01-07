@@ -11,12 +11,15 @@ namespace FG24 {
 Mesh::Mesh(const float* vertices, std::size_t vertexSize) {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// BAD NAME! This is not just vertex. It is vertex and UV in one array!
+	// Or am I confused? One vertex has: vertexPOSITION, UV, Normal, etc.
 	glBufferData(GL_ARRAY_BUFFER, vertexSize, vertices, GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	// Vertex attributes for SimpleShape.cpp Cube only
+	// --- Vertex attributes for SimpleShape.cpp Cube only ---
+	// Vertex position:
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
 		reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
@@ -59,29 +62,90 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
 }
 
+// QUESTION: How do I use multiple buffers? vertices, UVs, normals are all different arrays
 Mesh::Mesh(const MeshData& data) {
+	// MeshData does not have everything in one array. It is not interleaved (not recommended apparently)
 	numVertexIndices = data.numVertexIndices;
 
 	std::size_t vertSize = sizeof(Vertex) * data.numVertices; 
-	// Do not do sizeof the member (data.indices), instead use the type
+	std::size_t UVSize = sizeof(UV) * data.numUVs;
+	std::size_t normalSize = sizeof(Normal) * data.numNormals;
+
+	// Do not do sizeof the member (data.indices), use the type
 	std::size_t vertIndSize = sizeof(std::uint32_t) * data.numVertexIndices; // test something
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glBufferData(GL_ARRAY_BUFFER, vertSize, data.vertices, GL_STATIC_DRAW);
+	// Data will be set using glBufferSubData so it is nullptr now
+	std::size_t bufferSize = vertSize + normalSize + UVSize;
+	glBufferData(GL_ARRAY_BUFFER, bufferSize, nullptr, GL_STATIC_DRAW);
+
+	// Load data
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertSize, data.vertices);
+	glBufferSubData(GL_ARRAY_BUFFER, vertSize, UVSize, data.UVs);
+	glBufferSubData(GL_ARRAY_BUFFER, vertSize + UVSize, normalSize, data.normals);
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
 	// Vertex position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-						  reinterpret_cast<void*>(0));
+	glVertexAttribPointer(0, // index of stream of data for shader [[ layout (location = 0) in  ]]
+						 3,  // xyz = 3 
+						 GL_FLOAT, 
+						 GL_FALSE,
+						 3 * sizeof(float),
+						 reinterpret_cast<void*>(0));
+
+	// UV
+	glVertexAttribPointer(1,
+		2,
+		GL_FLOAT,
+		GL_FALSE,
+		2 * sizeof(float),
+		reinterpret_cast<void*>(vertSize));
+	
+	// Normal
+	glVertexAttribPointer(2,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		3 * sizeof(float),
+		reinterpret_cast<void*>(vertSize + UVSize));
+
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertIndSize, data.vertexIndices, GL_STATIC_DRAW);
+	// Free to delete MeshData at this point?
+	// Debug print the data given to OpenGL
+	// For each vertex index print the data of that index.
+
+	// index: 0 1 2 = first face: triangle 1. -> What is its values 
+	// numVertices = 8.
+	// numIndices = numVertexIndices = 36
+	// f1: 5 1 4
+	// f2: 5 1 8
+	int faceNum = 0;
+	for (int i = 0; i < numVertexIndices; i += 3) {
+		std::printf("Face %d\n", faceNum+1);
+
+		// Print vertex position for that face
+		auto v1 = data.vertices[data.vertexIndices[i] - 1]; // - 1 because vertexIndices starts at 1 not 0
+		std::printf("\tVert 1: %fx %fy %fz\n", v1.x, v1.y, v1.z);
+
+		auto v2 = data.vertices[data.vertexIndices[i+1] - 1];
+		std::printf("\tVert 2: %fx %fy %fz\n", v2.x, v2.y, v2.z);
+
+		auto v3 = data.vertices[data.vertexIndices[i+2] - 1];
+		std::printf("\tVert 3: %fx %fy %fz\n", v3.x, v3.y, v3.z);
+		
+		faceNum++;
+	}
+	std::printf("----\n");
 }
 
 void Mesh::Draw(std::uint32_t shaderID) {

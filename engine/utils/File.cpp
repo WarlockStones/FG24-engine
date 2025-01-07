@@ -141,6 +141,9 @@ struct Face { // TODO: Remove need for this Face struct
 	std::int32_t v[max]{}, uv[max]{}, vn[max]{}; // Indicies
 };
 
+constexpr std::uint8_t vBit  = 0b001;
+constexpr std::uint8_t uvBit = 0b010;
+constexpr std::uint8_t vnBit = 0b100;
 Face ParseF(const char* str) {
 	// elements,  e1, e2, e3 
 	// v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
@@ -151,9 +154,6 @@ Face ParseF(const char* str) {
     // TODO: Check for inconsistent face element indices. i.e 1/1/1 2//2 3/3/3
 
 	// A lambda can read values of constexpr variables without capturing it
-	constexpr std::uint8_t vBit  = 0b001;
-	constexpr std::uint8_t uvBit = 0b010;
-	constexpr std::uint8_t vnBit = 0b100;
 
 	static auto AddToCorrectBuffer = [](
 		const char* buf,
