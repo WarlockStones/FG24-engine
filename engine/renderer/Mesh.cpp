@@ -90,15 +90,17 @@ Mesh::Mesh(const MeshData& data) {
 	glBindVertexArray(VAO);
 
 	// Vertex position
-	glVertexAttribPointer(0, // index of stream of data for shader [[ layout (location = 0) in  ]]
-						 3,  // xyz = 3 
-						 GL_FLOAT, 
-						 GL_FALSE,
-						 3 * sizeof(float),
-						 reinterpret_cast<void*>(0));
+	glVertexAttribPointer(
+		0, // index of stream of data for shader [[ layout (location = 0) in  ]]
+		3, // xyz = 3 
+		GL_FLOAT, 
+		GL_FALSE,
+		3 * sizeof(float),
+		reinterpret_cast<void*>(0));
 
 	// UV
-	glVertexAttribPointer(1,
+	glVertexAttribPointer(
+		1,
 		2,
 		GL_FLOAT,
 		GL_FALSE,
@@ -106,7 +108,8 @@ Mesh::Mesh(const MeshData& data) {
 		reinterpret_cast<void*>(vertSize));
 	
 	// Normal
-	glVertexAttribPointer(2,
+	glVertexAttribPointer(
+		2,
 		3,
 		GL_FLOAT,
 		GL_FALSE,
@@ -120,7 +123,7 @@ Mesh::Mesh(const MeshData& data) {
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertIndSize, data.vertexIndices, GL_STATIC_DRAW);
-	// Free to delete MeshData at this point?
+	
 	// Debug print the data given to OpenGL
 	// For each vertex index print the data of that index.
 
