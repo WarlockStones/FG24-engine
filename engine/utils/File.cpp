@@ -129,6 +129,59 @@ Vertex ParseV(char* token) {
 	return v;
 }
 
+// TODO: Error handling
+UV ParseVT(char* token) {
+	token = std::strtok(token, " ");
+	token = std::strtok(nullptr, " "); // Tokenize to next past index
+	// Read u v w values as vertex texture coordinates
+	float uvw[3]{};
+	for (int i = 0; i < 3; ++i) {
+		if (token) {
+			if (std::sscanf(token, "%f", &uvw[i]) <= 0) {
+				std::fprintf(stderr, "Error: ParseVT: invalid vertex texture data!\n");
+			}
+
+			token = std::strtok(nullptr, " ");
+		} else if (i == 0) {
+			// v and w are optional but there must always be an u value
+			std::fprintf(stderr, "Error: ParseVT: failed to tokenize vt 'u' value!\n");
+		}
+	}
+	
+	// std::printf("ParseVT: %f %f %f\n", uvw[0], uvw[1], uvw[2]);
+	// There is no support for the optional w value.
+	UV uv;
+	uv.u = uvw[0];
+	uv.v = uvw[1];
+	return uv;
+}
+
+// TODO: Error handling
+Normal ParseVN(char* token) {
+	token = std::strtok(token, " ");
+	token = std::strtok(nullptr, " "); // Tokenize to next past index
+	// Read i j k values as vertex texture coordinates
+	float data[3]{};
+	for (int i = 0; i < 3; ++i) {
+		if (token) {
+			if (std::sscanf(token, "%f", &data[i]) <= 0) {
+				std::fprintf(stderr, "Error: ParseVN: invalid vertex normal data!\n");
+			}
+
+			token = std::strtok(nullptr, " ");
+		} else {
+			// i j k are not optional. There must be 3 values
+			std::fprintf(stderr, "Error: ParseVN: invalid vertex normal data!\n");
+		}
+	}
+
+	Normal n;
+	n.i = data[0];
+	n.j = data[1];
+	n.k = data[2];
+	return n;
+}
+
 struct FaceIndexElement {
 	int v, uv, vn;
 };
@@ -252,58 +305,7 @@ Face ParseF(const char* str) {
 	return face;
 }
 
-// TODO: Error handling
-UV ParseVT(char* token) {
-	token = std::strtok(token, " ");
-	token = std::strtok(nullptr, " "); // Tokenize to next past index
-	// Read u v w values as vertex texture coordinates
-	float uvw[3]{};
-	for (int i = 0; i < 3; ++i) {
-		if (token) {
-			if (std::sscanf(token, "%f", &uvw[i]) <= 0) {
-				std::fprintf(stderr, "Error: ParseVT: invalid vertex texture data!\n");
-			}
 
-			token = std::strtok(nullptr, " ");
-		} else if (i == 0) {
-			// v and w are optional but there must always be an u value
-			std::fprintf(stderr, "Error: ParseVT: failed to tokenize vt 'u' value!\n");
-		}
-	}
-	
-	// std::printf("ParseVT: %f %f %f\n", uvw[0], uvw[1], uvw[2]);
-	// There is no support for the optional w value.
-	UV uv;
-	uv.u = uvw[0];
-	uv.v = uvw[1];
-	return uv;
-}
-
-// TODO: Error handling
-Normal ParseVN(char* token) {
-	token = std::strtok(token, " ");
-	token = std::strtok(nullptr, " "); // Tokenize to next past index
-	// Read i j k values as vertex texture coordinates
-	float data[3]{};
-	for (int i = 0; i < 3; ++i) {
-		if (token) {
-			if (std::sscanf(token, "%f", &data[i]) <= 0) {
-				std::fprintf(stderr, "Error: ParseVN: invalid vertex normal data!\n");
-			}
-
-			token = std::strtok(nullptr, " ");
-		} else {
-			// i j k are not optional. There must be 3 values
-			std::fprintf(stderr, "Error: ParseVN: invalid vertex normal data!\n");
-		}
-	}
-
-	Normal n;
-	n.i = data[0];
-	n.j = data[1];
-	n.k = data[2];
-	return n;
-}
 
 
 ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
@@ -402,6 +404,8 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 	  std::copy(vnInd.begin(), vnInd.end(), normalIndices);
 	}
 
+	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices
+
 	MeshData& data = meshDataOut;
 	data.vertices = v;
 	data.numVertices = vertices.size();
@@ -450,7 +454,7 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 	std::printf("\n--- End of File.cpp ---\n");
 #endif
 
-	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices
+	return ErrorCode::Ok;
 }
 
 } // namespace File
