@@ -306,14 +306,13 @@ Normal ParseVN(char* token) {
 }
 
 
-// TODO: Better error handling
-MeshData LoadObjToMeshData(Filepath filepath) {
+ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 	const char* path = filepath.GetPath();
 
 	FileStream file(path, "rb");
 	if (!file.ptr) {
-		std::fprintf(stderr, "No file!\n%s\n", path);
-		return MeshData();
+		std::fprintf(stderr, "LoadObjToMeshData FileStream was null!\n%s\n", path);
+		return ErrorCode::NoFile;
 	} 
 
 	// If the file has meta data, read and allocate necessary size instead of std::vector
@@ -369,7 +368,7 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	// Face element indices error checks
 	if (vInd.size() == 0) {
 		std::fprintf(stderr, "Error: Parsed 0 face vertex indices!\n");
-		return MeshData();
+		return ErrorCode::LoadObjFailed;
 	}
 
 	// TODO: Is this a valid error? Check .obj specification
@@ -377,7 +376,7 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 		std::fprintf(stderr, "Error: The amount of UV idices != amount normal indices!\n");
 		std::fprintf(stderr, "There may have been an issue with parsing face index elements.\n");
 
-		return MeshData();
+		return ErrorCode::LoadObjFailed;
 	}
 
 	Vertex* v = new Vertex[vertices.size()];
@@ -403,7 +402,7 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	  std::copy(vnInd.begin(), vnInd.end(), normalIndices);
 	}
 
-	MeshData data;
+	MeshData& data = meshDataOut;
 	data.vertices = v;
 	data.numVertices = vertices.size();
 
@@ -422,7 +421,6 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 	data.numNormalIndices = vnInd.size();
 	data.normalIndices = normalIndices; 
 	
-
 #if true
 	std::printf("--- Printing the stuff in File.cpp: ---\n");
 	for (std::size_t i = 0; i < data.numVertices; ++i) {
@@ -453,7 +451,6 @@ MeshData LoadObjToMeshData(Filepath filepath) {
 #endif
 
 	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices
-	return data;
 }
 
 } // namespace File

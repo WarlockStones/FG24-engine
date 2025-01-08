@@ -36,6 +36,7 @@ bool Session::Init() {
 void Session::Start() {
 	// Or should I do some of this in the renderer? Factory pattern or something?
 
+	// TODO: Remove asserts and use default textures, shaders, and 
 	g_texturedShader = Shader::CompileShader("../../assets/shaders/textured.vert",
 											 "../../assets/shaders/textured.frag");
 	assert(g_texturedShader != 0);
@@ -44,8 +45,12 @@ void Session::Start() {
 	g_triangleMesh = new Square();
 	g_triangle = new Entity(g_triangleMesh, g_texturedShader, g_arcadeTexture);
 	assert(g_triangle);
-	MeshData flagData = FG24::File::LoadObjToMeshData("../../assets/mesh/cube.obj");
-	Mesh* flagMesh = new Mesh(flagData); // TODO: Fix so that flagMesh (the cube) renders correctly
+	MeshData flagData;
+	auto ec = FG24::File::LoadObjToMeshData("../../assets/mesh/cube.obj", flagData);
+	// TODO: Use default mesh if ErrorCode != Ok
+	assert(ec == File::ErrorCode::Ok);
+	Mesh* flagMesh = new Mesh(flagData);
+
 	Cube* cube = new Cube();
 	g_flag = new Entity(flagMesh, g_texturedShader, g_arcadeTexture);
 

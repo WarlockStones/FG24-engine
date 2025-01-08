@@ -9,13 +9,17 @@ namespace FG24 {
 // LoadOBJtoMeshData
 struct MeshData;
 namespace File {
-	// Load LF formatted ANSI text files and leaks some memory to boot!
-	const char* LoadTextFile(const char* path);
-	void FormatFilePath(char* s, std::size_t size);
-
-	// An awfully specific function
-	MeshData LoadObjToMeshData(Filepath filepath);
-	MeshData OldParseObj(const char* path); // Just for archiving sake
+enum class ErrorCode {
+	Ok,
+	NoFile, // Failed to open file stream
+	LoadObjFailed
 };
 
+// Load LF formatted ANSI text files and leaks some memory to boot!
+const char* LoadTextFile(const char* path);
+void FormatFilePath(char* s, std::size_t size);
+
+// An awfully specific function
+ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut);
+};
 } // namespace FG24
