@@ -11,6 +11,7 @@ namespace FG24 {
 Mesh::Mesh(const float* vertices, std::size_t vertexSize) {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
 	// BAD NAME! This is not just vertex. It is vertex and UV in one array!
 	// Or am I confused? One vertex has: vertexPOSITION, UV, Normal, etc.
 	glBufferData(GL_ARRAY_BUFFER, vertexSize, vertices, GL_STATIC_DRAW);
@@ -62,14 +63,13 @@ Mesh::Mesh(const float* vertices, std::size_t vertexSize, const std::uint32_t* i
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
 }
 
-// QUESTION: How do I use multiple buffers? vertices, UVs, normals are all different arrays
 Mesh::Mesh(const MeshData& data) {
-	// MeshData does not have everything in one array. It is not interleaved (not recommended apparently)
+	// MeshData does not have everything in one array
 	numVertexIndices = data.numVertexIndices;
 
-	std::size_t vertSize = sizeof(Vertex) * data.numVertices; 
-	std::size_t UVSize = sizeof(UV) * data.numUVs;
-	std::size_t normalSize = sizeof(Normal) * data.numNormals;
+	std::size_t vertSize = sizeof(Vec3) * data.numVertexPositions; 
+	std::size_t UVSize = sizeof(Vec2) * data.numUVs;
+	std::size_t normalSize = sizeof(Vec3) * data.numNormals;
 
 	// Do not do sizeof the member (data.indices), use the type
 	std::size_t vertIndSize = sizeof(std::uint32_t) * data.numVertexIndices; // test something
@@ -82,7 +82,7 @@ Mesh::Mesh(const MeshData& data) {
 	glBufferData(GL_ARRAY_BUFFER, bufferSize, nullptr, GL_STATIC_DRAW);
 
 	// Load data
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vertSize, data.vertices);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertSize, data.vertexPositions);
 	glBufferSubData(GL_ARRAY_BUFFER, vertSize, UVSize, data.UVs);
 	glBufferSubData(GL_ARRAY_BUFFER, vertSize + UVSize, normalSize, data.normals);
 
@@ -130,13 +130,13 @@ Mesh::Mesh(const MeshData& data) {
 		std::printf("Face %d\n", faceNum+1);
 
 		// Print vertex position for that face
-		auto v1 = data.vertices[data.vertexIndices[i]]; 
+		auto v1 = data.vertexPositions[data.vertexIndices[i]]; 
 		std::printf("\tVert 1: %fx %fy %fz\n", v1.x, v1.y, v1.z);
 
-		auto v2 = data.vertices[data.vertexIndices[i+1]];
+		auto v2 = data.vertexPositions[data.vertexIndices[i+1]];
 		std::printf("\tVert 2: %fx %fy %fz\n", v2.x, v2.y, v2.z);
 
-		auto v3 = data.vertices[data.vertexIndices[i+2]];
+		auto v3 = data.vertexPositions[data.vertexIndices[i+2]];
 		std::printf("\tVert 3: %fx %fy %fz\n", v3.x, v3.y, v3.z);
 		
 		faceNum++;

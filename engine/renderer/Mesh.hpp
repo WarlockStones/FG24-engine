@@ -1,45 +1,25 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
+#include "utils/Vec.hpp"
 
 namespace FG24 {
-
-// Vertex, UV, Normal, Face, and MeshData must be as simple as possible because
-// they will be stored on disk and read.
-struct Vertex {
-	float x, y, z;
-};
-
-struct UV {
-	float u, v;
-};
-
-struct Normal {
-	float i, j, k;
-};
 
 // Collection of pointers to dynamically allocated arrays of vertices, UVs, normals, and faces
 struct MeshData {
 	// Owning pointers. Should probably make them std::unique_ptr
-	// TODO: Rename vertexPositions? Figure out indexing and this whole thing
-	std::size_t numVertices{};
-	Vertex* vertices = nullptr;
+	std::size_t numVertexPositions{};
+	Vec3* vertexPositions = nullptr;
 
 	std::size_t numUVs{};
-	UV* UVs = nullptr;
+	Vec2* UVs = nullptr;
 
 	std::size_t numNormals{};
-	Normal* normals = nullptr;
+	Vec3* normals = nullptr;
 
 	// OpenGL wants all vertices AND face-index-grouping values as continuous arrays
 	std::size_t numVertexIndices = 0;
 	std::int32_t* vertexIndices = nullptr;
-
-	std::size_t numUVIndices = 0;
-	std::int32_t* UVIndices = nullptr;
-  
-	std::size_t numNormalIndices = 0;
-	std::int32_t* normalIndices = nullptr;
 };
 
 class Mesh {

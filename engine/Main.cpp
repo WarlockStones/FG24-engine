@@ -8,6 +8,8 @@
 #include <any>
 #include "tests/ThreadTest.hpp"
 
+#include "utils/Vec.hpp"
+#include <glm/glm.hpp>
 
 int main(int argv, char** args) {
     auto kb = FG24::Memory::GetAvailableKilobytes();
@@ -15,7 +17,6 @@ int main(int argv, char** args) {
 	std::printf("Avialable MBs: %lu\n", kb/1000);
 
 	// ThreadTest::RunIncrementTest();
-
 
 	FG24::Session session;
 

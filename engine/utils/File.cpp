@@ -8,6 +8,7 @@
 #include <vector>  // c++
 #include "renderer/Mesh.hpp"
 #include "Filepath.hpp"
+#include "utils/Vec.hpp"
 
 namespace FG24 {
 namespace File {
@@ -102,7 +103,7 @@ const char* LoadTextFile(const char* path) {
 	return text;
 }
 
-Vertex ParseV(char* token) {
+Vec3 ParseV(char* token) {
 	token = std::strtok(token, " "); 
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
 	// Read x y z values for vertex data
@@ -121,16 +122,11 @@ Vertex ParseV(char* token) {
 		}
 	}
 
-	Vertex v;
-	v.x = vert[0];
-	v.y = vert[1];
-	v.z = vert[2];
-
-	return v;
+	return Vec3(vert[0], vert[1], vert[2]);
 }
 
 // TODO: Error handling
-UV ParseVT(char* token) {
+Vec2 ParseVT(char* token) {
 	token = std::strtok(token, " ");
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
 	// Read u v w values as vertex texture coordinates
@@ -149,15 +145,13 @@ UV ParseVT(char* token) {
 	}
 	
 	// std::printf("ParseVT: %f %f %f\n", uvw[0], uvw[1], uvw[2]);
+
 	// There is no support for the optional w value.
-	UV uv;
-	uv.u = uvw[0];
-	uv.v = uvw[1];
-	return uv;
+	return Vec2(uvw[0], uvw[1]);
 }
 
 // TODO: Error handling
-Normal ParseVN(char* token) {
+Vec3 ParseVN(char* token) {
 	token = std::strtok(token, " ");
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
 	// Read i j k values as vertex texture coordinates
@@ -175,11 +169,7 @@ Normal ParseVN(char* token) {
 		}
 	}
 
-	Normal n;
-	n.i = data[0];
-	n.j = data[1];
-	n.k = data[2];
-	return n;
+	return Vec3(data[0], data[1], data[2]);
 }
 
 struct FaceIndexElement {
@@ -319,13 +309,13 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 
 	// If the file has meta data, read and allocate necessary size instead of std::vector
 	// I did not want to loop twice to do that.
-	std::vector<Vertex> vertices;
+	std::vector<Vec3> vertices; // vertex positions. TODO: Rename
 	vertices.reserve(512);
 	
-	std::vector<UV> UVs;
+	std::vector<Vec2> UVs;
 	UVs.reserve(512);
 
-	std::vector<Normal> normals;
+	std::vector<Vec3> normals;
 	normals.reserve(512);
 
 	std::vector<std::int32_t> vInd;
@@ -381,13 +371,13 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 		return ErrorCode::LoadObjFailed;
 	}
 
-	Vertex* v = new Vertex[vertices.size()];
+	Vec3* v = new Vec3[vertices.size()];
 	std::copy(vertices.begin(), vertices.end(), v);
 
-	UV* uv = new UV[UVs.size()];
+	Vec2* uv = new Vec2[UVs.size()];
 	std::copy(UVs.begin(), UVs.end(), uv);
 
-	Normal* n = new Normal[normals.size()];
+	Vec3* n = new Vec3[normals.size()];
 	std::copy(normals.begin(), normals.end(), n);
 
 	std::int32_t* vertexIndices = new std::int32_t[vInd.size()];
@@ -405,10 +395,9 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 	}
 
 	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices
-
 	MeshData& data = meshDataOut;
-	data.vertices = v;
-	data.numVertices = vertices.size();
+	data.vertexPositions = v;
+	data.numVertexPositions = vertices.size();
 
 	data.UVs = uv;
 	data.numUVs = UVs.size();
@@ -418,38 +407,27 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 
 	data.vertexIndices = vertexIndices;
 	data.numVertexIndices = vInd.size();
-
-	data.numUVIndices = uvInd.size();
-	data.UVIndices = uvIndices;
-  
-	data.numNormalIndices = vnInd.size();
-	data.normalIndices = normalIndices; 
 	
 #if true
 	std::printf("--- Printing the stuff in File.cpp: ---\n");
-	for (std::size_t i = 0; i < data.numVertices; ++i) {
-		std::printf("%f %f %f\n", data.vertices[i].x, data.vertices[i].y, data.vertices[i].z);
+	for (std::size_t i = 0; i < data.numVertexPositions; ++i) {
+		std::printf("%f %f %f\n",
+			data.vertexPositions[i].x,
+			data.vertexPositions[i].y,
+			data.vertexPositions[i].z);
 	}
 	std::printf("uv:\n");
 	for (std::size_t i = 0; i < data.numUVs; ++i) {
-		std::printf("%f %f\n", data.UVs[i].u, data.UVs[i].v);
+		std::printf("%f %f\n", data.UVs[i].x, data.UVs[i].y);
 	}
 	std::printf("n:\n");
 	for (std::size_t i = 0; i < data.numNormals; ++i) {
 	  const auto& x = data.normals[i];
-	  std::printf("%f %f %f\n", x.i, x.j, x.k);
+	  std::printf("%f %f %f\n", x.x, x.y, x.z);
 	}
 	std::printf("vertex indices:\n");
 	for (std::size_t i = 0; i < data.numVertexIndices; ++i) {
 		std::printf("%d ", data.vertexIndices[i]);
-	}
-	std::printf("\nuv indices:\n");
-	for (std::size_t i = 0; i < data.numUVIndices; ++i) {
-		std::printf("%d ", data.UVIndices[i]);
-	}
-	std::printf("\nnormal indices:\n");
-	for (std::size_t i = 0; i < data.numNormalIndices; ++i) {
-		std::printf("%d ", data.normalIndices[i]);
 	}
 	std::printf("\n--- End of File.cpp ---\n");
 #endif
