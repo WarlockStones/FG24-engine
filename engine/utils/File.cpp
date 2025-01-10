@@ -1,11 +1,12 @@
 #include "File.hpp"
 #include <cstdio>
 #include <cstdint>
-#include <cstring>
+#include <cstring> // memcmp
 #include <cassert>
 #include <cctype>
 #include <utility> // c++
 #include <vector>  // c++
+#include <map>     // c++
 #include "renderer/Mesh.hpp"
 #include "Filepath.hpp"
 #include "utils/Vec.hpp"
@@ -295,7 +296,18 @@ Face ParseF(const char* str) {
 	return face;
 }
 
-
+// Packed contigious memory for fast memcmp
+struct Vertex {
+	Vec3 position;
+	Vec2 uv;
+	Vec3 normal;
+	bool operator<(const Vertex& other) const {
+		return std::memcmp(
+			reinterpret_cast<const void*>(this),
+			reinterpret_cast<const void*>(&other),
+			sizeof(Vertex))>0;
+	};
+};
 
 
 ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
@@ -307,33 +319,30 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 		return ErrorCode::NoFile;
 	} 
 
-	// If the file has meta data, read and allocate necessary size instead of std::vector
-	// I did not want to loop twice to do that.
-	std::vector<Vec3> vertices; // vertex positions. TODO: Rename
-	vertices.reserve(512);
-	
-	std::vector<Vec2> UVs;
-	UVs.reserve(512);
-
-	std::vector<Vec3> normals;
-	normals.reserve(512);
+	// Temporary attributes that has .obj indexing. Must be converted
+	std::vector<Vec3> tempPositions; // vertex positions. TODO: Rename
+	std::vector<Vec2> tempUVs;
+	std::vector<Vec3> tempNormals;
+	tempPositions.reserve(512);
+	tempUVs.reserve(512);
+	tempNormals.reserve(512);
 
 	std::vector<std::int32_t> vInd;
-	vInd.reserve(512);
 	std::vector<std::int32_t> uvInd;
-	uvInd.reserve(512);
 	std::vector<std::int32_t> vnInd;
+	vInd.reserve(512);
+	uvInd.reserve(512);
 	vnInd.reserve(512);
 
 	constexpr std::size_t bufMax = 256;
 	for (char buf[bufMax]{}; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
 		char prefix[3] = { buf[0], buf[1] , '\0' };
 		if (std::strcmp(prefix, "v ") == 0) {
-			vertices.push_back(ParseV(buf));
+			tempPositions.push_back(ParseV(buf));
 		} else if (std::strcmp(prefix, "vt") == 0) {
-			UVs.push_back(ParseVT(buf));
+			tempUVs.push_back(ParseVT(buf));
 		} else if (std::strcmp(prefix, "vn") == 0) {
-			normals.push_back(ParseVN(buf));
+			tempNormals.push_back(ParseVN(buf));
 		} else if (std::strcmp(prefix, "f ")  == 0) {
 			Face face = ParseF(buf);
 			vInd.push_back(face.v[0]);
@@ -371,14 +380,57 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 		return ErrorCode::LoadObjFailed;
 	}
 
-	Vec3* v = new Vec3[vertices.size()];
-	std::copy(vertices.begin(), vertices.end(), v);
+	// Convert .obj indexed attributes to raw, non-indexed attributes
+	std::vector<Vec3> positions;
+	positions.reserve(tempPositions.size());
+	std::printf("Printing raw vertex positions:\n");
+	for (std::size_t i = 0; i < vInd.size(); ++i) {
+		positions.push_back(tempPositions[vInd[i]]);
+		auto& tar = positions[i];
+		std::printf("\t%f %f %f\n", tar.x, tar.y, tar.z);
+	}
+	
+	meshDataOut.numVertexPositions = positions.size();
+	meshDataOut.vertexPositions = new Vec3[positions.size()];
+	std::copy(positions.begin(), positions.end(), meshDataOut.vertexPositions);
 
-	Vec2* uv = new Vec2[UVs.size()];
-	std::copy(UVs.begin(), UVs.end(), uv);
+	// TEST JUST RETURN RAW POSITION DATA --------------------------------------
+	return ErrorCode::Ok; // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	// -------------------------------------------------------------------------
 
-	Vec3* n = new Vec3[normals.size()];
-	std::copy(normals.begin(), normals.end(), n);
+	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices
+	std::vector<Vec3> indexedPositions;
+	indexedPositions.reserve(tempPositions.size());
+	std::vector<Vec2> indexedUVs;
+	indexedUVs.reserve(tempUVs.size());
+	std::vector<Vec3> indexedNormals;
+	indexedNormals.reserve(tempNormals.size());
+
+	std::vector<std::uint16_t> indicies;
+	std::map<Vertex, std::uint16_t> VertexToIndex;
+
+	// Do the indexing
+	for (std::size_t i = 0; i < tempPositions.size(); ++i) {
+		Vertex v = {tempPositions.at(i), tempUVs.at(i), tempNormals.at(i)};
+		auto it = VertexToIndex.find(v);
+		if (it == VertexToIndex.end()) {
+			// 
+		    
+		} else {
+		    // A similar vertex exists, index it
+			indicies.push_back(it->second);
+		}
+	}
+	
+
+	Vec3* v = new Vec3[tempPositions.size()];
+	std::copy(tempPositions.begin(), tempPositions.end(), v);
+
+	Vec2* uv = new Vec2[tempUVs.size()];
+	std::copy(tempUVs.begin(), tempUVs.end(), uv);
+
+	Vec3* n = new Vec3[tempNormals.size()];
+	std::copy(tempNormals.begin(), tempNormals.end(), n);
 
 	std::int32_t* vertexIndices = new std::int32_t[vInd.size()];
 	std::copy(vInd.begin(), vInd.end(), vertexIndices);
@@ -394,20 +446,20 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 	  std::copy(vnInd.begin(), vnInd.end(), normalIndices);
 	}
 
-	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices
+
 	MeshData& data = meshDataOut;
 	data.vertexPositions = v;
-	data.numVertexPositions = vertices.size();
+	data.numVertexPositions = tempPositions.size();
 
 	data.UVs = uv;
-	data.numUVs = UVs.size();
+	data.numUVs = tempUVs.size();
 
 	data.normals = n;
-	data.numNormals = normals.size();
+	data.numNormals = tempNormals.size();
 
 	data.vertexIndices = vertexIndices;
 	data.numVertexIndices = vInd.size();
-	
+
 #if true
 	std::printf("--- Printing the stuff in File.cpp: ---\n");
 	for (std::size_t i = 0; i < data.numVertexPositions; ++i) {

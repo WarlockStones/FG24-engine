@@ -49,7 +49,8 @@ void Session::Start() {
 	auto ec = FG24::File::LoadObjToMeshData("../../assets/mesh/cube.obj", flagData);
 	// TODO: Use default mesh if ErrorCode != Ok
 	assert(ec == File::ErrorCode::Ok);
-	Mesh* flagMesh = new Mesh(flagData);
+	Mesh* flagMesh = new Mesh();
+	flagMesh->InitBuffers(flagData);
 
 	Cube* cube = new Cube();
 	g_flag = new Entity(flagMesh, g_texturedShader, g_arcadeTexture);

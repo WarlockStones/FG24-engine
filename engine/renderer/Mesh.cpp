@@ -145,6 +145,25 @@ Mesh::Mesh(const MeshData& data) {
 #endif
 }
 
+void Mesh::InitBuffers(const MeshData& data) {
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  
+	glBufferData(
+		GL_ARRAY_BUFFER,                        // Type
+		data.numVertexPositions * sizeof(Vec3), // Size in bytes of buffer
+		data.vertexPositions,                   // Pointer to data to be copied
+		GL_STATIC_DRAW);                        // Usage pattern
+	
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	
+	// Vertex Position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0,
+		reinterpret_cast<void*>(0));
+	glEnableVertexAttribArray(0);
+}
+
 void Mesh::Draw(std::uint32_t shaderID) {
 	assert(shaderID != 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons

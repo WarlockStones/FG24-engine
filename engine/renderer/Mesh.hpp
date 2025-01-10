@@ -24,6 +24,7 @@ struct MeshData {
 
 class Mesh {
 public:
+    Mesh() = default;
 	// For simple triangle without any indices
 	Mesh(const float* vertices, std::size_t vertexSize);
 
@@ -32,6 +33,8 @@ public:
 
 	// For mesh data loaded from file
 	Mesh(const MeshData& data);
+
+    void InitBuffers(const MeshData& data);
 
 	void Draw(std::uint32_t shaderID);
 
