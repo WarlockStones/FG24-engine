@@ -10,10 +10,10 @@
 #include "utils/File.hpp"
 
 // I should probably not do these rendering stuff here
-#include "renderer/SimpleShapes.hpp"
 #include "renderer/Shader.hpp"
 #include "renderer/Texture.hpp"
 #include "framework/Entity.hpp"
+#include "renderer/Mesh.hpp"
 
 // Temp testing
 #include "framework/ExampleManager.hpp"
@@ -34,25 +34,23 @@ bool Session::Init() {
 }
 
 void Session::Start() {
-	// Or should I do some of this in the renderer? Factory pattern or something?
-
-	// TODO: Remove asserts and use default textures, shaders, and 
 	g_texturedShader = Shader::CompileShader("../../assets/shaders/textured.vert",
 											 "../../assets/shaders/textured.frag");
 	assert(g_texturedShader != 0);
 	g_arcadeTexture = Texture::LoadFromFile("../../assets/textures/arcade_carpet.png");
 	assert(g_arcadeTexture != 0);
-	g_triangleMesh = new Square();
-	g_triangle = new Entity(g_triangleMesh, g_texturedShader, g_arcadeTexture);
-	assert(g_triangle);
-	MeshData flagData;
-	auto ec = FG24::File::LoadObjToMeshData("../../assets/mesh/cube.obj", flagData);
+	float* flagVertexData = nullptr;
+	std::size_t numFlagVertexData{};
+	std::size_t numFlagVerticies{};
+	auto ec = FG24::File::LoadObjToMeshData(
+		"../../assets/mesh/suzanne_tri.obj",
+		flagVertexData,
+		numFlagVertexData,
+		numFlagVerticies);
 	// TODO: Use default mesh if ErrorCode != Ok
 	assert(ec == File::ErrorCode::Ok);
-	Mesh* flagMesh = new Mesh();
-	flagMesh->InitBuffers(flagData);
-
-	Cube* cube = new Cube();
+	Mesh* flagMesh = new Mesh;
+	flagMesh->InitBuffers(flagVertexData, numFlagVertexData, numFlagVerticies);
 	g_flag = new Entity(flagMesh, g_texturedShader, g_arcadeTexture);
 
 	exampleManager->StartThread();
@@ -95,7 +93,7 @@ void Session::Start() {
 
 void Session::Update() {
 	// Testing sending messages to manager on another thread
-	if (g_action1) {
+	if (g_action1) { // Press keyboard key 1
 	    std::uint32_t ms = SDL_GetTicks();
 		float s = static_cast<float>(ms) / 1000.0f;
 		printf("Session is sending a message\n");

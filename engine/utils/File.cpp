@@ -297,6 +297,7 @@ Face ParseF(const char* str) {
 }
 
 // Packed contigious memory for fast memcmp
+/* May be used later for indicies
 struct Vertex {
 	Vec3 position;
 	Vec2 uv;
@@ -308,9 +309,16 @@ struct Vertex {
 			sizeof(Vertex))>0;
 	};
 };
+*/
 
 
-ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
+// TODO: Support .obj files that has other attribute configuration than v,vt,vn
+ErrorCode LoadObjToMeshData(
+	Filepath filepath,
+	float*& vertexDataOut,
+	std::size_t& numVertexDataOut,
+	std::size_t& numVerticiesOut)
+{
 	const char* path = filepath.GetPath();
 
 	FileStream file(path, "rb");
@@ -333,6 +341,12 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 	vInd.reserve(512);
 	uvInd.reserve(512);
 	vnInd.reserve(512);
+
+	// TODO:
+	// i.e Check that the face optional elements are consistent.
+	// i.e: f 1//1 2/2/ BAD!
+	// i.e: f 1 2 3/3/3 BAD!
+	// Face element indices error checks
 
 	constexpr std::size_t bufMax = 256;
 	for (char buf[bufMax]{}; std::fgets(buf, bufMax, file.ptr) != nullptr;) {
@@ -362,127 +376,53 @@ ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut) {
 		}
 	}
 
-	// TODO: Error check that the Face Index Elmenets vectors are of equal size
-	// i.e Check that the face optional elements are consistent.
-	// i.e: f 1//1 2/2/ BAD!
-	// i.e: f 1 2 3/3/3 BAD!
-	// Face element indices error checks
+	// We have added indicies
 	if (vInd.size() == 0) {
-		std::fprintf(stderr, "Error: Parsed 0 face vertex indices!\n");
+		std::fprintf(stderr, "Error: Parsed 0 indices!\n");
 		return ErrorCode::LoadObjFailed;
 	}
 
-	// TODO: Is this a valid error? Check .obj specification
-	if (uvInd.size() != vnInd.size()) {
-		std::fprintf(stderr, "Error: The amount of UV idices != amount normal indices!\n");
-		std::fprintf(stderr, "There may have been an issue with parsing face index elements.\n");
-
+	// Indicies are of equal size
+	if (vInd.size() != uvInd.size() || vInd.size() != vnInd.size()) {
+		std::fprintf(stderr, "Error: Parsed .obj indicies are not of equal amount\n");
 		return ErrorCode::LoadObjFailed;
 	}
+
+	std::vector<Vec3> positions;
+	std::vector<Vec2> uvs;
+	std::vector<Vec3> normals;
+	// Indicies will indicate how many verticies will be created.
+	// TODO: Make them arrays? (No reason not to use std::vector though ...)
+	positions.reserve(vInd.size()); // indicies should be of equal size
+uvs.reserve(uvInd.size()); 
+	normals.reserve(vnInd.size()); 
 
 	// Convert .obj indexed attributes to raw, non-indexed attributes
-	std::vector<Vec3> positions;
-	positions.reserve(tempPositions.size());
-	std::printf("Printing raw vertex positions:\n");
 	for (std::size_t i = 0; i < vInd.size(); ++i) {
 		positions.push_back(tempPositions[vInd[i]]);
-		auto& tar = positions[i];
-		std::printf("\t%f %f %f\n", tar.x, tar.y, tar.z);
+	    uvs.push_back(tempUVs[uvInd[i]]);
+	    normals.push_back(tempNormals[vnInd[i]]);
+	}
+
+	std::size_t s = positions.size() * 3;
+	s += uvs.size() * 2;
+	s += normals.size() * 3;
+	numVerticiesOut = positions.size();
+	numVertexDataOut = s;
+	vertexDataOut = new float[s];
+	std::size_t pos = 0;
+	for (std::size_t i = 0; i < positions.size(); ++i) {
+		vertexDataOut[pos++] = positions[i].x;
+		vertexDataOut[pos++] = positions[i].y;
+		vertexDataOut[pos++] = positions[i].z;
+		vertexDataOut[pos++] = uvs[i].x;
+		vertexDataOut[pos++] = uvs[i].y;
+		vertexDataOut[pos++] = normals[i].x;
+		vertexDataOut[pos++] = normals[i].y;
+		vertexDataOut[pos++] = normals[i].z;
 	}
 	
-	meshDataOut.numVertexPositions = positions.size();
-	meshDataOut.vertexPositions = new Vec3[positions.size()];
-	std::copy(positions.begin(), positions.end(), meshDataOut.vertexPositions);
-
-	// TEST JUST RETURN RAW POSITION DATA --------------------------------------
-	return ErrorCode::Ok; // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	// -------------------------------------------------------------------------
-
-	// TODO: Order indices. Do the "Indexing" operation and just feed OpenGL ordered vertices
-	std::vector<Vec3> indexedPositions;
-	indexedPositions.reserve(tempPositions.size());
-	std::vector<Vec2> indexedUVs;
-	indexedUVs.reserve(tempUVs.size());
-	std::vector<Vec3> indexedNormals;
-	indexedNormals.reserve(tempNormals.size());
-
-	std::vector<std::uint16_t> indicies;
-	std::map<Vertex, std::uint16_t> VertexToIndex;
-
-	// Do the indexing
-	for (std::size_t i = 0; i < tempPositions.size(); ++i) {
-		Vertex v = {tempPositions.at(i), tempUVs.at(i), tempNormals.at(i)};
-		auto it = VertexToIndex.find(v);
-		if (it == VertexToIndex.end()) {
-			// 
-		    
-		} else {
-		    // A similar vertex exists, index it
-			indicies.push_back(it->second);
-		}
-	}
-	
-
-	Vec3* v = new Vec3[tempPositions.size()];
-	std::copy(tempPositions.begin(), tempPositions.end(), v);
-
-	Vec2* uv = new Vec2[tempUVs.size()];
-	std::copy(tempUVs.begin(), tempUVs.end(), uv);
-
-	Vec3* n = new Vec3[tempNormals.size()];
-	std::copy(tempNormals.begin(), tempNormals.end(), n);
-
-	std::int32_t* vertexIndices = new std::int32_t[vInd.size()];
-	std::copy(vInd.begin(), vInd.end(), vertexIndices);
-
-	std::int32_t* uvIndices = nullptr;
-	if (uvInd.size() > 0) {
-	  uvIndices = new std::int32_t[uvInd.size()];
-	  std::copy(uvInd.begin(), uvInd.end(), uvIndices);
-	}
-	std::int32_t* normalIndices = nullptr;
-	if (vnInd.size() > 0) {
-	  normalIndices = new std::int32_t[vnInd.size()];
-	  std::copy(vnInd.begin(), vnInd.end(), normalIndices);
-	}
-
-
-	MeshData& data = meshDataOut;
-	data.vertexPositions = v;
-	data.numVertexPositions = tempPositions.size();
-
-	data.UVs = uv;
-	data.numUVs = tempUVs.size();
-
-	data.normals = n;
-	data.numNormals = tempNormals.size();
-
-	data.vertexIndices = vertexIndices;
-	data.numVertexIndices = vInd.size();
-
-#if true
-	std::printf("--- Printing the stuff in File.cpp: ---\n");
-	for (std::size_t i = 0; i < data.numVertexPositions; ++i) {
-		std::printf("%f %f %f\n",
-			data.vertexPositions[i].x,
-			data.vertexPositions[i].y,
-			data.vertexPositions[i].z);
-	}
-	std::printf("uv:\n");
-	for (std::size_t i = 0; i < data.numUVs; ++i) {
-		std::printf("%f %f\n", data.UVs[i].x, data.UVs[i].y);
-	}
-	std::printf("n:\n");
-	for (std::size_t i = 0; i < data.numNormals; ++i) {
-	  const auto& x = data.normals[i];
-	  std::printf("%f %f %f\n", x.x, x.y, x.z);
-	}
-	std::printf("vertex indices:\n");
-	for (std::size_t i = 0; i < data.numVertexIndices; ++i) {
-		std::printf("%d ", data.vertexIndices[i]);
-	}
-	std::printf("\n--- End of File.cpp ---\n");
-#endif
+	// TODO: Index
 
 	return ErrorCode::Ok;
 }

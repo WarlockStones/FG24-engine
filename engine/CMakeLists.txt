@@ -30,7 +30,6 @@ add_executable(engine
 	"framework/Transform.cpp"
 	"framework/ExampleManager.cpp"
 	"renderer/Renderer.cpp"
-	"renderer/SimpleShapes.cpp"
 	"renderer/Mesh.cpp"
 	"renderer/Texture.cpp"
 	"renderer/Shader.cpp"

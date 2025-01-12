@@ -20,6 +20,10 @@ const char* LoadTextFile(const char* path);
 void FormatFilePath(char* s, std::size_t size);
 
 // An awfully specific function
-ErrorCode LoadObjToMeshData(Filepath filepath, MeshData& meshDataOut);
+ErrorCode LoadObjToMeshData(
+	Filepath filepath,
+	float*& vertexDataOut,
+	std::size_t& numVertexDataOut,
+	std::size_t& numVerticiesOut);
 };
 } // namespace FG24
