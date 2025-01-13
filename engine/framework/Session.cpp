@@ -34,9 +34,9 @@ bool Session::Init() {
 }
 
 void Session::Start() {
-	g_texturedShader = Shader::CompileShader("../../assets/shaders/textured.vert",
-											 "../../assets/shaders/textured.frag");
-	assert(g_texturedShader != 0);
+	g_shader = Shader::CompileShader("../../assets/shaders/phong.vert",
+									 "../../assets/shaders/phong.frag");
+	assert(g_shader != 0);
 	g_arcadeTexture = Texture::LoadFromFile("../../assets/textures/arcade_carpet.png");
 	assert(g_arcadeTexture != 0);
 	float* flagVertexData = nullptr;
@@ -51,7 +51,7 @@ void Session::Start() {
 	assert(ec == File::ErrorCode::Ok);
 	Mesh* flagMesh = new Mesh;
 	flagMesh->InitBuffers(flagVertexData, numFlagVertexData, numFlagVerticies);
-	g_flag = new Entity(flagMesh, g_texturedShader, g_arcadeTexture);
+	g_flag = new Entity(flagMesh, g_shader, g_arcadeTexture);
 
 	exampleManager->StartThread();
 	

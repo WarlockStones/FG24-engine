@@ -1,12 +1,12 @@
 #version 330 core
 
 uniform sampler2D tex;
-uniform vec4 cameraPosition;
 
 uniform vec4 PrimaryColorVec4 = vec4(1.0, 1.0, 1.0, 1.0); // Used for debugging
 uniform vec4 lightAmbient = vec4(0.2, 0.2, 0.2, 1); // Base light regardless of pos
 uniform vec4 lightDiffuse = vec4(1, 0.9, 0.8, 1); // Diffuse color
-uniform vec4 lightSpecular = vec4(0.9, 0.8, 0.7, 1); // Specular highlight color
+// uniform vec4 lightSpecular = vec4(0.9, 0.8, 0.7, 1); // Specular highlight color
+uniform vec4 lightSpecular = vec4(1.0, 0.0, 1.0, 1); // Odd specular color
 uniform vec3 lightPosition = vec3(10, 25, 15); // World position of the light
 // Constant, linear, quadratic - light fading by distance
 uniform vec3 lightAttenuation = vec3(1, 0.1, 0.001);

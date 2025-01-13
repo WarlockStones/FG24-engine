@@ -11,7 +11,7 @@ double g_deltaTime = 0;
 int g_windowWidth = 800;
 int g_windowHeight = 600;
 
-std::uint32_t		g_texturedShader{};
+std::uint32_t		g_shader{};
 std::uint32_t		g_arcadeTexture{};
 Entity*				g_flag{};
 

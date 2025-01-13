@@ -53,8 +53,6 @@ void Renderer::Draw() {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// g_triangle->Draw();
-
 	///////////////////////////////////////////////////////////////////////////////////////
 	// This should be set per model basis
 	// I have not decided where to put this, so for now it is just here. Matrixes and stuff
@@ -65,8 +63,10 @@ void Renderer::Draw() {
 
 	// Model matrix = local to world space
 	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
-	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // "Lay on ground"
-	model = glm::rotate(model, (float)SDL_GetTicks() / 1000, glm::vec3(0.0f, 0.0f, 1.0f)); // Spin
+	// model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // "Lay on ground"
+	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, -2.5f, -1.5f)); 
+
+	// model = glm::rotate(model, (float)SDL_GetTicks() / 1000, glm::vec3(0.0f, 0.0f, 1.0f)); // Spin
 
 	// View matrix (camera) Move the entire scene around inversed to where we want camera to move
 	// OpenGL is right-handed system so positive x is right, positive y is up. positive z is backwards.
@@ -82,11 +82,26 @@ void Renderer::Draw() {
 		0.1f, 100.0f); // near, far planes of the frustrum
 
 	// TODO: Move into entity object i.e move into g_flag
-	Shader::Use(g_texturedShader);
-	Shader::SetMat4(g_texturedShader, "model", model);
-	Shader::SetMat4(g_texturedShader, "view", view);
-	Shader::SetMat4(g_texturedShader, "projection", proj);
+	Shader::Use(g_shader);
+	Shader::SetMat4(g_shader, "model", model);
+	Shader::SetMat4(g_shader, "view", view);
+	Shader::SetMat4(g_shader, "projection", proj);
 	g_flag->Draw();
+
+	// Light
+	glm::vec3 lightPos = glm::vec3(
+		glm::sin(float((SDL_GetTicks() * 1000) * 0.0003) * 0.006 - 1),
+		0,
+		glm::cos(float((SDL_GetTicks() * 1000) * 0.0003) * 0.006 - 1)
+		);
+	Shader::SetVec3(g_shader, "lightPosition", lightPos);
+
+	// TODO: Add camera position not just hard-coded to 0, 0, -3
+	Shader::SetVec3(g_shader, "cameraPosition", glm::vec3(0.0f, 0.0f, -3.0f));
+	
+	
+		
+	
 
 	SDL_GL_SwapWindow(window);
 }

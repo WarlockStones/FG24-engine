@@ -9,6 +9,7 @@ namespace Shader {
   void Use(std::uint32_t shaderID);
   void SetInt  (std::uint32_t shaderID, const char* name, int value);
   void SetFloat(std::uint32_t shaderID, const char* name, float value);
+  void SetVec3 (std::uint32_t shaderID, const char* name, glm::vec3 value);
   void SetMat4 (std::uint32_t shaderID, const char* name, glm::mat4 value);
 } // namespace Shader
 } // namespace FG24

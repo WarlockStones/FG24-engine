@@ -11,7 +11,7 @@ extern double g_deltaTime;
 extern int g_windowWidth;
 extern int g_windowHeight;
 
-extern std::uint32_t	g_texturedShader;
+extern std::uint32_t	g_shader;
 extern std::uint32_t	g_arcadeTexture;
 extern Entity*			g_flag;
 
