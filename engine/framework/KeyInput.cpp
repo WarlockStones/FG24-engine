@@ -76,6 +76,10 @@ void KeyInput::ProcessInput() {
 			default:
 			break;
 			}
+		} else if (e.type == SDL_MOUSEMOTION) {
+			g_mouseMotion = true; // To inform camera that there was mouse movement
+			g_xRel = e.motion.xrel;
+			g_yRel = e.motion.yrel;
 		}
 	}
 }

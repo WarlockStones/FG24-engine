@@ -24,6 +24,7 @@ add_executable(engine
 	"utils/Memory.cpp"
 	"utils/ThreadPool.cpp"
 	"utils/Vec.cpp"
+	"framework/Camera.cpp"
 	"framework/Session.cpp"
 	"framework/KeyInput.cpp"
 	"framework/Entity.cpp"

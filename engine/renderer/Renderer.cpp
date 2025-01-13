@@ -7,6 +7,7 @@
 #include "Globals.hpp"
 #include "framework/Entity.hpp"
 #include "Shader.hpp"
+#include "framework/Camera.hpp"
 
 
 namespace FG24 {
@@ -72,7 +73,8 @@ void Renderer::Draw() {
 	// OpenGL is right-handed system so positive x is right, positive y is up. positive z is backwards.
 	// So translate scene towards negative z-axis
 	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); // Move "camera"/view back -3f
+	view = g_camera->GetViewMatrix();
+	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); // Move "camera"/view back -3f
 
 	// Projection matrix. Perspective or Orthographic
 	// TODO: Move perspective function call away from update loop, it only needs to run once

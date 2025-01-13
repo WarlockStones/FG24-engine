@@ -19,6 +19,7 @@
 #include "framework/ExampleManager.hpp"
 #include "framework/Message.hpp"
 
+
 namespace FG24 {
 
 bool Session::Init() {
@@ -53,8 +54,9 @@ void Session::Start() {
 	flagMesh->InitBuffers(flagVertexData, numFlagVertexData, numFlagVerticies);
 	g_flag = new Entity(flagMesh, g_shader, g_arcadeTexture);
 
-	exampleManager->StartThread();
+	// exampleManager->StartThread();
 	
+	g_camera = new Camera(glm::vec3(0, 0, 4), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
 
 #if false // Test serialization
 	// If save file for this entity exists, load it.
@@ -91,21 +93,10 @@ void Session::Start() {
 #endif
 }
 
-void Session::Update() {
-	// Testing sending messages to manager on another thread
-	if (g_action1) { // Press keyboard key 1
-	    std::uint32_t ms = SDL_GetTicks();
-		float s = static_cast<float>(ms) / 1000.0f;
-		printf("Session is sending a message\n");
-		exampleManager->QueueMessage(new FloatMessage(s));
-		g_action1 = false;
-	}
-}
-
 void Session::GameLoop() {
-	constexpr int fps = 30;
+	constexpr int fps = 60;
 	constexpr int millisecondsPerFrame = 1000 / fps;
-	static double millisecondsPreviousFrame{};
+	static std::uint32_t millisecondsPreviousFrame{};
 	g_runGameLoop = true;
 	while (g_runGameLoop) {
 		KeyInput::ProcessInput();
@@ -115,13 +106,29 @@ void Session::GameLoop() {
 		std::uint32_t timeToWait = millisecondsPerFrame - 
 			static_cast<std::uint32_t>(SDL_GetTicks() - millisecondsPreviousFrame);
 		if (timeToWait > 0 && timeToWait <= millisecondsPerFrame) {
-		  std::printf("x");
 			SDL_Delay(timeToWait);
 		}
 
-		Update();
+		float deltaTime = (SDL_GetTicks() - millisecondsPreviousFrame) / 1000.0;
+		millisecondsPreviousFrame = SDL_GetTicks();
+
+		Update(deltaTime);
 		renderer->Draw();
 	}
+}
+
+void Session::Update(float deltaTime) {
+
+	// Testing sending messages to manager on another thread
+	if (g_action1) { // Press keyboard key 1
+	    std::uint32_t ms = SDL_GetTicks();
+		float s = static_cast<float>(ms) / 1000.0f;
+		printf("Session is sending a message\n");
+		exampleManager->QueueMessage(new FloatMessage(s));
+		g_action1 = false;
+	}
+
+	g_camera->Update(deltaTime);
 }
 
 Session::~Session() {

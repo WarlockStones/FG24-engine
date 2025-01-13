@@ -1,5 +1,7 @@
 #pragma once
 #include <thread>
+#include "framework/Camera.hpp"
+#include <glm/glm.hpp> // For camera initialization
 
 namespace FG24 {
 class Renderer;
@@ -11,7 +13,7 @@ public:
 	Session() = default;
 	bool Init();
 	void Start();
-	void Update();
+	void Update(float deltaTime);
 	void GameLoop();
 	~Session();
 private:
