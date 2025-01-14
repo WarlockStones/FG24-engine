@@ -26,14 +26,16 @@ glm::mat4 Camera::GetViewMatrix() const {
 }
 
 void Camera::Update(float deltaTime) {
-	m_yaw += (g_xRelativeMouseMotion * m_mouseSensitivity);
-	m_pitch += (g_yRelativeMouseMotion * m_mouseSensitivity * -1); // -1 to reverse up
-	glm::clamp(m_pitch, -89.0f, 89.0f);
-	UpdateVectors();
+    if (g_xRelativeMouseMotion != 0 || g_yRelativeMouseMotion != 0) {
+		m_yaw += (g_xRelativeMouseMotion * m_mouseSensitivity);
+		m_pitch += (g_yRelativeMouseMotion * m_mouseSensitivity * -1); // -1 to reverse up
+		glm::clamp(m_pitch, -89.0f, 89.0f);
+		UpdateVectors();
 
-	// Reset mouse move when used
-	g_xRelativeMouseMotion = 0; 
-	g_yRelativeMouseMotion = 0;
+		// Reset mouse move when used
+		g_xRelativeMouseMotion = 0; 
+		g_yRelativeMouseMotion = 0;
+	}
 
 	// Move position. WASD
 	m_position += (m_movementSpeed * m_front) * g_yvel * static_cast<float>(deltaTime);
