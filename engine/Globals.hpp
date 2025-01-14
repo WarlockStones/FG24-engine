@@ -1,17 +1,20 @@
 #pragma once
 #include <cstdint>
+#include <glm/vec3.hpp>
 
 namespace FG24 {
 class Entity;
 class Camera;
 
-// just temporary thing
 extern bool g_runGameLoop;
-extern double g_deltaTime;
 
+// Configs
 extern int g_windowWidth;
 extern int g_windowHeight;
+constexpr glm::vec3 g_worldUp = glm::vec3(0, 1, 0);
+constexpr glm::vec3 g_worldForward = glm::vec3(0, 0, -1);
 
+// Assets / Entities
 extern std::uint32_t	g_shader;
 extern std::uint32_t	g_arcadeTexture;
 extern Entity*			g_flag;
@@ -21,10 +24,6 @@ extern Camera*			g_camera;
 extern float g_yvel;
 extern float g_xvel;
 extern bool g_action1;
-// Inputs - Mouse
-// Used to only update camera lookDir when there was a mouse movement
-extern bool g_mouseMotion;  // TODO: Fix this messy programming
-extern float g_xRel;
-extern float g_yRel;
-}
-
+extern float g_xRelativeMouseMotion;
+extern float g_yRelativeMouseMotion;
+} // namespace FG24

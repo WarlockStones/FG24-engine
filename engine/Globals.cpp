@@ -5,9 +5,7 @@
 #include "framework/Camera.hpp"
 
 namespace FG24 {
-// Just temporary thing
 bool g_runGameLoop = false;
-double g_deltaTime = 0;
 
 int g_windowWidth = 800;
 int g_windowHeight = 600;
@@ -23,7 +21,7 @@ float g_xvel = 0;
 bool g_action1 = false;
 // Inputs - Mouse
 bool g_mouseMotion{};
-float g_xRel{};
-float g_yRel{};
+float g_xRelativeMouseMotion{};
+float g_yRelativeMouseMotion{};
 }
 

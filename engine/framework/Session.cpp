@@ -56,7 +56,7 @@ void Session::Start() {
 
 	// exampleManager->StartThread();
 	
-	g_camera = new Camera(glm::vec3(0, 0, 4), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
+	g_camera = new Camera(glm::vec3(0, 0, 4), -90, 0);
 
 #if false // Test serialization
 	// If save file for this entity exists, load it.
