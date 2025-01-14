@@ -41,6 +41,15 @@ void KeyInput::ProcessInput() {
 
 			case SDLK_1:
 			g_action1 = true;
+
+			case SDLK_2:
+			g_action2 = true;
+
+			case SDLK_3:
+			g_action3 = true;
+
+			case SDLK_4:
+			g_action4 = true;
 			break;
 
 			default:

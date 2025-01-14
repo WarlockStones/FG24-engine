@@ -54,57 +54,45 @@ void Renderer::Draw() {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	///////////////////////////////////////////////////////////////////////////////////////
-	// This should be set per model basis
-	// I have not decided where to put this, so for now it is just here. Matrixes and stuff
-	///////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////
+	// This should be set per model basis //
+	////////////////////////////////////////
 	// Space / Coordinate systems
-	// Local (aka. object) space > World space > View (aka. eye) space > Clip space > Screen space.
-	//                >>Model Matrix>>	>>VIEW MATRIX>>>	>> PROJECTION MATRIX >> 
+	// Local/object space > World space > View/eye space > Clip space > Screen space.
 
-	// Model matrix = local to world space
+	// Model matrix to translate local to world space
 	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
 	// model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // "Lay on ground"
 	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, -2.5f, -1.5f)); 
-
 	// model = glm::rotate(model, (float)SDL_GetTicks() / 1000, glm::vec3(0.0f, 0.0f, 1.0f)); // Spin
 
-	// View matrix (camera) Move the entire scene around inversed to where we want camera to move
-	// OpenGL is right-handed system so positive x is right, positive y is up. positive z is backwards.
-	// So translate scene towards negative z-axis
-	glm::mat4 view = glm::mat4(1.0f);
-	view = g_camera->GetViewMatrix();
-	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); // Move "camera"/view back -3f
+	// View matrix (camera)
+	// Move the entire scene around inversed to where we want camera to move
+	// OpenGL is right-handed system so +x = right, +y = up. +z = backwards.
+	// This is why forward is -z. 
+	glm::mat4 view = g_camera->GetViewMatrix();
 
 	// Projection matrix. Perspective or Orthographic
-	// TODO: Move perspective function call away from update loop, it only needs to run once
+	// TODO: Don't run perspective calculation in update loop
+	// projection matrix only needs to calculate on FOV, aspect ratio, or clip-plane changes
 	glm::mat4 proj = glm::perspective(
 		glm::radians(45.0f), // FOV
 		static_cast<float>(g_windowWidth) / static_cast<float>(g_windowHeight), // Aspect ratio
 		0.1f, 100.0f); // near, far planes of the frustrum
 
-	// TODO: Move into entity object i.e move into g_flag
+	// TODO: Support more than one shader
 	Shader::Use(g_shader);
 	Shader::SetMat4(g_shader, "model", model);
 	Shader::SetMat4(g_shader, "view", view);
 	Shader::SetMat4(g_shader, "projection", proj);
+	// Draw all entities
 	g_flag->Draw();
 
 	// Light
-	glm::vec3 lightPos = glm::vec3(
-		glm::sin(float((SDL_GetTicks() * 1000) * 0.0003) * 0.006 - 1),
-		0,
-		glm::cos(float((SDL_GetTicks() * 1000) * 0.0003) * 0.006 - 1)
-		);
-	Shader::SetVec3(g_shader, "lightPosition", lightPos);
+	Shader::SetVec3(g_shader, "lightPosition", g_lightPos);
 
-	// TODO: Add camera position not just hard-coded to 0, 0, -3
-	Shader::SetVec3(g_shader, "cameraPosition", glm::vec3(0.0f, 0.0f, -3.0f));
+	Shader::SetVec3(g_shader, "cameraPosition", g_camera->GetPosition());
 	
-	
-		
-	
-
 	SDL_GL_SwapWindow(window);
 }
 

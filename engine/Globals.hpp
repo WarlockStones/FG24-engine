@@ -19,11 +19,15 @@ extern std::uint32_t	g_shader;
 extern std::uint32_t	g_arcadeTexture;
 extern Entity*			g_flag;
 extern Camera*			g_camera;
+extern glm::vec3 g_lightPos;
 
 // Inputs
 extern float g_yvel;
 extern float g_xvel;
 extern bool g_action1;
+extern bool g_action2;
+extern bool g_action3;
+extern bool g_action4;
 extern float g_xRelativeMouseMotion;
 extern float g_yRelativeMouseMotion;
 } // namespace FG24

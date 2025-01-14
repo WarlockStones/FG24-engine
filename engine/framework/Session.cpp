@@ -117,6 +117,7 @@ void Session::GameLoop() {
 	}
 }
 
+static bool lightShouldTick = true;
 void Session::Update(float deltaTime) {
 
 	// Testing sending messages to manager on another thread
@@ -129,6 +130,22 @@ void Session::Update(float deltaTime) {
 	}
 
 	g_camera->Update(deltaTime);
+
+	// Light entity update. I really need a way to manage entities and their properties...
+	// TODO: Create entity management.
+	// TODO: Create lightEntity. Give it position and a default mesh
+	if (g_action2) {
+		g_action2 = false;
+		lightShouldTick = !lightShouldTick;
+	}
+	if (lightShouldTick) {
+		static float lightOffset = 0;
+		lightOffset += deltaTime;
+		g_lightPos = glm::vec3(
+			glm::sin(lightOffset * 1.1000) * 1.000 - 1,
+			0,
+			glm::cos(lightOffset * 1.1003) * 1.000 - 1);
+	}
 }
 
 Session::~Session() {
