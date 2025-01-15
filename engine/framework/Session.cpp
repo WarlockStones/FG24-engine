@@ -21,7 +21,6 @@
 
 
 namespace FG24 {
-
 bool Session::Init() {
 	renderer = new Renderer();
 	exampleManager = new ExampleManager();
@@ -53,6 +52,21 @@ void Session::Start() {
 	Mesh* flagMesh = new Mesh;
 	flagMesh->InitBuffers(flagVertexData, numFlagVertexData, numFlagVerticies);
 	g_flag = new Entity(flagMesh, g_shader, g_arcadeTexture);
+
+	float* cubeVertexData = nullptr;
+	std::size_t numCubeVertexData{};
+	std::size_t numCubeVerticies{};
+	ec = FG24::File::LoadObjToMeshData( // TODO: Make this a default mesh
+		"../../assets/mesh/cube.obj", 
+		cubeVertexData,
+		numCubeVertexData,
+		numCubeVerticies);
+	assert(ec == File::ErrorCode::Ok);
+	Mesh* cubeMesh = new Mesh;
+	cubeMesh->InitBuffers(cubeVertexData, numCubeVertexData, numFlagVerticies);
+	// TODO: Create an unlit shader to use for light cube entity
+	// TODO: Make it so that an entity does not need a texture?
+	g_light = new Entity(cubeMesh, g_shader, g_arcadeTexture);
 
 	// exampleManager->StartThread();
 	
@@ -133,7 +147,6 @@ void Session::Update(float deltaTime) {
 
 	// Light entity update. I really need a way to manage entities and their properties...
 	// TODO: Create entity management.
-	// TODO: Create lightEntity. Give it position and a default mesh
 	if (g_action2) {
 		g_action2 = false;
 		lightShouldTick = !lightShouldTick;
@@ -141,10 +154,10 @@ void Session::Update(float deltaTime) {
 	if (lightShouldTick) {
 		static float lightOffset = 0;
 		lightOffset += deltaTime;
-		g_lightPos = glm::vec3(
-			glm::sin(lightOffset * 1.1000) * 1.000 - 1,
+		g_light->transform.location = glm::vec3(
+			glm::sin(lightOffset * 1.1000) * 4.000 - 1,
 			0,
-			glm::cos(lightOffset * 1.1003) * 1.000 - 1);
+			glm::cos(lightOffset * 1.1000) * 4.000 - 1);
 	}
 }
 

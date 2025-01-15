@@ -1,6 +1,7 @@
 #pragma once
 #include "utils/Writable.hpp"
 #include "utils/containers/Vec3.hpp"
+#include <glm/vec3.hpp>
 
 namespace FG24 {
 class Transform : public IWritable {
@@ -9,8 +10,8 @@ public:
 	bool ReadFrom(FILE* file) override;
 
 	// TODO make private
-	Vec3 location{};
-	Vec3 rotation{};
-	Vec3 scale{};
+	glm::vec3 location{};
+	glm::vec3 rotation{};
+	glm::vec3 scale{};
 };
 }

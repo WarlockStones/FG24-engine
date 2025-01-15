@@ -63,8 +63,8 @@ void Renderer::Draw() {
 	// Model matrix to translate local to world space
 	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
 	// model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // "Lay on ground"
-	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, -2.5f, -1.5f)); 
-	// model = glm::rotate(model, (float)SDL_GetTicks() / 1000, glm::vec3(0.0f, 0.0f, 1.0f)); // Spin
+	// model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, -2.5f, -1.5f)); 
+	model = glm::rotate(model, (float)SDL_GetTicks() / 1000, glm::vec3(0.0f, 0.0f, 1.0f)); // Spin
 
 	// View matrix (camera)
 	// Move the entire scene around inversed to where we want camera to move
@@ -85,13 +85,17 @@ void Renderer::Draw() {
 	Shader::SetMat4(g_shader, "model", model);
 	Shader::SetMat4(g_shader, "view", view);
 	Shader::SetMat4(g_shader, "projection", proj);
-	// Draw all entities
+	Shader::SetVec3(g_shader, "lightPosition", g_light->transform.location);
+	Shader::SetVec3(g_shader, "cameraPosition", g_camera->GetPosition());
 	g_flag->Draw();
 
 	// Light
-	Shader::SetVec3(g_shader, "lightPosition", g_lightPos);
-
-	Shader::SetVec3(g_shader, "cameraPosition", g_camera->GetPosition());
+	glm::mat4 lightModel = glm::mat4(1.0f);
+	lightModel = glm::translate(lightModel, g_light->transform.location); // Translate first!
+	lightModel = glm::scale(lightModel, glm::vec3(0.5));
+	// lightModel = glm::rotate(lightModel, ???));
+	Shader::SetMat4(g_shader, "model", lightModel);
+	g_light->Draw();
 	
 	SDL_GL_SwapWindow(window);
 }
