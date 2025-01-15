@@ -19,7 +19,8 @@ extern std::uint32_t	g_shader;
 extern std::uint32_t	g_arcadeTexture;
 extern Entity*			g_flag;
 extern Camera*			g_camera;
-extern Entity*			g_light;
+extern std::uint32_t	g_light1;
+extern std::uint32_t	g_light2;
 
 // Inputs
 extern float g_yvel;

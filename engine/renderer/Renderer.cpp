@@ -9,7 +9,6 @@
 #include "Shader.hpp"
 #include "framework/Camera.hpp"
 
-
 namespace FG24 {
 bool Renderer::Init() {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -85,17 +84,26 @@ void Renderer::Draw() {
 	Shader::SetMat4(g_shader, "model", model);
 	Shader::SetMat4(g_shader, "view", view);
 	Shader::SetMat4(g_shader, "projection", proj);
-	Shader::SetVec3(g_shader, "lightPosition", g_light->transform.location);
+	// Shader::SetVec3(g_shader, "lightPosition", g_light->transform.location);
 	Shader::SetVec3(g_shader, "cameraPosition", g_camera->GetPosition());
 	g_flag->Draw();
 
 	// Light
+	/*
 	glm::mat4 lightModel = glm::mat4(1.0f);
 	lightModel = glm::translate(lightModel, g_light->transform.location); // Translate first!
 	lightModel = glm::scale(lightModel, glm::vec3(0.5));
 	// lightModel = glm::rotate(lightModel, ???));
 	Shader::SetMat4(g_shader, "model", lightModel);
 	g_light->Draw();
+
+	// Light 2
+	glm::mat4 lm2 = glm::mat4(1.0);
+	lm2 = glm::translate(lm2, g_light2->transform.location); // Translate first!
+	lm2 = glm::scale(lm2, glm::vec3(0.5));
+	Shader::SetMat4(g_shader, "model", lm2);
+	g_light2->Draw();
+	*/
 	
 	SDL_GL_SwapWindow(window);
 }

@@ -8,6 +8,7 @@
 #include "framework/KeyInput.hpp"
 
 #include "utils/File.hpp"
+#include "framework/Lighting.hpp"
 
 // I should probably not do these rendering stuff here
 #include "renderer/Shader.hpp"
@@ -66,7 +67,9 @@ void Session::Start() {
 	cubeMesh->InitBuffers(cubeVertexData, numCubeVertexData, numFlagVerticies);
 	// TODO: Create an unlit shader to use for light cube entity
 	// TODO: Make it so that an entity does not need a texture?
-	g_light = new Entity(cubeMesh, g_shader, g_arcadeTexture);
+	Lighting::AddLight(Lighting::Light(glm::vec3(0), Lighting::LightType::Point));
+
+
 
 	// exampleManager->StartThread();
 	
@@ -155,9 +158,9 @@ void Session::Update(float deltaTime) {
 		static float lightOffset = 0;
 		lightOffset += deltaTime;
 		g_light->transform.location = glm::vec3(
-			glm::sin(lightOffset * 1.1000) * 4.000 - 1,
+			glm::sin(lightOffset * 1.1f) * 4.0f - 1,
 			0,
-			glm::cos(lightOffset * 1.1000) * 4.000 - 1);
+			glm::cos(lightOffset * 1.1f) * 4.0f - 1);
 	}
 }
 

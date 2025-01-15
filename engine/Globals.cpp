@@ -16,7 +16,8 @@ std::uint32_t		g_arcadeTexture{};
 Entity*				g_flag{};
 Camera*				g_camera{};
 glm::vec3			g_lightPos;
-Entity*				g_light{};
+std::uint32_t				g_light = -1;
+std::uint32_t				g_light2 = -1;
 
 // Key inputs
 float g_yvel = 0;

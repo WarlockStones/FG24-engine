@@ -30,6 +30,7 @@ add_executable(engine
 	"framework/Entity.cpp"
 	"framework/Transform.cpp"
 	"framework/ExampleManager.cpp"
+	"framework/Lighting.cpp"
 	"renderer/Renderer.cpp"
 	"renderer/Mesh.cpp"
 	"renderer/Texture.cpp"
