@@ -129,12 +129,12 @@ Vec3 ParseV(char* token) {
 Vec2 ParseVT(char* token) {
 	token = std::strtok(token, " ");
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
-	// Read u v w values as vertex texture coordinates
+	// Read u v w values as vertex textureID coordinates
 	float uvw[3]{};
 	for (int i = 0; i < 3; ++i) {
 		if (token) {
 			if (std::sscanf(token, "%f", &uvw[i]) <= 0) {
-				std::fprintf(stderr, "Error: ParseVT: invalid vertex texture data!\n");
+				std::fprintf(stderr, "Error: ParseVT: invalid vertex textureID data!\n");
 			}
 
 			token = std::strtok(nullptr, " ");
@@ -154,7 +154,7 @@ Vec2 ParseVT(char* token) {
 Vec3 ParseVN(char* token) {
 	token = std::strtok(token, " ");
 	token = std::strtok(nullptr, " "); // Tokenize to next past index
-	// Read i j k values as vertex texture coordinates
+	// Read i j k values as vertex textureID coordinates
 	float data[3]{};
 	for (int i = 0; i < 3; ++i) {
 		if (token) {

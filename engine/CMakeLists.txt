@@ -35,7 +35,7 @@ add_executable(engine
 	"renderer/Mesh.cpp"
 	"renderer/Texture.cpp"
 	"renderer/Shader.cpp"
-)
+ "framework/EntityManager.cpp")
 
 target_include_directories(engine PRIVATE
 	${CMAKE_SOURCE_DIR}/engine

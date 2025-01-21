@@ -27,7 +27,7 @@ void Mesh::InitBuffers(
 
 	// Vertex Position
 	glVertexAttribPointer(
-		0, // index of stream of data for shader [[ layout (location = 0) in  ]]
+		0, // index of stream of data for m_shaderID [[ layout (location = 0) in  ]]
 		3, // num components. xyz = 3 
 		GL_FLOAT, // Type
 		GL_FALSE, // Normalize
@@ -57,7 +57,7 @@ void Mesh::InitBuffers(
 	glEnableVertexAttribArray(2);
 }
 
-void Mesh::Draw(std::uint32_t shaderID) {
+void Mesh::Draw(std::uint32_t shaderID) const {
 	assert(shaderID != 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
 	glUseProgram(shaderID);

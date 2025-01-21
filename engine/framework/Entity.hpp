@@ -10,19 +10,22 @@ class Mesh;
 // An Entity is a thing in the game world
 class Entity : public IWritable {
 public:
-	Entity(Mesh* mesh, std::uint32_t shader, std::uint32_t texture = 0);
+	explicit Entity(const Mesh& mesh, std::uint32_t shaderID, std::uint32_t textureID, int ID);
 	~Entity() = default;
-	void Draw();
+	Entity(const Entity& other); // Copy constructor
+	Entity& operator=(Entity&& other); // Move assignment
+	void Draw() const;
+	int GetID() const;
 
-	// TODO maybe virtual in the future?
 	bool WriteTo(FILE* file) const override;
 	bool ReadFrom(FILE* file) override;
 
 	// TODO: Make private
-	Transform transform;
+	Transform m_transform;
 private:
-	Mesh* mesh{};
-	std::uint32_t shader{};
-	std::uint32_t texture = 0; // Texture id 0 means has no texture
+	const Mesh& m_mesh;
+	std::uint32_t m_shaderID{};
+	std::uint32_t m_textureID = 0; // Texture m_ID 0 means has no m_textureID
+	int m_ID = -1;
 };
 } // namespace FG24

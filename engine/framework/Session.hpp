@@ -7,6 +7,8 @@ namespace FG24 {
 class Renderer;
 class KeyInput;
 class ExampleManager;
+class GameState;
+class EntityManager;
 
 class Session {
 public:
@@ -19,7 +21,8 @@ public:
 private:
 	Renderer* renderer{};
 	KeyInput* keyInput{};
-
+	GameState* m_gameState;
 	ExampleManager* exampleManager;
+	EntityManager* entityManager;
 };
 }

@@ -17,7 +17,7 @@ constexpr glm::vec3 g_worldForward = glm::vec3(0, 0, -1);
 // Assets / Entities
 extern std::uint32_t	g_shader;
 extern std::uint32_t	g_arcadeTexture;
-extern Entity*			g_flag;
+extern int				g_flagEntityID;
 extern Camera*			g_camera;
 extern std::uint32_t	g_light1;
 extern std::uint32_t	g_light2;

@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <SDL2/SDL.h>
+#include <vector>
 #include <cstdio>
 #include "Globals.hpp"
 #include "framework/Entity.hpp"
@@ -49,7 +50,7 @@ bool Renderer::Init() {
 	return true;
 }
 
-void Renderer::Draw() {
+void Renderer::Draw(const std::vector<Entity>& entities) const {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -59,6 +60,7 @@ void Renderer::Draw() {
 	// Space / Coordinate systems
 	// Local/object space > World space > View/eye space > Clip space > Screen space.
 
+	// TODO: Support more than one entity model position
 	// Model matrix to translate local to world space
 	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
 	// model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // "Lay on ground"
@@ -79,19 +81,22 @@ void Renderer::Draw() {
 		static_cast<float>(g_windowWidth) / static_cast<float>(g_windowHeight), // Aspect ratio
 		0.1f, 100.0f); // near, far planes of the frustrum
 
-	// TODO: Support more than one shader
+	// TODO: Support more than one shaderID
 	Shader::Use(g_shader);
 	Shader::SetMat4(g_shader, "model", model);
 	Shader::SetMat4(g_shader, "view", view);
 	Shader::SetMat4(g_shader, "projection", proj);
-	// Shader::SetVec3(g_shader, "lightPosition", g_light->transform.location);
+	// Shader::SetVec3(g_shader, "lightPosition", g_light->m_transform.location);
 	Shader::SetVec3(g_shader, "cameraPosition", g_camera->GetPosition());
-	g_flag->Draw();
+
+	for(const Entity& e : entities) {
+		e.Draw();
+	}
 
 	// Light
 	/*
 	glm::mat4 lightModel = glm::mat4(1.0f);
-	lightModel = glm::translate(lightModel, g_light->transform.location); // Translate first!
+	lightModel = glm::translate(lightModel, g_light->m_transform.location); // Translate first!
 	lightModel = glm::scale(lightModel, glm::vec3(0.5));
 	// lightModel = glm::rotate(lightModel, ???));
 	Shader::SetMat4(g_shader, "model", lightModel);
@@ -99,7 +104,7 @@ void Renderer::Draw() {
 
 	// Light 2
 	glm::mat4 lm2 = glm::mat4(1.0);
-	lm2 = glm::translate(lm2, g_light2->transform.location); // Translate first!
+	lm2 = glm::translate(lm2, g_light2->m_transform.location); // Translate first!
 	lm2 = glm::scale(lm2, glm::vec3(0.5));
 	Shader::SetMat4(g_shader, "model", lm2);
 	g_light2->Draw();

@@ -15,6 +15,7 @@
 #include "renderer/Texture.hpp"
 #include "framework/Entity.hpp"
 #include "renderer/Mesh.hpp"
+#include "framework/EntityManager.hpp"
 
 // Temp testing
 #include "framework/ExampleManager.hpp"
@@ -25,6 +26,7 @@ namespace FG24 {
 bool Session::Init() {
 	renderer = new Renderer();
 	exampleManager = new ExampleManager();
+	entityManager = new EntityManager();
 
 	if (renderer->Init() == false) {
 		std::fprintf(stderr, "Error: Session failed to initialize Renderer!\n");
@@ -52,7 +54,7 @@ void Session::Start() {
 	assert(ec == File::ErrorCode::Ok);
 	Mesh* flagMesh = new Mesh;
 	flagMesh->InitBuffers(flagVertexData, numFlagVertexData, numFlagVerticies);
-	g_flag = new Entity(flagMesh, g_shader, g_arcadeTexture);
+	g_flagEntityID = entityManager->AddEntity(*flagMesh, g_shader);
 
 	float* cubeVertexData = nullptr;
 	std::size_t numCubeVertexData{};
@@ -65,9 +67,9 @@ void Session::Start() {
 	assert(ec == File::ErrorCode::Ok);
 	Mesh* cubeMesh = new Mesh;
 	cubeMesh->InitBuffers(cubeVertexData, numCubeVertexData, numFlagVerticies);
-	// TODO: Create an unlit shader to use for light cube entity
-	// TODO: Make it so that an entity does not need a texture?
-	Lighting::AddLight(Lighting::Light(glm::vec3(0), Lighting::LightType::Point));
+	// TODO: Create an unlit m_shaderID to use for light cube entity
+	// TODO: Make it so that an entity does not need a m_textureID?
+// 	Lighting::AddLight(Lighting::Light(glm::vec3(0), Lighting::LightType::Point));
 
 
 
@@ -116,25 +118,23 @@ void Session::GameLoop() {
 	static std::uint32_t millisecondsPreviousFrame{};
 	g_runGameLoop = true;
 	while (g_runGameLoop) {
-		KeyInput::ProcessInput();
-
-		// TODO: Fix this. It is not blocking!
-		// Block game loop if running too fast
+		// Lock fps
 		std::uint32_t timeToWait = millisecondsPerFrame - 
 			static_cast<std::uint32_t>(SDL_GetTicks() - millisecondsPreviousFrame);
 		if (timeToWait > 0 && timeToWait <= millisecondsPerFrame) {
 			SDL_Delay(timeToWait);
 		}
-
 		float deltaTime = (SDL_GetTicks() - millisecondsPreviousFrame) / 1000.0;
 		millisecondsPreviousFrame = SDL_GetTicks();
 
-		Update(deltaTime);
-		renderer->Draw();
+		KeyInput::ProcessInput();
+		Update(deltaTime); 
+		renderer->Draw(entityManager->GetEntities());
 	}
 }
 
 static bool lightShouldTick = true;
+// Update game state
 void Session::Update(float deltaTime) {
 
 	// Testing sending messages to manager on another thread
@@ -157,10 +157,12 @@ void Session::Update(float deltaTime) {
 	if (lightShouldTick) {
 		static float lightOffset = 0;
 		lightOffset += deltaTime;
-		g_light->transform.location = glm::vec3(
+		/*
+		g_light->m_transform.location = glm::vec3(
 			glm::sin(lightOffset * 1.1f) * 4.0f - 1,
 			0,
 			glm::cos(lightOffset * 1.1f) * 4.0f - 1);
+			*/
 	}
 }
 

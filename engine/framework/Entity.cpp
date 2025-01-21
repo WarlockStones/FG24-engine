@@ -4,33 +4,55 @@
 #include "Entity.hpp"
 #include "renderer/Mesh.hpp"
 #include <cstdint>
-
 #include <cstdio>
 
 namespace FG24 {
-Entity::Entity(Mesh* mesh, std::uint32_t shader, std::uint32_t texture) :
-	mesh(mesh), shader(shader), texture(texture) {
+Entity::Entity(const Mesh& mesh, std::uint32_t shaderID, std::uint32_t textureID, int ID) :
+	m_mesh(mesh), m_shaderID(shaderID), m_textureID(textureID), m_ID(ID) {
 }
-void Entity::Draw() {
-	// Set shader and character specific things here 
 
-	if (texture != 0) {
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+Entity::Entity(const Entity& other) 
+	: m_mesh(other.m_mesh),
+	m_shaderID(other.m_shaderID),
+	m_textureID(other.m_textureID),
+	m_ID(other.m_ID) {
+}
+
+Entity& Entity::operator=(Entity&& other) {
+	if (&other == this) {
+		return *this;
 	}
 
-	// Use shader and do shader stuff
+	// Release any resources we may be holding
 
-	mesh->Draw(shader);
+	// Transfer ownership of pointers
+
+	return *this;
+}
+
+void Entity::Draw() const{
+	// Set m_shaderID and character specific things here 
+
+	if (m_textureID != 0) {
+		glActiveTexture(GL_TEXTURE0);
+	}
+
+	// Use m_shaderID and do m_shaderID stuff
+
+	m_mesh.Draw(m_shaderID);
 
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture
+}
+
+int Entity::GetID() const {
+	return m_ID;
 }
 
 constexpr int EntityVersion = 1; // For serialization
 bool Entity::WriteTo(FILE* file) const {
 	int version = EntityVersion;
 	std::fwrite(&version, sizeof(int), 1, file);
-	transform.WriteTo(file);
+	m_transform.WriteTo(file);
 
 	return true;
 }
@@ -38,7 +60,7 @@ bool Entity::WriteTo(FILE* file) const {
 bool Entity::ReadFrom(FILE* file) {
 	int version = 0;
 	std::fread(&version, sizeof(int), 1, file);
-	transform.ReadFrom(file);
+	m_transform.ReadFrom(file);
 
 	return true;
 }

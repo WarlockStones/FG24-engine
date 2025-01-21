@@ -13,11 +13,11 @@ int g_windowHeight = 600;
 
 std::uint32_t		g_shader{};
 std::uint32_t		g_arcadeTexture{};
-Entity*				g_flag{};
+int					g_flagEntityID = -1;
 Camera*				g_camera{};
 glm::vec3			g_lightPos;
-std::uint32_t				g_light = -1;
-std::uint32_t				g_light2 = -1;
+std::uint32_t		g_light = -1;
+std::uint32_t		g_light2 = -1;
 
 // Key inputs
 float g_yvel = 0;

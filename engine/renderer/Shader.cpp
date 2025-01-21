@@ -21,7 +21,7 @@ std::uint32_t CompileShader(const char* vertPath, const char* fragPath) {
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-		std::fprintf(stderr, "Error: Renderer failed to compile triangle vertex shader\n");
+		std::fprintf(stderr, "Error: Renderer failed to compile triangle vertex m_shaderID\n");
 		std::fprintf(stderr, "%s\n", infoLog);
 		return 0;
 	}
@@ -35,7 +35,7 @@ std::uint32_t CompileShader(const char* vertPath, const char* fragPath) {
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-		std::fprintf(stderr, "Error: Renderer failed to compile triangle fragment shader\n");
+		std::fprintf(stderr, "Error: Renderer failed to compile triangle fragment m_shaderID\n");
 		std::fprintf(stderr, "%s\n", infoLog);
 		return 0;
 	}
@@ -47,7 +47,7 @@ std::uint32_t CompileShader(const char* vertPath, const char* fragPath) {
 	glGetProgramiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(program, 512, nullptr, infoLog);
-		std::fprintf(stderr, "Error: Renderer failed to link triangle shader program\n");
+		std::fprintf(stderr, "Error: Renderer failed to link triangle m_shaderID program\n");
 		std::fprintf(stderr, "%s\n", infoLog);
 		return 0;
 	}
