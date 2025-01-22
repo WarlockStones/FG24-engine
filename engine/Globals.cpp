@@ -4,6 +4,7 @@
 #include "renderer/Mesh.hpp"
 #include "framework/Entity.hpp"
 #include "framework/Camera.hpp"
+#include "framework/Lighting.hpp"
 
 
 namespace FG24 {
@@ -17,9 +18,12 @@ std::uint32_t		g_arcadeTexture{};
 Entity*				g_entity1{};
 Entity*				g_entity2{};
 Camera*				g_camera{};
-glm::vec3			g_lightPos;
-std::uint32_t		g_light = -1;
-std::uint32_t		g_light2 = -1;
+glm::vec3			g_lightPos{};
+Light*				g_light1{};
+Light*				g_light2{};
+
+// Move to MeshManager
+Mesh* g_cubeMesh;
 
 // Key inputs
 float g_yvel = 0;

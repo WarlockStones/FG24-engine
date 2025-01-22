@@ -16,6 +16,7 @@
 #include "framework/Entity.hpp"
 #include "renderer/Mesh.hpp"
 #include "framework/EntityManager.hpp"
+#include "framework/Lighting.hpp"
 
 // Temp testing
 #include "framework/ExampleManager.hpp"
@@ -64,8 +65,8 @@ void Session::Start() {
 		numCubeVertexData,
 		numCubeVerticies);
 	assert(ec == File::ErrorCode::Ok);
-	Mesh* cubeMesh = new Mesh;
-	cubeMesh->InitBuffers(cubeVertexData, numCubeVertexData, numFlagVerticies);
+	g_cubeMesh = new Mesh;
+	g_cubeMesh->InitBuffers(cubeVertexData, numCubeVertexData, numFlagVerticies);
 
 	// ----- Configure entities -----
 	Mesh* monkeyMesh = new Mesh;
@@ -74,13 +75,17 @@ void Session::Start() {
 	g_entity1 = entityManager.CreateEntity(*monkeyMesh, g_shader);
 
 	// Box
-	g_entity2 = entityManager.CreateEntity(*cubeMesh, g_shader);
+	g_entity2 = entityManager.CreateEntity(*g_cubeMesh, g_shader);
 	g_entity2->m_transform.SetLocation(glm::vec3(2, 2, -2));
 	g_entity2->m_transform.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
 	// TODO: Create an unlit m_shaderID to use for light cube entity
 	// TODO: Make it so that an entity does not need a m_textureID?
-	// Lighting::AddLight(Lighting::Light(glm::vec3(0), Lighting::LightType::Point));
+	g_light1 = Lighting::CreateLight(
+		glm::vec3(2, 2, 4), // Pos
+		LightType::Point,    // Type
+		glm::vec4(0.0f, 0.7f, 0.0f, 1.0f),	// diffuse
+		glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); // specular
 
 	// exampleManager->StartThread();
 	
@@ -169,12 +174,10 @@ void Session::Update(float deltaTime) {
 	if (lightShouldTick) {
 		static float lightOffset = 0;
 		lightOffset += deltaTime;
-		/*
-		g_light->m_transform.location = glm::vec3(
+		g_light1->m_position = glm::vec3(
 			glm::sin(lightOffset * 1.1f) * 4.0f - 1,
-			0,
+			3,
 			glm::cos(lightOffset * 1.1f) * 4.0f - 1);
-			*/
 	}
 }
 

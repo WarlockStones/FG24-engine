@@ -76,6 +76,14 @@ void SetVec3 (std::uint32_t shaderID, const char* name, glm::vec3 value) {
 				value.y,
 				value.z);
 }
+void SetVec4 (std::uint32_t shaderID, const char* name, glm::vec4 value) {
+	glUniform4f(glGetUniformLocation(shaderID, name),
+				value.r,
+				value.g,
+				value.b,
+				value.a);
+}
+
 void SetMat4 (std::uint32_t shaderID, const char* name, glm::mat4 value) {
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, name),
 					  1, // Amout of matrices we are sending

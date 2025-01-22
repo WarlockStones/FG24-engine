@@ -9,6 +9,9 @@
 #include "framework/Entity.hpp"
 #include "Shader.hpp"
 #include "framework/Camera.hpp"
+#include "framework/Lighting.hpp"
+#include "renderer/Mesh.hpp"
+
 namespace FG24 {
 bool Renderer::Init() {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -64,8 +67,21 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 	Shader::SetMat4(g_shader, "projection", m_projection);
 	Shader::SetVec3(g_shader, "cameraPosition", g_camera->GetPosition());
 
+	for (const auto& l : Lighting::GetLights()) {
+		glm::mat4 model = glm::mat4(1);
+		model = glm::translate(model, l->m_position);
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+		Shader::SetMat4(g_shader, "model", model);
+		Shader::SetVec3(g_shader, "lightPosition", Lighting::GetLights().at(0)->m_position); // Now just use 1 light
+		Shader::SetVec4(g_shader, "lightDiffuse", l->m_diffuse);
+		Shader::SetVec4(g_shader, "lightSpecular", l->m_specular);
+		
+		// TODO: Light's mesh should use default unlit shader
+		g_cubeMesh->Draw(g_shader);
+	}
+
 	for(const Entity* e : entities) {
-		glm::mat4 tr = glm::mat4(1);
+		glm::mat4 tr =  glm::mat4(1);
 		glm::mat4 rot = glm::mat4(1);
 		glm::mat4 scl = glm::mat4(1);
 		tr = glm::translate(tr, e->m_transform.GetLocation());
@@ -73,26 +89,11 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 		scl = glm::scale(scl, e->m_transform.GetScale());
 		glm::mat4 model = tr * rot * scl;
 		Shader::SetMat4(g_shader, "model", model);
+
+		// TODO: give them the position of all lights
+
 		e->Draw();
 	}
-
-	// Light
-	// Shader::SetVec3(g_shader, "lightPosition", g_light->m_transform.location);
-	/*
-	glm::mat4 lightModel = glm::mat4(1.0f);
-	lightModel = glm::translate(lightModel, g_light->m_transform.location); // Translate first!
-	lightModel = glm::scale(lightModel, glm::vec3(0.5));
-	// lightModel = glm::rotate(lightModel, ???));
-	Shader::SetMat4(g_shader, "model", lightModel);
-	g_light->Draw();
-
-	// Light 2
-	glm::mat4 lm2 = glm::mat4(1.0);
-	lm2 = glm::translate(lm2, g_light2->m_transform.location); // Translate first!
-	lm2 = glm::scale(lm2, glm::vec3(0.5));
-	Shader::SetMat4(g_shader, "model", lm2);
-	g_light2->Draw();
-	*/
 	
 	SDL_GL_SwapWindow(m_window);
 }
