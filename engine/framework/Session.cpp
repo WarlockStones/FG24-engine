@@ -25,8 +25,6 @@
 namespace FG24 {
 bool Session::Init() {
 	renderer = new Renderer();
-	exampleManager = new ExampleManager();
-	entityManager = new EntityManager();
 
 	if (renderer->Init() == false) {
 		std::fprintf(stderr, "Error: Session failed to initialize Renderer!\n");
@@ -73,10 +71,10 @@ void Session::Start() {
 	Mesh* monkeyMesh = new Mesh;
 	monkeyMesh->InitBuffers(monkeyVertexData, numFlagVertexData, numFlagVerticies);
 	// Monkey
-	g_entity1 = entityManager->CreateEntity(*monkeyMesh, g_shader);
+	g_entity1 = entityManager.CreateEntity(*monkeyMesh, g_shader);
 
 	// Box
-	g_entity2 = entityManager->CreateEntity(*cubeMesh, g_shader);
+	g_entity2 = entityManager.CreateEntity(*cubeMesh, g_shader);
 	g_entity2->m_transform.SetLocation(glm::vec3(2, 2, -2));
 	g_entity2->m_transform.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
@@ -140,7 +138,7 @@ void Session::GameLoop() {
 
 		KeyInput::ProcessInput();
 		Update(deltaTime); 
-		renderer->Draw(entityManager->GetEntities());
+		renderer->Draw(entityManager.GetEntities());
 	}
 }
 
@@ -153,7 +151,7 @@ void Session::Update(float deltaTime) {
 		std::uint32_t ms = SDL_GetTicks();
 		float s = static_cast<float>(ms) / 1000.0f;
 		printf("Session is sending a message\n");
-		exampleManager->QueueMessage(new FloatMessage(s));
+		exampleManager.QueueMessage(new FloatMessage(s));
 		g_action1 = false;
 	}
 
@@ -181,9 +179,9 @@ void Session::Update(float deltaTime) {
 }
 
 Session::~Session() {
-	delete exampleManager;
-	delete renderer;
-	delete keyInput;
+	if (renderer != nullptr) {
+		delete renderer;
+	}
 	std::printf("Session destructor done\n");
 }
 
