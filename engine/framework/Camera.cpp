@@ -22,6 +22,9 @@ void Camera::UpdateVectors() {
 }
 
 glm::mat4 Camera::GetViewMatrix() const {
+	// Move the entire scene around inversed to where we want camera to move
+	// OpenGL is right-handed system so +x = right, +y = up. +z = backwards.
+	// This is why forward is -z. 
 	return glm::lookAt(m_position, m_position + m_front, m_up);
 }
 

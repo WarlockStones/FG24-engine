@@ -1,8 +1,10 @@
 #include "Transform.hpp"
+#include <glm/gtc/quaternion.hpp>
 #include <cstdio>
 
 constexpr int TransformVersion = 1; // For serialization
 bool FG24::Transform::WriteTo(FILE* file) const {
+	/*
 	// FILE* will be an already opened file stream pointer and now we just have
 	// to write to it
 	int version = TransformVersion;
@@ -13,9 +15,12 @@ bool FG24::Transform::WriteTo(FILE* file) const {
 	std::fwrite(&rotation, sizeof(Vec3), 1, file);
 	std::fwrite(&scale, sizeof(Vec3), 1, file);
 	return true;
+	*/
+	return false;
 }
 
 bool FG24::Transform::ReadFrom(FILE* file) {
+	/*
 	int version = 0;
 	// TODO: Error checking. Did we read enough?
 	std::fread(&version, sizeof(int), 1, file);
@@ -24,4 +29,32 @@ bool FG24::Transform::ReadFrom(FILE* file) {
 	std::fread(&scale,    sizeof(Vec3), 1, file);
 
 	return true;
+	*/
+	return false;
 }
+
+void FG24::Transform::SetLocation(glm::vec3 newLocation) {
+	m_location = newLocation;
+}
+
+const glm::vec3 FG24::Transform::GetLocation() const {
+	return m_location;
+}
+
+void FG24::Transform::SetScale(glm::vec3 newScale) {
+	m_scale = newScale;
+}
+
+const glm::vec3 FG24::Transform::GetScale() const {
+	return m_scale;
+}
+
+// x, y, z = pitch, yaw, roll
+void FG24::Transform::SetRotation(glm::vec3 newEuler) {
+	m_rotation = glm::quat(newEuler);
+}
+
+const glm::mat4& FG24::Transform::GetRotationMatrix() const {
+	return glm::mat4_cast(m_rotation);
+}
+

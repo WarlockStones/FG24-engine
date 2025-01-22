@@ -7,15 +7,16 @@
 #include <cstdio>
 
 namespace FG24 {
-Entity::Entity(const Mesh& mesh, std::uint32_t shaderID, std::uint32_t textureID, int ID) :
-	m_mesh(mesh), m_shaderID(shaderID), m_textureID(textureID), m_ID(ID) {
+Entity::Entity(const Mesh& mesh, std::uint32_t shaderId, std::uint32_t textureId) :
+	m_mesh(mesh), m_shaderId(shaderId), m_textureId(textureId) {
 }
 
 Entity::Entity(const Entity& other) 
 	: m_mesh(other.m_mesh),
-	m_shaderID(other.m_shaderID),
-	m_textureID(other.m_textureID),
-	m_ID(other.m_ID) {
+	m_shaderId(other.m_shaderId),
+	m_textureId(other.m_textureId),
+	m_transform(other.m_transform) {
+
 }
 
 Entity& Entity::operator=(Entity&& other) {
@@ -24,28 +25,23 @@ Entity& Entity::operator=(Entity&& other) {
 	}
 
 	// Release any resources we may be holding
-
 	// Transfer ownership of pointers
 
 	return *this;
 }
 
-void Entity::Draw() const{
+void Entity::Draw() const {
 	// Set m_shaderID and character specific things here 
 
-	if (m_textureID != 0) {
+	if (m_textureId != 0) {
 		glActiveTexture(GL_TEXTURE0);
 	}
 
 	// Use m_shaderID and do m_shaderID stuff
 
-	m_mesh.Draw(m_shaderID);
+	m_mesh.Draw(m_shaderId);
 
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture
-}
-
-int Entity::GetID() const {
-	return m_ID;
 }
 
 constexpr int EntityVersion = 1; // For serialization

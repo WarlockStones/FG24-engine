@@ -5,6 +5,7 @@
 #include "framework/Entity.hpp"
 #include "framework/Camera.hpp"
 
+
 namespace FG24 {
 bool g_runGameLoop = false;
 
@@ -13,7 +14,8 @@ int g_windowHeight = 600;
 
 std::uint32_t		g_shader{};
 std::uint32_t		g_arcadeTexture{};
-int					g_flagEntityID = -1;
+Entity*				g_entity1{};
+Entity*				g_entity2{};
 Camera*				g_camera{};
 glm::vec3			g_lightPos;
 std::uint32_t		g_light = -1;
