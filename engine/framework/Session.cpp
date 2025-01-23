@@ -100,6 +100,13 @@ void Session::Start() {
 		glm::vec4(0.5f, 0.0f, 0.5f, 1.0f),
 		glm::vec4(0.5f, 0.0f, 0.5f, 1.0f));
 
+	g_lightDir = Lighting::CreateLight(
+		glm::vec3(0, 10, -5),
+		LightType::Directional,
+		glm::vec4(0.7f, 0.6f, 0.5f, 1.0f),
+		glm::vec4(0.7f, 0.6f, 0.5f, 1.0f));
+
+
 	// exampleManager->StartThread();
 	
 	g_camera = new Camera(glm::vec3(0, 0, 4), -90, 0);

@@ -1,5 +1,9 @@
 #version 330 core
 #define MAX_LIGHTS 8 // Make sure this matches in C++
+// LightType
+#define POINT 0
+#define SPOT 1
+#define DIRECTIONAL 2
 
 uniform sampler2D tex;
 
@@ -39,11 +43,10 @@ void main() {
 
 	// Add from each light
 	for (int i = 0; i < activeLights; ++i) {
-		// CHANGE THESE NAMES!! Causes shadowing!!
 		vec3 diffuseToAdd = vec3(0,0,0);
 		vec3 specularToAdd = vec3(0,0,0);
 
-		if (lightType[i] == 0) { 
+		if (lightType[i] == POINT) { 
 			// Calculate point light by 
 			vec3 lightDirection = normalize(lightPosition[i].xyz - pos_world.xyz);
 
@@ -91,8 +94,43 @@ void main() {
 			}
 			diffuseLuminosity += diffuseToAdd;
 			specularLuminosity += specularToAdd;
-		} // end of light loop
-	}
+		} else if (lightType[i] == SPOT) {
+			// TODO: Add spotlight
+			diffuseLuminosity += vec3(1,0,0);
+			specularLuminosity += vec3(1,0,0);
+		} else if (lightType[i] == DIRECTIONAL) {
+			vec3 lightDirection = normalize(lightPosition[i].xyz - pos_world.xyz);
+			vec3 normalizedNormal = normalize(vec3(normal_world.xyz));
+
+			// Intensify light by how aligned the normal is to the direction to the light
+			float difIntensity = max(dot(normalizedNormal, lightDirection), 0.0);
+
+			// Do diffuse and specular only if on correct side to be lit
+			if (difIntensity > 0) {
+				// Directional light omits attenuation
+				diffuseToAdd = difIntensity * lightDiffuse[i].xyz * materialDiffuse.xyz;
+
+				// Calculate specular
+				vec3 vertPositionToCamera = normalize((cameraPosition.xyz - pos_world.xyz));
+				vec3 vectorToCamera = normalize(vertPositionToCamera);
+				vec3 halfVector = normalize((lightDirection + vectorToCamera) / 2);
+				float initialBrightness = max(dot(halfVector, normalizedNormal), 0.0);
+				
+				float totalBrightness = initialBrightness;
+				for (int i = 0; i < materialShininess; ++i) {
+					totalBrightness *= initialBrightness;
+				}
+				// Add specular
+				specularToAdd.xyz += 
+					totalBrightness *
+					lightSpecular[i].xyz *
+					materialSpecular.xyz;
+
+			}
+			diffuseLuminosity += diffuseToAdd;
+			specularLuminosity += specularToAdd;
+		}
+	} // End of for each light loop
 
 	fragColor.xyz = diffuseLuminosity + specularLuminosity;
 

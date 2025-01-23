@@ -102,6 +102,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
 			// TODO: Light's mesh should use default unlit shader
 			Shader::SetMat4(g_shader, "model", model);
+			// TODO: Add diferent mesh for different light type
 			g_cubeMesh->Draw(g_shader);
 		}
 	}

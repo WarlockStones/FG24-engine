@@ -22,6 +22,7 @@ glm::vec3			g_lightPos{};
 Light*				g_light1{};
 Light*				g_light2{};
 Light*				g_light3{};
+Light*				g_lightDir{};
 
 // Move to MeshManager
 Mesh* g_cubeMesh;
