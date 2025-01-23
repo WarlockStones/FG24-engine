@@ -17,7 +17,7 @@ public:
 	void SetRotation(glm::vec3 newEuler);
 	const glm::quat& GetRotation() const;
 	const glm::vec3& GetRotationEuler() const;
-	const glm::mat4& GetRotationMatrix() const;
+	glm::mat4 GetRotationMatrix() const;
 
 private:
 	glm::vec3 m_location = {0.0f, 0.0f, 0.0f};

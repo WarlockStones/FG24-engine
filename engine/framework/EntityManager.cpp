@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include "EntityManager.hpp"
 #include "renderer/Shader.hpp"
 #include "framework/Entity.hpp"
@@ -21,7 +22,7 @@ Entity* EntityManager::CreateEntity(const Mesh& mesh, std::uint32_t shaderId) {
 
 void EntityManager::DeleteEntity(Entity* toRemove) {
 	assert(toRemove != nullptr);
-	for (int i = 0; i < m_entities.size(); ++i) {
+	for (std::size_t i = 0; i < m_entities.size(); ++i) {
 		if (m_entities[i] == toRemove) {
 			delete m_entities[i];
 			m_entities.erase(m_entities.begin() + i);

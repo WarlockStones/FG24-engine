@@ -1,5 +1,7 @@
 #include "Lighting.hpp"
-#include <Vector>
+#include <vector>
+#include <cstdio>
+#include <cstddef>
 #include <cassert>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -29,7 +31,7 @@ glm::vec4 ambient = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
 
 void DeleteLight(Light* toDelete) {
 	assert(toDelete != nullptr);
-	for (int i = 0; i < lights.size(); ++i) {
+	for (std::size_t i = 0; i < lights.size(); ++i) {
 		if (lights[i] == toDelete) {
 			delete lights[i];
 			lights.erase(lights.begin() + i);

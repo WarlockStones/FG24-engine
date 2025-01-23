@@ -11,7 +11,7 @@ class Mesh;
 class Entity : public IWritable {
 public:
 	explicit Entity(const Mesh& mesh, std::uint32_t shaderId, std::uint32_t textureId);
-	~Entity() = default;
+	virtual ~Entity() = default;
 	Entity(const Entity& other); // Copy constructor
 	Entity& operator=(Entity&& other); // Move assignment
 	void Draw() const;

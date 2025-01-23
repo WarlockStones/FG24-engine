@@ -4,7 +4,7 @@
 namespace FG24 {
 enum LightType { Point, Spot, Directional};
 struct Light {
-	Light::Light(
+	Light(
 		glm::vec3 pos,
 		LightType type,
 		glm::vec4 diffuse,

@@ -13,9 +13,9 @@ Entity::Entity(const Mesh& mesh, std::uint32_t shaderId, std::uint32_t textureId
 
 Entity::Entity(const Entity& other) 
 	: m_mesh(other.m_mesh),
+	m_transform(other.m_transform),
 	m_shaderId(other.m_shaderId),
-	m_textureId(other.m_textureId),
-	m_transform(other.m_transform) {
+	m_textureId(other.m_textureId){
 
 }
 

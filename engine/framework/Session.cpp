@@ -144,6 +144,7 @@ void Session::Start() {
 
 	if (fp) std::fclose(fp);
 #endif
+	std::printf("Session start done!\n");
 }
 
 void Session::GameLoop() {
@@ -170,7 +171,6 @@ void Session::GameLoop() {
 static bool lightShouldTick = true;
 // Update game state
 void Session::Update(float deltaTime) {
-
 	// Testing sending messages to manager on another thread
 	if (g_action1) { // Press keyboard key 1
 		std::uint32_t ms = SDL_GetTicks();
