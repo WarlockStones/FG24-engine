@@ -14,10 +14,11 @@ glm::vec4 ambient = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	glm::vec3 pos,
 	LightType type,
 	glm::vec4 diffuse,
-	glm::vec4 specular)
+	glm::vec4 specular,
+	glm::vec3 attenuation)
 {
 	if (lights.size() < maxLights) {
-		Light* l = new Light(pos, type, diffuse, specular);
+		Light* l = new Light(pos, type, diffuse, specular, attenuation);
 		lights.push_back(l);
 		return l;
 	} else {

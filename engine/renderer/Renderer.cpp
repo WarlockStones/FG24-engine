@@ -68,9 +68,10 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 	Shader::SetVec3(g_shader, "cameraPosition", g_camera->GetPosition());
 
 	int lightType[Lighting::maxLights];
-	float diffuse[Lighting::maxLights * 3];
-	float specular[Lighting::maxLights * 3];
+	float diffuse[Lighting::maxLights * 4];
+	float specular[Lighting::maxLights * 4];
 	float position[Lighting::maxLights * 3];
+	float attenuation[Lighting::maxLights * 3];
 	// attenuation but add that to Light struct
 	int activeLights = 0;
 	for (const auto& l : Lighting::GetLights()) {
@@ -85,6 +86,10 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 			specular[activeLights * 4 + 1] = l->m_specular.g;
 			specular[activeLights * 4 + 2] = l->m_specular.b;
 			specular[activeLights * 4 + 3] = l->m_specular.a;
+
+			attenuation[activeLights * 3 + 0] = l->m_attenuation.x;
+			attenuation[activeLights * 3 + 1] = l->m_attenuation.y;
+			attenuation[activeLights * 3 + 2] = l->m_attenuation.z;
 
 			position[activeLights * 3 + 0] = l->m_position.x;
 			position[activeLights * 3 + 1] = l->m_position.y;
@@ -105,7 +110,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 	glUniform4fv(glGetUniformLocation(g_shader, "lightDiffuse"), activeLights, diffuse);
 	glUniform4fv(glGetUniformLocation(g_shader, "lightSpecular"), activeLights, specular);
 	glUniform3fv(glGetUniformLocation(g_shader, "lightPosition"), activeLights, position);
-	// TODO: Add attenuation
+	glUniform3fv(glGetUniformLocation(g_shader, "lightAttenuation"), activeLights, attenuation);
 	glUniform1iv(glGetUniformLocation(g_shader, "lightType"), activeLights, lightType);
 
 	for(const Entity* e : entities) {

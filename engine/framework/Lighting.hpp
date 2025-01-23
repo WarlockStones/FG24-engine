@@ -15,7 +15,8 @@ Light* CreateLight(
 	glm::vec3 pos,
 	LightType type,
 	glm::vec4 diffuse,
-	glm::vec4 specular);
+	glm::vec4 specular,
+	glm::vec3 attenuation = glm::vec3(1, 0.1, 0.001));
 
 void DeleteLight(Light* toDelete);
 

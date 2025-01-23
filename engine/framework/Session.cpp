@@ -83,8 +83,10 @@ void Session::Start() {
 	g_light1 = Lighting::CreateLight(
 		glm::vec3(2, 2, 4), // Pos
 		LightType::Point,    // Type
-		glm::vec4(0.0f, 0.7f, 0.0f, 1.0f),	// diffuse
-		glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); // specular
+		glm::vec4(0.0f, 0.7f, 0.0f, 1.0f), // diffuse
+		glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), // specular
+		glm::vec3(1.0f, 0.05f, 0.0005f)
+		);
 
 	g_light2 = Lighting::CreateLight(
 		glm::vec3(-2, 0, -2),
@@ -183,10 +185,12 @@ void Session::Update(float deltaTime) {
 	if (lightShouldTick) {
 		static float lightOffset = 0;
 		lightOffset += deltaTime;
-		g_light1->m_position = glm::vec3(
-			glm::sin(lightOffset * 1.1f) * 4.0f - 1,
-			3,
-			glm::cos(lightOffset * 1.1f) * 4.0f - 1);
+		if (g_light1) {
+			g_light1->m_position = glm::vec3(
+				glm::sin(lightOffset * 1.1f) * 4.0f - 1,
+				3,
+				glm::cos(lightOffset * 1.1f) * 4.0f - 1);
+		}
 	}
 }
 

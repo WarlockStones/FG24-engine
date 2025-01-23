@@ -11,7 +11,7 @@ uniform vec4 lightDiffuse[MAX_LIGHTS]; // Diffuse color
 uniform vec4 lightSpecular[MAX_LIGHTS]; // Specular highlight color
 uniform vec3 lightPosition[MAX_LIGHTS]; 
 // Constant, linear, quadratic - light fading by distance
-uniform vec3 lightAttenuation = vec3(2, 0.1, 0.001); // TODO Make array
+uniform vec3 lightAttenuation[MAX_LIGHTS];
 uniform int lightType[MAX_LIGHTS]; // 0 = point, 1 = spot, 2 = directional
 uniform int activeLights = 0;
 
@@ -60,10 +60,10 @@ void main() {
 
 				float attenuation = 
 					1 / (
-						lightAttenuation.x +
-						lightAttenuation.y *
+						lightAttenuation[i].x +
+						lightAttenuation[i].y *
 						distanceToLight +
-						lightAttenuation.z * 
+						lightAttenuation[i].z * 
 						pow(distanceToLight, 2));
 
 
