@@ -67,18 +67,46 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 	Shader::SetMat4(g_shader, "projection", m_projection);
 	Shader::SetVec3(g_shader, "cameraPosition", g_camera->GetPosition());
 
+	int lightType[Lighting::maxLights];
+	float diffuse[Lighting::maxLights * 3];
+	float specular[Lighting::maxLights * 3];
+	float position[Lighting::maxLights * 3];
+	// attenuation but add that to Light struct
+	int activeLights = 0;
 	for (const auto& l : Lighting::GetLights()) {
-		glm::mat4 model = glm::mat4(1);
-		model = glm::translate(model, l->m_position);
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-		Shader::SetMat4(g_shader, "model", model);
-		Shader::SetVec3(g_shader, "lightPosition", Lighting::GetLights().at(0)->m_position); // Now just use 1 light
-		Shader::SetVec4(g_shader, "lightDiffuse", l->m_diffuse);
-		Shader::SetVec4(g_shader, "lightSpecular", l->m_specular);
-		
-		// TODO: Light's mesh should use default unlit shader
-		g_cubeMesh->Draw(g_shader);
+		if (l->enabled) {
+			lightType[activeLights] = l->m_type;
+			diffuse [activeLights * 4 + 0] = l->m_diffuse.r;
+			diffuse [activeLights * 4 + 1] = l->m_diffuse.g;
+			diffuse [activeLights * 4 + 2] = l->m_diffuse.b;
+			diffuse [activeLights * 4 + 3] = l->m_diffuse.a;
+
+			specular[activeLights * 4 + 0] = l->m_specular.r;
+			specular[activeLights * 4 + 1] = l->m_specular.g;
+			specular[activeLights * 4 + 2] = l->m_specular.b;
+			specular[activeLights * 4 + 3] = l->m_specular.a;
+
+			position[activeLights * 3 + 0] = l->m_position.x;
+			position[activeLights * 3 + 1] = l->m_position.y;
+			position[activeLights * 3 + 2] = l->m_position.z;
+			
+			++activeLights;
+			// Draw render light default debug mesh
+			glm::mat4 model = glm::mat4(1);
+			model = glm::translate(model, l->m_position);
+			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+			// TODO: Light's mesh should use default unlit shader
+			Shader::SetMat4(g_shader, "model", model);
+			g_cubeMesh->Draw(g_shader);
+		}
 	}
+
+	glUniform1i(glGetUniformLocation(g_shader, "activeLights"), activeLights);
+	glUniform4fv(glGetUniformLocation(g_shader, "lightDiffuse"), activeLights, diffuse);
+	glUniform4fv(glGetUniformLocation(g_shader, "lightSpecular"), activeLights, specular);
+	glUniform3fv(glGetUniformLocation(g_shader, "lightPosition"), activeLights, position);
+	// TODO: Add attenuation
+	glUniform1iv(glGetUniformLocation(g_shader, "lightType"), activeLights, lightType);
 
 	for(const Entity* e : entities) {
 		glm::mat4 tr =  glm::mat4(1);
@@ -90,15 +118,18 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 		glm::mat4 model = tr * rot * scl;
 		Shader::SetMat4(g_shader, "model", model);
 
-		// TODO: give them the position of all lights
-
 		e->Draw();
 	}
 	
 	SDL_GL_SwapWindow(m_window);
 }
 
-void Renderer::SetProjectionMatrix(float fov, std::uint32_t windowWidth, std::uint32_t windowHeight, float nearClipPlane, float farClipPlane) {
+void Renderer::SetProjectionMatrix(float fov,
+	std::uint32_t windowWidth,
+	std::uint32_t windowHeight,
+	float nearClipPlane,
+	float farClipPlane) 
+{
 	// Don't run perspective calculation in update loop.
 	// Projection matrix only needs to calculate on FOV, aspect ratio, or clip-plane changes
 	m_projection = glm::perspective(

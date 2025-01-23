@@ -21,6 +21,7 @@ Camera*				g_camera{};
 glm::vec3			g_lightPos{};
 Light*				g_light1{};
 Light*				g_light2{};
+Light*				g_light3{};
 
 // Move to MeshManager
 Mesh* g_cubeMesh;

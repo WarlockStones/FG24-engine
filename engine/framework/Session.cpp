@@ -79,13 +79,24 @@ void Session::Start() {
 	g_entity2->m_transform.SetLocation(glm::vec3(2, 2, -2));
 	g_entity2->m_transform.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
-	// TODO: Create an unlit m_shaderID to use for light cube entity
-	// TODO: Make it so that an entity does not need a m_textureID?
+	// Lights
 	g_light1 = Lighting::CreateLight(
 		glm::vec3(2, 2, 4), // Pos
 		LightType::Point,    // Type
 		glm::vec4(0.0f, 0.7f, 0.0f, 1.0f),	// diffuse
 		glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); // specular
+
+	g_light2 = Lighting::CreateLight(
+		glm::vec3(-2, 0, -2),
+		LightType::Point,
+		glm::vec4(0.7f, 0.7f, 0.7f, 1.0f),
+		glm::vec4(0.7f, 0.7f, 0.7f, 1.0f));
+
+	g_light3 = Lighting::CreateLight(
+		glm::vec3(2, 0, 2),
+		LightType::Point,
+		glm::vec4(0.5f, 0.0f, 0.5f, 1.0f),
+		glm::vec4(0.5f, 0.0f, 0.5f, 1.0f));
 
 	// exampleManager->StartThread();
 	
@@ -165,8 +176,6 @@ void Session::Update(float deltaTime) {
 	float rot = static_cast<float>(SDL_GetTicks()) * 0.1f;
 	g_entity2->m_transform.SetRotation(glm::vec3(0, rot, 0.0f));
 
-	// Light entity update. I really need a way to manage entities and their properties...
-	// TODO: Create entity management.
 	if (g_action2) {
 		g_action2 = false;
 		lightShouldTick = !lightShouldTick;

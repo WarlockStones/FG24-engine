@@ -9,7 +9,7 @@ namespace FG24 {
 namespace Lighting {
 constexpr int maxLights = 8;
 
-constexpr glm::vec4 globalAmbient = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+extern glm::vec4 ambient;
 
 Light* CreateLight(
 	glm::vec3 pos,
