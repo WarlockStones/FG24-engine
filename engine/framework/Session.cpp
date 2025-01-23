@@ -95,7 +95,7 @@ void Session::Start() {
 		glm::vec4(0.7f, 0.7f, 0.7f, 1.0f));
 
 	g_light3 = Lighting::CreateLight(
-		glm::vec3(2, 0, 2),
+		glm::vec3(1, 0, 1),
 		LightType::Point,
 		glm::vec4(0.5f, 0.0f, 0.5f, 1.0f),
 		glm::vec4(0.5f, 0.0f, 0.5f, 1.0f));
@@ -191,6 +191,14 @@ void Session::Update(float deltaTime) {
 				3,
 				glm::cos(lightOffset * 1.1f) * 4.0f - 1);
 		}
+	}
+	if (g_light3) {
+		static float pos = 0;
+		pos += deltaTime;
+		g_light3->m_position = glm::vec3(
+			g_light3->m_position.x,
+			g_light3->m_position.y,
+			glm::sin(pos * 1.1) * 4.0f + 4.5f);
 	}
 }
 
