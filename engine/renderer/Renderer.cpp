@@ -71,7 +71,9 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 	float diffuse[Lighting::maxLights * 4];
 	float specular[Lighting::maxLights * 4];
 	float position[Lighting::maxLights * 3];
+	float rotation[Lighting::maxLights * 3];
 	float attenuation[Lighting::maxLights * 3];
+	float cutoff[Lighting::maxLights];
 	// attenuation but add that to Light struct
 	int activeLights = 0;
 	for (const auto& l : Lighting::GetLights()) {
@@ -94,6 +96,13 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 			position[activeLights * 3 + 0] = l->m_position.x;
 			position[activeLights * 3 + 1] = l->m_position.y;
 			position[activeLights * 3 + 2] = l->m_position.z;
+
+			rotation[activeLights * 3 + 0] = l->m_rotation.x;
+			rotation[activeLights * 3 + 1] = l->m_rotation.y;
+			rotation[activeLights * 3 + 2] = l->m_rotation.z;
+
+			static constexpr auto co = glm::cos(glm::radians(12.5f));
+			cutoff[activeLights] = co;
 			
 			++activeLights;
 			// Draw render light default debug mesh
@@ -112,6 +121,8 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 	glUniform4fv(glGetUniformLocation(g_shader, "lightSpecular"), activeLights, specular);
 	glUniform3fv(glGetUniformLocation(g_shader, "lightPosition"), activeLights, position);
 	glUniform3fv(glGetUniformLocation(g_shader, "lightAttenuation"), activeLights, attenuation);
+	glUniform3fv(glGetUniformLocation(g_shader, "lightRotation"), activeLights, rotation);
+	glUniform1fv(glGetUniformLocation(g_shader, "lightCutoff"), activeLights, cutoff);
 	glUniform1iv(glGetUniformLocation(g_shader, "lightType"), activeLights, lightType);
 
 	for(const Entity* e : entities) {

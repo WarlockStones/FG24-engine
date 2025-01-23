@@ -16,6 +16,8 @@ uniform vec4 lightSpecular[MAX_LIGHTS]; // Specular highlight color
 uniform vec3 lightPosition[MAX_LIGHTS]; 
 // Constant, linear, quadratic - light fading by distance
 uniform vec3 lightAttenuation[MAX_LIGHTS];
+uniform vec3 lightRotation[MAX_LIGHTS];
+uniform float lightCutoff[MAX_LIGHTS]; // used for spotlights
 uniform int lightType[MAX_LIGHTS]; // 0 = point, 1 = spot, 2 = directional
 uniform int activeLights = 0;
 
@@ -49,7 +51,6 @@ void main() {
     vec4 texel = vec4(0.0, 1.0, 0.1, 1.0); // Placeholder color for textures
 	
 	fragColor = vec4(0,0,0,texel.w); // Initialize color at 0 lighting
-	fragColor.xyz += vec3(materialAmbient * lightAmbient); // Add global ambient
 
 	// Cumulative luminosity calculated from every light combined
 	vec3 diffuseLuminosity = vec3(0);
@@ -94,10 +95,40 @@ void main() {
 
 		} else if (lightType[i] == SPOT) {
 			// TODO: Add spotlight
-			diffuseLuminosity += vec3(1,0,0);
-			specularLuminosity += vec3(1,0,0);
+		    float spotDotCutoff = dot(normalize(-lightRotation[i]), lightDirection);
+			// Only light if within the cutoff
+			if (spotDotCutoff > lightCutoff[i]) {
 
+			    // Do light calculations just like point light
+				float difIntensity = max(dot(normalizedNormal, lightDirection), 0.0);
+
+				// Do diffuse and specular only if on correct side to be lit
+				if (difIntensity > 0) {
+					vec3 diffusePart = difIntensity * lightDiffuse[i].xyz * materialDiffuse.xyz;
+
+					float distanceToLight = length(lightPosition[i].xyz - pos_world.xyz);
+					float attenuation = 
+						1 / (
+							lightAttenuation[i].x +
+							lightAttenuation[i].y *
+							distanceToLight +
+							lightAttenuation[i].z * 
+							pow(distanceToLight, 2));
+
+					diffuseToAdd += diffusePart * attenuation; 
+
+					specularToAdd.xyz += 
+						CalculateSpecularBrightness(lightDirection, normalizedNormal) *
+						lightSpecular[i].xyz *
+						attenuation *
+						materialSpecular.xyz;
+
+				}
+				diffuseLuminosity += diffuseToAdd;
+				specularLuminosity += specularToAdd;
+			}
 		} else if (lightType[i] == DIRECTIONAL) {
+		    // TODO: use light rotation instead of position for directional light
 			float difIntensity = max(dot(normalizedNormal, lightDirection), 0.0);
 
 			if (difIntensity > 0) {
@@ -114,6 +145,13 @@ void main() {
 			specularLuminosity += specularToAdd;
 		}
 	} // End of for each light loop
+
+	/* TODO: Fix ambient
+	fragColor.xyz =
+		diffuseLuminosity +
+		specularLuminosity +
+		vec3(materialAmbient * lightAmbient);
+	*/
 
 	fragColor.xyz = diffuseLuminosity + specularLuminosity;
 

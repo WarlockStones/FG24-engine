@@ -57,4 +57,3 @@ void FG24::Transform::SetRotation(glm::vec3 newEuler) {
 glm::mat4 FG24::Transform::GetRotationMatrix() const {
   return glm::mat4_cast(m_rotation); // This crashes
 }
-

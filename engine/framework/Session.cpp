@@ -79,13 +79,17 @@ void Session::Start() {
 	g_entity2->m_transform.SetLocation(glm::vec3(2, 2, -2));
 	g_entity2->m_transform.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
+	auto wall = entityManager.CreateEntity(*g_cubeMesh, g_shader);
+	wall->m_transform.SetLocation(glm::vec3(0, 0, -3.5));
+	wall->m_transform.SetScale(glm::vec3(4.0f, 4.0f, 1.0f));
+
 	// Lights
 	g_light1 = Lighting::CreateLight(
 		glm::vec3(2, 2, 4), // Pos
 		LightType::Point,    // Type
 		glm::vec4(0.0f, 0.7f, 0.0f, 1.0f), // diffuse
 		glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), // specular
-		glm::vec3(1.0f, 0.05f, 0.0005f)
+		glm::vec3(1.0f, 0.005f, 0.0005f)
 		);
 
 	g_light2 = Lighting::CreateLight(
@@ -96,9 +100,11 @@ void Session::Start() {
 
 	g_light3 = Lighting::CreateLight(
 		glm::vec3(1, 0, 1),
-		LightType::Point,
+		LightType::Spot,
 		glm::vec4(0.5f, 0.0f, 0.5f, 1.0f),
-		glm::vec4(0.5f, 0.0f, 0.5f, 1.0f));
+		glm::vec4(0.5f, 0.0f, 0.5f, 1.0f),
+		glm::vec3(2.0f, 0.05f, 0.005), // Attenuation
+		glm::vec3(0, 0, -1)); // rotation
 
 	g_lightDir = Lighting::CreateLight(
 		glm::vec3(0, 10, -5),
@@ -144,7 +150,6 @@ void Session::Start() {
 
 	if (fp) std::fclose(fp);
 #endif
-	std::printf("Session start done!\n");
 }
 
 void Session::GameLoop() {
@@ -171,6 +176,7 @@ void Session::GameLoop() {
 static bool lightShouldTick = true;
 // Update game state
 void Session::Update(float deltaTime) {
+
 	// Testing sending messages to manager on another thread
 	if (g_action1) { // Press keyboard key 1
 		std::uint32_t ms = SDL_GetTicks();
