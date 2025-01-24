@@ -24,9 +24,6 @@ Light*				g_light2{};
 Light*				g_light3{};
 Light*				g_lightDir{};
 
-// Move to MeshManager
-Mesh* g_cubeMesh;
-
 // Key inputs
 float g_yvel = 0;
 float g_xvel = 0;

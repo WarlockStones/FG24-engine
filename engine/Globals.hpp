@@ -27,10 +27,6 @@ extern Light*			g_light2;
 extern Light*			g_light3;
 extern Light*			g_lightDir;
 
-// Move to MeshManager
-extern Mesh* g_cubeMesh;
-
-
 // Inputs
 extern float g_yvel;
 extern float g_xvel;

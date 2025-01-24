@@ -17,6 +17,7 @@
 #include "renderer/Mesh.hpp"
 #include "framework/EntityManager.hpp"
 #include "framework/Lighting.hpp"
+#include "MeshManager.hpp"
 
 // Temp testing
 #include "framework/ExampleManager.hpp"
@@ -43,43 +44,19 @@ void Session::Start() {
 	g_arcadeTexture = Texture::LoadFromFile("../../assets/textures/arcade_carpet.png");
 	assert(g_arcadeTexture != 0);
 
-	// Add data
-	float* monkeyVertexData = nullptr;
-	std::size_t numFlagVertexData{};
-	std::size_t numFlagVertices{};
-	auto ec = FG24::File::LoadObjToMeshData(
-		"../../assets/mesh/suzanne_tri.obj",
-		monkeyVertexData,
-		numFlagVertexData,
-		numFlagVertices);
-	// TODO: Use default mesh if ErrorCode != Ok
-	assert(ec == File::ErrorCode::Ok);
-
-	// Add cube
-	float* cubeVertexData = nullptr;
-	std::size_t numCubeVertexData{};
-	std::size_t numCubeVertices{};
-	ec = FG24::File::LoadObjToMeshData( // TODO: Make this a default mesh
-		"../../assets/mesh/cube.obj", 
-		cubeVertexData,
-		numCubeVertexData,
-		numCubeVertices);
-	assert(ec == File::ErrorCode::Ok);
-	g_cubeMesh = new Mesh;
-	g_cubeMesh->InitBuffers(cubeVertexData, numCubeVertexData, numFlagVertices);
+	// Add mesh
+	auto* monkeyMesh = MeshManager::GetMesh("suzanne_tri");
+	auto* cubeMesh = MeshManager::GetMesh("cube");
 
 	// ----- Configure entities -----
-	Mesh* monkeyMesh = new Mesh;
-	monkeyMesh->InitBuffers(monkeyVertexData, numFlagVertexData, numFlagVertices);
-	// Monkey
 	g_entity1 = entityManager.CreateEntity(*monkeyMesh, g_shader);
 
 	// Box
-	g_entity2 = entityManager.CreateEntity(*g_cubeMesh, g_shader);
+	g_entity2 = entityManager.CreateEntity(*cubeMesh, g_shader);
 	g_entity2->m_transform.SetLocation(glm::vec3(2, 2, -2));
 	g_entity2->m_transform.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
-	auto wall = entityManager.CreateEntity(*g_cubeMesh, g_shader);
+	auto wall = entityManager.CreateEntity(*cubeMesh, g_shader);
 	wall->m_transform.SetLocation(glm::vec3(0, 0, -3.5));
 	wall->m_transform.SetScale(glm::vec3(4.0f, 4.0f, 1.0f));
 
