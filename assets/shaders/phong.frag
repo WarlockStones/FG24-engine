@@ -133,14 +133,12 @@ void main() {
 		}
 	} // End of for each light loop
 
-	/* TODO: Fix ambient
 	fragColor.xyz =
 		diffuseLuminosity +
 		specularLuminosity +
 		vec3(materialAmbient * lightAmbient);
-	*/
 
-	fragColor.xyz = diffuseLuminosity + specularLuminosity;
+	// fragColor.xyz = diffuseLuminosity + specularLuminosity;
 
 	// Debug color override
 	// fragColor *= primaryColorVec4;

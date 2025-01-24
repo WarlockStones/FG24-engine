@@ -112,7 +112,6 @@ void Session::Start() {
 		glm::vec4(0.7f, 0.6f, 0.5f, 1.0f),
 		glm::vec4(0.7f, 0.6f, 0.5f, 1.0f));
 
-
 	// exampleManager->StartThread();
 	
 	g_camera = new Camera(glm::vec3(0, 0, 4), -90, 0);

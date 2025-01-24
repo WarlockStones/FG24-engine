@@ -116,6 +116,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 		}
 	}
 
+	// Todo make Shader:: functions to set arrays
 	glUniform1i(glGetUniformLocation(g_shader, "activeLights"), activeLights);
 	glUniform4fv(glGetUniformLocation(g_shader, "lightDiffuse"), activeLights, diffuse);
 	glUniform4fv(glGetUniformLocation(g_shader, "lightSpecular"), activeLights, specular);
@@ -124,6 +125,8 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 	glUniform3fv(glGetUniformLocation(g_shader, "lightRotation"), activeLights, rotation);
 	glUniform1fv(glGetUniformLocation(g_shader, "lightCutoff"), activeLights, cutoff);
 	glUniform1iv(glGetUniformLocation(g_shader, "lightType"), activeLights, lightType);
+	Shader::SetVec4(g_shader, "lightAmbient", Lighting::ambient);
+
 
 	for(const Entity* e : entities) {
 		glm::mat4 tr =  glm::mat4(1);
