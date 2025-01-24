@@ -101,7 +101,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 			rotation[activeLights * 3 + 1] = l->m_rotation.y;
 			rotation[activeLights * 3 + 2] = l->m_rotation.z;
 
-			static constexpr auto co = glm::cos(glm::radians(12.5f));
+			static auto co = glm::cos(glm::radians(12.5f));
 			cutoff[activeLights] = co;
 			
 			++activeLights;
