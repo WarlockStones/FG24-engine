@@ -22,11 +22,10 @@ Mesh* GetMesh(std::string_view meshSource) {
 		//   Return default mesh on failure
 
 		// TODO:
-		// First attemp to load .mdl
+		// First attempt to load .mdl
 		// Look for .obj
 		// Convert .obj to .mdl
 		// Load .mdl
-
 
 		// For now just load OBJ to test
 		std::string path = "../../assets/mesh/";
@@ -36,6 +35,8 @@ Mesh* GetMesh(std::string_view meshSource) {
 		auto ec = ObjToMdl::LoadObjToVertexData(path.c_str(), data);
 		// TODO: Handle error
 		assert(ec == ObjToMdl::ErrorCode::Ok);
+
+		// Convert to .mdl
 
 		Mesh* mesh = new Mesh;
 		mesh->InitBuffers(data.m_data, data.m_numVertexData, data.m_numVertices);

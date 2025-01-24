@@ -333,5 +333,18 @@ ErrorCode LoadObjToVertexData(
 
 	return ErrorCode::Ok;
 }
+
+constexpr std::uint32_t mdlVersion = 1;
+ErrorCode SerializeVertexData(const VertexData& data) {
+	// Header: 12-bytes
+
+	// magic word: uint32 "modl" 4 bytes
+	// m - o - d - l
+	// 1st byte is a magic-word: "modl"
+	// 2nd byte version number
+	// 
+
+}
+
 } // namespace ObjToMdl
 } // namespace FG24
