@@ -31,9 +31,10 @@ in vec2 uv_world;
 in vec3 normal_world;
 in vec3 pos_world; // World coordinates of the vertex
 
-out vec4 fragColor; // Can I rename this? TODO: Try
+out vec4 fragColor;
 
-float CalculateSpecularBrightness(vec3 lightDirection, vec3 normalizedNormal) {
+vec3 CalculateSpecular(vec3 lightDirection, vec3 normalizedNormal, int index) {
+	// Calculate brightness
 	vec3 vertPositionToCamera = normalize((cameraPosition.xyz - pos_world.xyz));
 	vec3 vectorToCamera = normalize(vertPositionToCamera);
 	vec3 halfVector = normalize((lightDirection + vectorToCamera) / 2);
@@ -44,11 +45,23 @@ float CalculateSpecularBrightness(vec3 lightDirection, vec3 normalizedNormal) {
 		totalBrightness *= initialBrightness;
 	}
 
-	return totalBrightness;
+	return totalBrightness * lightSpecular[index].xyz * materialSpecular.xyz;
 }
 
+float CalculateAttenuation(int index) {
+		float distanceToLight = length(lightPosition[index].xyz - pos_world.xyz);
+		return 
+			1 / (
+				lightAttenuation[index].x +
+				lightAttenuation[index].y *
+				distanceToLight +
+				lightAttenuation[index].z * 
+				pow(distanceToLight, 2));
+}
+
+
 void main() {
-    vec4 texel = vec4(0.0, 1.0, 0.1, 1.0); // Placeholder color for textures
+	vec4 texel = vec4(0.0, 1.0, 0.1, 1.0); // Placeholder color for textures
 	
 	fragColor = vec4(0,0,0,texel.w); // Initialize color at 0 lighting
 
@@ -72,74 +85,48 @@ void main() {
 			if (difIntensity > 0) {
 				vec3 diffusePart = difIntensity * lightDiffuse[i].xyz * materialDiffuse.xyz;
 
-				float distanceToLight = length(lightPosition[i].xyz - pos_world.xyz);
-				float attenuation = 
-					1 / (
-						lightAttenuation[i].x +
-						lightAttenuation[i].y *
-						distanceToLight +
-						lightAttenuation[i].z * 
-						pow(distanceToLight, 2));
-
+				float attenuation = CalculateAttenuation(i);
 				diffuseToAdd += diffusePart * attenuation; 
 
-				specularToAdd.xyz += 
-					CalculateSpecularBrightness(lightDirection, normalizedNormal) *
-					lightSpecular[i].xyz *
-					attenuation *
-					materialSpecular.xyz;
-
+				specularToAdd +=
+					CalculateSpecular(lightDirection, normalizedNormal, i) *
+					attenuation;
 			}
 			diffuseLuminosity += diffuseToAdd;
 			specularLuminosity += specularToAdd;
 
 		} else if (lightType[i] == SPOT) {
-			// TODO: Add spotlight
-		    float spotDotCutoff = dot(normalize(-lightRotation[i]), lightDirection);
+			float spotDotCutoff = dot(normalize(-lightRotation[i]), lightDirection);
+
 			// Only light if within the cutoff
 			if (spotDotCutoff > lightCutoff[i]) {
 
-			    // Do light calculations just like point light
+				// Do light calculations just like point light
 				float difIntensity = max(dot(normalizedNormal, lightDirection), 0.0);
 
-				// Do diffuse and specular only if on correct side to be lit
 				if (difIntensity > 0) {
 					vec3 diffusePart = difIntensity * lightDiffuse[i].xyz * materialDiffuse.xyz;
 
-					float distanceToLight = length(lightPosition[i].xyz - pos_world.xyz);
-					float attenuation = 
-						1 / (
-							lightAttenuation[i].x +
-							lightAttenuation[i].y *
-							distanceToLight +
-							lightAttenuation[i].z * 
-							pow(distanceToLight, 2));
-
+					float attenuation = CalculateAttenuation(i);
 					diffuseToAdd += diffusePart * attenuation; 
 
 					specularToAdd.xyz += 
-						CalculateSpecularBrightness(lightDirection, normalizedNormal) *
-						lightSpecular[i].xyz *
-						attenuation *
-						materialSpecular.xyz;
+						CalculateSpecular(lightDirection, normalizedNormal, i) *
+						attenuation;
 
 				}
 				diffuseLuminosity += diffuseToAdd;
 				specularLuminosity += specularToAdd;
 			}
+
 		} else if (lightType[i] == DIRECTIONAL) {
-		    // TODO: use light rotation instead of position for directional light
+			// TODO: use light rotation instead of position for directional light
 			float difIntensity = max(dot(normalizedNormal, lightDirection), 0.0);
 
 			if (difIntensity > 0) {
 				// Directional light omits attenuation
 				diffuseToAdd = difIntensity * lightDiffuse[i].xyz * materialDiffuse.xyz;
-
-				specularToAdd.xyz += 
-					CalculateSpecularBrightness(lightDirection, normalizedNormal) *
-					lightSpecular[i].xyz *
-					materialSpecular.xyz;
-
+				specularToAdd.xyz += CalculateSpecular(lightDirection, normalizedNormal, i);
 			}
 			diffuseLuminosity += diffuseToAdd;
 			specularLuminosity += specularToAdd;
