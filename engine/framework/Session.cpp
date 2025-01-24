@@ -46,31 +46,31 @@ void Session::Start() {
 	// Add data
 	float* monkeyVertexData = nullptr;
 	std::size_t numFlagVertexData{};
-	std::size_t numFlagVerticies{};
+	std::size_t numFlagVertices{};
 	auto ec = FG24::File::LoadObjToMeshData(
 		"../../assets/mesh/suzanne_tri.obj",
 		monkeyVertexData,
 		numFlagVertexData,
-		numFlagVerticies);
+		numFlagVertices);
 	// TODO: Use default mesh if ErrorCode != Ok
 	assert(ec == File::ErrorCode::Ok);
 
 	// Add cube
 	float* cubeVertexData = nullptr;
 	std::size_t numCubeVertexData{};
-	std::size_t numCubeVerticies{};
+	std::size_t numCubeVertices{};
 	ec = FG24::File::LoadObjToMeshData( // TODO: Make this a default mesh
 		"../../assets/mesh/cube.obj", 
 		cubeVertexData,
 		numCubeVertexData,
-		numCubeVerticies);
+		numCubeVertices);
 	assert(ec == File::ErrorCode::Ok);
 	g_cubeMesh = new Mesh;
-	g_cubeMesh->InitBuffers(cubeVertexData, numCubeVertexData, numFlagVerticies);
+	g_cubeMesh->InitBuffers(cubeVertexData, numCubeVertexData, numFlagVertices);
 
 	// ----- Configure entities -----
 	Mesh* monkeyMesh = new Mesh;
-	monkeyMesh->InitBuffers(monkeyVertexData, numFlagVertexData, numFlagVerticies);
+	monkeyMesh->InitBuffers(monkeyVertexData, numFlagVertexData, numFlagVertices);
 	// Monkey
 	g_entity1 = entityManager.CreateEntity(*monkeyMesh, g_shader);
 

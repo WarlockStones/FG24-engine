@@ -24,6 +24,6 @@ ErrorCode LoadObjToMeshData(
 	Filepath filepath,
 	float*& vertexDataOut,
 	std::size_t& numVertexDataOut,
-	std::size_t& numVerticiesOut);
+	std::size_t& numVerticesOut);
 };
 } // namespace FG24

@@ -316,7 +316,7 @@ ErrorCode LoadObjToMeshData(
 	Filepath filepath,
 	float*& vertexDataOut,
 	std::size_t& numVertexDataOut,
-	std::size_t& numVerticiesOut)
+	std::size_t& numVerticesOut)
 {
 	const char* path = filepath.GetPath();
 
@@ -390,7 +390,7 @@ ErrorCode LoadObjToMeshData(
 	std::vector<Vec3> positions;
 	std::vector<Vec2> uvs;
 	std::vector<Vec3> normals;
-	// Indicies will indicate how many verticies will be created.
+	// Indicies will indicate how many vertices will be created.
 	// TODO: Make them arrays? (No reason not to use std::vector though ...)
 	positions.reserve(vInd.size()); // indicies should be of equal size
 uvs.reserve(uvInd.size()); 
@@ -406,7 +406,7 @@ uvs.reserve(uvInd.size());
 	std::size_t s = positions.size() * 3;
 	s += uvs.size() * 2;
 	s += normals.size() * 3;
-	numVerticiesOut = positions.size();
+	numVerticesOut = positions.size();
 	numVertexDataOut = s;
 	vertexDataOut = new float[s];
 	std::size_t pos = 0;

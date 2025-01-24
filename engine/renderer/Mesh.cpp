@@ -8,12 +8,12 @@ namespace FG24 {
 void Mesh::InitBuffers(
 	const float* vertexData,
 	std::size_t numVertexData,
-	std::size_t numVerticies)
+	std::size_t numVertices)
 {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	numVerticiesToDraw = numVerticies;
+	numVerticesToDraw = numVertices;
   
 	assert(vertexData != nullptr);
 	glBufferData(
@@ -72,7 +72,7 @@ void Mesh::Draw(std::uint32_t shaderID) const {
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
 	} else if (EBO == 0) {
 		// glDrawArrays(GL_TRIANGLES, 0, 3); // Draw triangle which has only 3 vertices
-		glDrawArrays(GL_TRIANGLES, 0, numVerticiesToDraw); 
+		glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw); 
 	}
 	
 	glBindVertexArray(0); // Unbind
