@@ -14,9 +14,9 @@
 namespace FG24 {
 namespace File {
 
-FileStream::FileStream(const char* path, const char* mode)
+FileStream::FileStream(Filepath path, const char* mode)
 	// TODO: Consider using std::fopen_s instead - MSVC warning
-	: ptr(std::fopen(path, mode)) {
+  : ptr(std::fopen(path.ToString(), mode)) {
 }
 
 FileStream::~FileStream() {
@@ -25,15 +25,10 @@ FileStream::~FileStream() {
 	}
 }
 
-void FormatFilePath(char* s, std::size_t size) {
-#ifdef _WIN32
-	for (size_t i = 0; i < size; i++) {
-		if (s[i] == '/') {
-			s[i] = '\\';
-		}
-	}
-#endif
+bool FileStream::IsValid() {
+	return ptr != nullptr ? true : false;
 }
+
 
 // TODO: Do not use fseek() and ftell() to compute the size of a regular file
 // https://wiki.sei.cmu.edu/confluence/display/c/FIO19-C.+Do+not+use+fseek%28%29+and+ftell%28%29+to+compute+the+size+of+a+regular+file
@@ -55,9 +50,6 @@ const char* LoadTextFile(const char* path) {
 	assert(pathlen < 260);
 	// Windows only allows for 260 character paths. This is probably faster than dynamic allocation
 	// TODO: Measure stack array vs dynamic array
-	char p[260];
-	std::memcpy(p, path, sizeof(path));
-	FormatFilePath(p, sizeof(path));
 
 	FileStream file(path, "rb"); // t, text-mode converts windows CRLF to LF.
 	if (Check(file.ptr == nullptr, "fopen()")) {

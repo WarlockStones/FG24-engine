@@ -21,27 +21,43 @@ Mesh* GetMesh(std::string_view meshSource) {
 		//   Return newly loaded mesh on success
 		//   Return default mesh on failure
 
-		// TODO:
-		// First attempt to load .mdl
-		// Look for .obj
-		// Convert .obj to .mdl
-		// Load .mdl
+		// TODO: Filepath class should handle file endings 
+	    // Attempt to load .mdl
+		std::string mdlPath = "../../assets/mesh/";
+		mdlPath += meshSource;
+		mdlPath += ".mdl";
+		// Attempt to load mdl
+		VertexData mdlData;
+		auto mdlEc = ObjToMdl::LoadMdlToVertexData(mdlPath.c_str(), mdlData);;
+		if (mdlEc == ObjToMdl::ErrorCode::Ok) {
+			// File exists and was loaded sucessfully. Use that as the result
+			Mesh* mesh = new Mesh;
+			mesh->InitBuffers(mdlData.m_data, mdlData.m_numVertexData, mdlData.m_numVertices);
+			meshMap.insert({ meshSource, mesh });
+			result = mesh;
+		} else if (mdlEc == ObjToMdl::ErrorCode::NoFile) {
+			// Attempt to load obj
+			std::string path = "../../assets/mesh/";
+			path += meshSource;
+			path += ".obj";
+			VertexData data;
+			auto ec = ObjToMdl::LoadObjToVertexData(path.c_str(), data);
+			// TODO: Handle error
+			assert(ec == ObjToMdl::ErrorCode::Ok);
 
-		// For now just load OBJ to test
-		std::string path = "../../assets/mesh/";
-		path += meshSource;
-		path += ".obj";
-		VertexData data;
-		auto ec = ObjToMdl::LoadObjToVertexData(path.c_str(), data);
-		// TODO: Handle error
-		assert(ec == ObjToMdl::ErrorCode::Ok);
+			// Convert to .mdl
+			// TODO: Fix! Bad practice of hiding functionallity in GetMesh function
+			// This should probably be handled through editor UI
+			ObjToMdl::Serialize(meshSource, data);
 
-		// Convert to .mdl
-
-		Mesh* mesh = new Mesh;
-		mesh->InitBuffers(data.m_data, data.m_numVertexData, data.m_numVertices);
-		meshMap.insert({ meshSource, mesh });
-		result = mesh;
+			Mesh* mesh = new Mesh;
+			mesh->InitBuffers(data.m_data, data.m_numVertexData, data.m_numVertices);
+			meshMap.insert({ meshSource, mesh });
+			result = mesh;
+		} else {
+			// Error code bad
+			std::fprintf(stderr, "Error:MeshManager failed to provide a new mesh!\n");
+		}
 	}
 
 	return result;

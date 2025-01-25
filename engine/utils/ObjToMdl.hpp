@@ -9,14 +9,13 @@ namespace ObjToMdl {
 enum class ErrorCode {
 	Ok,
 	NoFile,
-	LoadObjFailed
+	LoadObjFailed,
+	LoadMdlFailed
 };
 
 ErrorCode LoadObjToVertexData(Filepath filepath, VertexData& vertexDataOut);
+ErrorCode LoadMdlToVertexData(Filepath filepath, VertexData& vertexDataOut);
 
-// Write vertex data to a binary .mdl file
-constexpr int mdlVersion = 1;
-ErrorCode SerializeVertexData(std::string_view name, const VertexData& data);
-
+ErrorCode Serialize(std::string_view name, const VertexData& data);
 } // namespace ObjToMdl
 } // namespace FG24

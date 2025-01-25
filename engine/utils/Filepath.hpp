@@ -6,7 +6,7 @@ class Filepath {
 public:
 	Filepath(const char* path); // Translates paths into the OS required syntax
 	// Filepath(const char* directory, const char* filename)
-	const char* GetPath();
+	const char* ToString();
 private:
 	char path[254]{};
 };

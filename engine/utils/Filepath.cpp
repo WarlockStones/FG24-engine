@@ -26,6 +26,6 @@ Filepath::Filepath(const char* filepath) {
 	FormatPath(path, sizeof(path));
 }
 
-const char* Filepath::GetPath() {
+const char* Filepath::ToString() {
 	return &path[0];
 }

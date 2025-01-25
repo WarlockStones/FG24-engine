@@ -17,8 +17,9 @@ enum class ErrorCode {
 // RAII c FILE*. This class is local to this file
 class FileStream {
 public:
-	FileStream(const char* path, const char* mode);
+	FileStream(Filepath path, const char* mode);
 	~FileStream();
+	bool IsValid();
 
 	FILE* ptr = nullptr;
 };
