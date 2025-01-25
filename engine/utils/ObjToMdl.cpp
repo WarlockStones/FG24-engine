@@ -208,22 +208,6 @@ Face ParseF(const char* str) {
 	return face;
 }
 
-// Packed contigious memory for fast memcmp
-/* May be used later for indicies
-struct Vertex {
-	Vec3 position;
-	Vec2 uv;
-	Vec3 normal;
-	bool operator<(const Vertex& other) const {
-		return std::memcmp(
-			reinterpret_cast<const void*>(this),
-			reinterpret_cast<const void*>(&other),
-			sizeof(Vertex))>0;
-	};
-};
-*/
-
-
 // TODO: Support .obj files that has other attribute configuration than v,vt,vn
 ErrorCode LoadObjToVertexData(Filepath path, VertexData& vertexDataOut) {
 	File::FileStream file(path, "rb");
@@ -340,17 +324,11 @@ static constexpr std::uint32_t magic = 0x6C646F6D; // "modl" ASCII to hex
 ErrorCode LoadMdlToVertexData(Filepath filepath, VertexData& vertexDataOut) {
 	File::FileStream fs(filepath, "rb");
 	if (fs.IsValid()) {
-		// Read file header and make sure it everything is in order.
-		// Read and store data-header file
-		// Read rest of file and then compare with total size from header if success.
-
-		// Read header
-		std::uint32_t fileHeader[2];
+		// Read file header
+		std::uint32_t fileHeader[2]{};
 		const std::size_t n = std::fread(&fileHeader[0], sizeof(fileHeader[0]), 2, fs.ptr);
-		std::printf("Read %zu objects.\n", n);
 		if (n == 2) {
-			// Successfully read the header.
-			// Make sure everything is in order.
+			// Successfully read the header
 			if (fileHeader[0] != magic) {
 				std::fprintf(
 					stderr,
@@ -366,8 +344,9 @@ ErrorCode LoadMdlToVertexData(Filepath filepath, VertexData& vertexDataOut) {
 				return ErrorCode::LoadMdlFailed;
 			    
 			}
-			// Everything is good load data header
-			std::uint32_t numVertices;
+
+			// Read data header
+			std::uint32_t numVertices{};
 			if (std::fread(&numVertices, sizeof(std::uint32_t), 1, fs.ptr) != 1) {
 				std::fprintf(
 					stderr,
@@ -375,7 +354,7 @@ ErrorCode LoadMdlToVertexData(Filepath filepath, VertexData& vertexDataOut) {
 					filepath.ToString());
 				return ErrorCode::LoadMdlFailed;
 			}
-			std::uint32_t numVertexData;
+			std::uint32_t numVertexData{};
 			if (std::fread(&numVertexData, sizeof(std::uint32_t), 1, fs.ptr) != 1) {
 				std::fprintf(
 					stderr,
@@ -385,25 +364,17 @@ ErrorCode LoadMdlToVertexData(Filepath filepath, VertexData& vertexDataOut) {
 			  
 			}
 
-			// Allocate float array of numVertexData and read data of that size
+			// Read data
 			float* vertexData = new float[numVertexData];
 			auto numRead = std::fread(&vertexData[0], sizeof(float), numVertexData, fs.ptr);
-			std::printf("numVertexData: %u\n", numVertexData);
-			std::printf("numVertices: %u\n", numVertices);
-			std::printf("numRead: %lu\n", numRead);
-			std::printf("vertexData[0 1 2] %f %f %f\n", vertexData[0], vertexData[1], vertexData[2]);
 			if (numRead != numVertexData) {
-				// delete vertexData;
 				std::fprintf(
 					stderr,
 					"Error: Failed reading vertex data of mdl file:\n\t%s\n",
 					filepath.ToString());
+				delete[] vertexData;
 				return ErrorCode::LoadMdlFailed;
 			}
-
-			// TODO: Remove the size? Since I don't think I need it, I know
-			// how big the header needs be and then I get numVertexData for the rest.
-			// Don't see a point in using it atm.
 
 			vertexDataOut.m_data = vertexData;
 			vertexDataOut.m_numVertexData = numVertexData;
@@ -417,7 +388,7 @@ ErrorCode LoadMdlToVertexData(Filepath filepath, VertexData& vertexDataOut) {
 			return ErrorCode::LoadMdlFailed;
 		}
 	} else {
-		std::printf("Could not find %s.mdl\n", filepath.ToString());
+		std::printf("Could not find %s\n", filepath.ToString());
 		return ErrorCode::NoFile;
 	}
 
@@ -434,38 +405,44 @@ ErrorCode Serialize(std::string_view name, const VertexData& data) {
     // Data: 
     //   Vertex data (vertex position, uv, normals) stored as array of floats
 
-	std::printf("\nSerializing %s\n", name.data());
-	std::printf("numVertexData %u\n", data.m_numVertexData);
-	std::printf("numVertices %u\n", data.m_numVertices);
-	// std::size_T may not be uint32! !!! ARGJT! Thats it!!!!!
-	// so i then later read in garbage! So I don't want to store it as a size_t sice
-	// it is only specified as "the maximum size of a theoretically possible object".
-  
     // magic-word MUST be equal to 0x6D6F646C "modl".
-	// version number
+	// version number to detect old incompatible files.
   
-    // Create filestream
 	std::string path = "../../assets/mesh/";
 	path += name;
 	path += ".mdl";
 
-	// TODO: Error checks. fwrite returns number of objects written successfully
 	File::FileStream fs(Filepath(path.c_str()), "wb");
 	if (fs.IsValid()) {
-		// Write to disk
-		std::fwrite(
-			&magic,                // pointer to first object in array to be written
-			sizeof(std::uint32_t), // size of each object
-			1,                     // number of objects to be written
-			fs.ptr);               // output file stream
-		std::fwrite(&mdlVersion, sizeof(std::uint32_t),	1, fs.ptr);
-		std::fwrite(&data.m_numVertices, sizeof(std::uint32_t), 1, fs.ptr);
-		std::fwrite(&data.m_numVertexData, sizeof(std::uint32_t), 1, fs.ptr);
-		std::fwrite(&data.m_data[0], sizeof(float), data.m_numVertexData, fs.ptr);
+		std::size_t n = 0;
+		n += std::fwrite(&magic, sizeof(std::uint32_t), 1, fs.ptr);               
+		n += std::fwrite(&mdlVersion, sizeof(std::uint32_t), 1, fs.ptr);
+		n += std::fwrite(&data.m_numVertices, sizeof(std::uint32_t), 1, fs.ptr);
+		n += std::fwrite(&data.m_numVertexData, sizeof(std::uint32_t), 1, fs.ptr);
+		n += std::fwrite(&data.m_data[0], sizeof(float), data.m_numVertexData, fs.ptr);
+		std::size_t expected = 4; // 4 = magic + version + numVerts + numVertData
+		expected += data.m_numVertexData;
+		if (n != expected) {
+			// TODO: Should probably delete the corrupt file
+			std::fprintf(
+				stderr,
+				"Error: Failed to write .mdl file! Did not write expected amount.\n");
+			std::fprintf(
+				stderr,
+				"Wrote '%zu' but expected to write '%zu'\n\t%s\n",
+				n, expected, path.c_str());
+			return ErrorCode::SaveObjFailed;
+		}
 	} else {
-	  std::fprintf(stderr, "Error: ObjToMdl, failed to open path!\n\t%s", path.c_str());
+		std::fprintf(
+			stderr,
+			"Error: ObjToMdl, failed to open path!\n\t%s",
+			path.c_str());
 	}
-
+	
+	std::printf(
+		"Successfully created new .mdl file from vertex data: %s\n",
+		path.c_str());
 	return ErrorCode::Ok;
 }
 

@@ -10,6 +10,7 @@ enum class ErrorCode {
 	Ok,
 	NoFile,
 	LoadObjFailed,
+	SaveObjFailed,
 	LoadMdlFailed
 };
 
