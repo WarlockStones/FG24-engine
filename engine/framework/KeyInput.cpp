@@ -23,18 +23,22 @@ void KeyInput::ProcessInput() {
 			break;
 
 			// Movement keys
+			case SDLK_UP:
 			case SDLK_w:
 			g_yvel = 1;
 			break;
 
+			case SDLK_RIGHT:
 			case SDLK_d:
 			g_xvel = 1;
 			break;
 
+			case SDLK_DOWN:
 			case SDLK_s:
 			g_yvel = -1;
 			break;
-
+			
+			case SDLK_LEFT:
 			case SDLK_a:
 			g_xvel = -1;
 			break;
@@ -61,24 +65,28 @@ void KeyInput::ProcessInput() {
 		} else if (e.type == SDL_KEYUP) {
 			switch (e.key.keysym.sym) {
 			// Movement keys
+			case SDLK_UP:
 			case SDLK_w:
 			if (g_yvel > 0) {
 				g_yvel = 0;
 			}
 			break;
 
+			case SDLK_RIGHT:
 			case SDLK_d:
 			if (g_xvel > 0) {
 				g_xvel = 0;
 			}
 			break;
 
+			case SDLK_DOWN:
 			case SDLK_s:
 			if (g_yvel < 0) {
 				g_yvel = 0;
 			}
 			break;
 
+			case SDLK_LEFT:
 			case SDLK_a:
 			if (g_xvel < 0) {
 				g_xvel = 0;
