@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace FG24 {
-// Testing useage of not dymanically allocating my objects
+// Testing useage of sparse arrays and ways to avoid dynamic arrays and allocation
 namespace CameraManager {
 Camera* activeCamera = nullptr;
 constexpr std::size_t maxCameras = 24;
@@ -21,8 +21,8 @@ Camera* GetActiveCamera() {
 	return activeCamera;
 }
 
-// Naive algorithm
 bool CameraExists(std::uint32_t id) {
+	// Naive algorithm
 	for (size_t i = 0; i < numCameras; ++i) {
 		if (activeIds[i] == id) {
 			return true;
@@ -33,7 +33,6 @@ bool CameraExists(std::uint32_t id) {
 }
 
 void SetActiveCamera(std::uint32_t id) {
-	// Reference of C not the thing c points to?
 	if (CameraExists(id)) {
 	    std::printf("Setting active camera to: id: %d, addr: %p\n", id, &cameras[id]);
 		activeCamera = &cameras[id];
