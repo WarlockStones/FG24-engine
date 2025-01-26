@@ -9,6 +9,7 @@
 #include "framework/Entity.hpp"
 #include "Shader.hpp"
 #include "framework/Camera.hpp"
+#include "framework/CameraManager.hpp"
 #include "framework/Lighting.hpp"
 #include "renderer/Mesh.hpp"
 
@@ -60,14 +61,22 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	const Camera* camera = CameraManager::GetActiveCamera();
+	if (camera == nullptr) {
+		// TODO: Draw error message in 3D view
+	    std::printf("No active camera...\n");
+		SDL_GL_SwapWindow(m_window);
+		return;
+	}
+
 	// Space / Coordinate systems
 	// Local/object space > World space > View/eye space > Clip space > Screen space.
 
 	// TODO: Support more than one shaderID
 	Shader::Use(g_shader);
-	Shader::SetMat4(g_shader, "view", g_camera->GetViewMatrix());
+	Shader::SetMat4(g_shader, "view", camera->GetViewMatrix());
 	Shader::SetMat4(g_shader, "projection", m_projection);
-	Shader::SetVec3(g_shader, "cameraPosition", g_camera->GetPosition());
+	Shader::SetVec3(g_shader, "cameraPosition", camera->GetPosition());
 
 	int lightType[Lighting::maxLights];
 	float diffuse[Lighting::maxLights * 4];

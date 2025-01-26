@@ -6,6 +6,7 @@
 #include "Globals.hpp"
 #include "renderer/Renderer.hpp"
 #include "framework/KeyInput.hpp"
+#include "framework/CameraManager.hpp"
 
 #include "utils/File.hpp"
 #include "framework/Lighting.hpp"
@@ -91,7 +92,11 @@ void Session::Start() {
 
 	// exampleManager->StartThread();
 	
-	g_camera = new Camera(glm::vec3(0, 0, 4), -90, 0);
+	// Create initial camera
+	Camera& c = CameraManager::CreateCamera(glm::vec3(0,0,4), -90, 0);
+	CameraManager::SetActiveCamera(c);
+	// g_camera = new Camera(glm::vec3(0, 0, 4), -90, 0);
+	
 
 #if false // Test serialization
 	// If save file for this entity exists, load it.
@@ -162,7 +167,10 @@ void Session::Update(float deltaTime) {
 		g_action1 = false;
 	}
 
-	g_camera->Update(deltaTime);
+	auto* c = CameraManager::GetActiveCamera();
+	if (c) {
+		c->Update(deltaTime);
+	}
 
 	float rot = static_cast<float>(SDL_GetTicks()) * 0.1f;
 	g_entity2->m_transform.SetRotation(glm::vec3(0, rot, 0.0f));

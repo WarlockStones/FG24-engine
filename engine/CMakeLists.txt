@@ -25,17 +25,22 @@ add_executable(engine
 	"utils/ThreadPool.cpp"
 	"utils/Vec.cpp"
 	"framework/Camera.cpp"
+	"framework/CameraManager.cpp"
 	"framework/Session.cpp"
 	"framework/KeyInput.cpp"
 	"framework/Entity.cpp"
-	"framework/Transform.cpp"
+	"framework/EntityManager.cpp"
 	"framework/ExampleManager.cpp"
+	"framework/Transform.cpp"
 	"framework/Lighting.cpp"
+	"framework/Light.cpp"
+	"framework/MeshManager.cpp"
 	"renderer/Renderer.cpp"
 	"renderer/Mesh.cpp"
 	"renderer/Texture.cpp"
 	"renderer/Shader.cpp"
- "framework/EntityManager.cpp"  "framework/Light.cpp" "framework/MeshManager.cpp" "utils/ObjToMdl.cpp")
+	"utils/ObjToMdl.cpp"
+)
 
 target_include_directories(engine PRIVATE
 	${CMAKE_SOURCE_DIR}/engine
