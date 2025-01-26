@@ -92,11 +92,11 @@ void Session::Start() {
 
 	// exampleManager->StartThread();
 	
-	// Create initial camera
 	Camera& c = CameraManager::CreateCamera(glm::vec3(0,0,4), -90, 0);
-	CameraManager::SetActiveCamera(c);
-	// g_camera = new Camera(glm::vec3(0, 0, 4), -90, 0);
+	CameraManager::SetActiveCamera(c.m_id);
+	CameraManager::CreateCamera(glm::vec3(-3,2,2), -45, -45);
 	
+	return;
 
 #if false // Test serialization
 	// If save file for this entity exists, load it.
@@ -157,7 +157,6 @@ void Session::GameLoop() {
 static bool lightShouldTick = true;
 // Update game state
 void Session::Update(float deltaTime) {
-
 	// Testing sending messages to manager on another thread
 	if (g_action1) { // Press keyboard key 1
 		std::uint32_t ms = SDL_GetTicks();
@@ -178,6 +177,13 @@ void Session::Update(float deltaTime) {
 	if (g_action2) {
 		g_action2 = false;
 		lightShouldTick = !lightShouldTick;
+	}
+	if (g_action3) {
+		g_action3 = false;
+	    std::printf("Switching camera\n");
+		static bool UseCam1 = true;
+		UseCam1 ? CameraManager::SetActiveCamera(1) : CameraManager::SetActiveCamera(0);
+		UseCam1 = !UseCam1;
 	}
 	if (lightShouldTick) {
 		static float lightOffset = 0;

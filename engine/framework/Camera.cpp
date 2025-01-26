@@ -5,28 +5,15 @@
 #include "Globals.hpp"
 
 namespace FG24 {
-Camera::Camera(glm::vec3 position, float yaw, float pitch, int id) 
-	: m_position(position), m_yaw(yaw), m_pitch(pitch), m_id(id) {
+void Camera::Init(glm::vec3 position, float yaw, float pitch, std::uint32_t id) {
+	m_position = position; 
+	m_yaw = yaw;
+	m_pitch = pitch;
+	m_id = id;
 
-	UpdateVectors(); // Initialize vectors
+	UpdateVectors();
 }
 
-Camera::Camera(const Camera& other) 
-	: m_position(other.GetPosition()),
-	  m_yaw(other.GetYaw()),
-	  m_pitch(other.GetPitch()),
-	  m_id(other.m_id) {
-}
-
-Camera& Camera::operator=(Camera&& other) {
-	if (&other == this) {
-		return *this;
-	}
-	
-	// Nothing to deallocate or ownership to transfer.
-
-	return *this;
-}
 
 void Camera::UpdateVectors() {
 	glm::vec3 dir;
