@@ -30,6 +30,10 @@ Entity& Entity::operator=(Entity&& other) {
 	return *this;
 }
 
+const std::string& Entity::GetName() const {
+  return m_name;
+}
+
 void Entity::Draw() const {
 	// Set m_shaderID and character specific things here 
 

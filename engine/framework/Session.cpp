@@ -153,7 +153,7 @@ void Session::GameLoop() {
 
 		KeyInput::ProcessInput();
 		Update(deltaTime); 
-		Editor::Draw();
+		Editor::Draw(entityManager);
 		renderer->Draw(entityManager.GetEntities());
 	}
 }

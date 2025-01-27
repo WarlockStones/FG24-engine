@@ -22,7 +22,7 @@ set(IMGUI_SOURCES
 	"imgui/imgui_impl_sdl2.cpp"
 	"imgui/imgui_tables.cpp"
 	"imgui/imgui_widgets.cpp"
-	#"imgui/imgui_demo.cpp"
+	"imgui/imgui_demo.cpp"
 )
 
 add_executable(engine
