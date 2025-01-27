@@ -34,6 +34,10 @@ const std::string& Entity::GetName() const {
   return m_name;
 }
 
+void Entity::SetName(const char* name) {
+  m_name = name;
+}
+
 void Entity::Draw() const {
 	// Set m_shaderID and character specific things here 
 

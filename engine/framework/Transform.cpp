@@ -1,5 +1,6 @@
 #include "Transform.hpp"
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <cstdio>
 
 constexpr int TransformVersion = 1; // For serialization
@@ -33,11 +34,12 @@ bool FG24::Transform::ReadFrom(FILE* file) {
 	return false;
 }
 
+// TODO: glm::vec3 lots of unintentional copies are being done
 void FG24::Transform::SetLocation(glm::vec3 newLocation) {
 	m_location = newLocation;
 }
 
-const glm::vec3 FG24::Transform::GetLocation() const {
+const glm::vec3& FG24::Transform::GetLocation() const {
 	return m_location;
 }
 
@@ -45,13 +47,17 @@ void FG24::Transform::SetScale(glm::vec3 newScale) {
 	m_scale = newScale;
 }
 
-const glm::vec3 FG24::Transform::GetScale() const {
+const glm::vec3& FG24::Transform::GetScale() const {
 	return m_scale;
 }
 
 // x, y, z = pitch, yaw, roll
 void FG24::Transform::SetRotation(glm::vec3 newEuler) {
 	m_rotation = glm::quat(newEuler);
+}
+
+glm::vec3 FG24::Transform::GetRotationEuler() const {
+	return glm::eulerAngles(m_rotation);
 }
 
 glm::mat4 FG24::Transform::GetRotationMatrix() const {

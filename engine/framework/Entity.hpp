@@ -21,6 +21,7 @@ public:
 	bool ReadFrom(FILE* file) override;
 
     const std::string& GetName() const;
+    void SetName(const char* name);
 
 	Transform m_transform;
 private:

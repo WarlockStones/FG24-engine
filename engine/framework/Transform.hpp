@@ -11,12 +11,12 @@ public:
 	bool ReadFrom(FILE* file) override;
 
 	void SetLocation(glm::vec3 newLocation);
-	const glm::vec3 GetLocation() const;
+	const glm::vec3& GetLocation() const;
 	void SetScale(glm::vec3 newScale);
-	const glm::vec3 GetScale() const;
+	const glm::vec3& GetScale() const;
 	void SetRotation(glm::vec3 newEuler);
 	const glm::quat& GetRotation() const;
-	const glm::vec3& GetRotationEuler() const;
+	glm::vec3 GetRotationEuler() const;
 	glm::mat4 GetRotationMatrix() const;
 
 private:
