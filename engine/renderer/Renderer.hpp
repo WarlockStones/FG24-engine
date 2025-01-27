@@ -16,10 +16,9 @@ public:
 		float nearClipPlane = 0.1f,
 		float farClipPlane = 100.0f);
 
-private:
 	SDL_Window* m_window{};
 	void* m_context{}; // SDL_GLContext is a void* typedef // TODO: Cast to something sensible
-
+private:
 	// Translation matrices
 	glm::mat4 m_view;
 	glm::mat4 m_projection;

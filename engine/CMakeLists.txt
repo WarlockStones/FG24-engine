@@ -15,6 +15,16 @@ add_definitions(${OPENGL_DEFINITIONS})
 
 find_package(glm CONFIG REQUIRED)
 
+set(IMGUI_SOURCES
+	"imgui/imgui.cpp"
+	"imgui/imgui_draw.cpp"
+	"imgui/imgui_impl_opengl3.cpp"
+	"imgui/imgui_impl_sdl2.cpp"
+	"imgui/imgui_tables.cpp"
+	"imgui/imgui_widgets.cpp"
+	#"imgui/imgui_demo.cpp"
+)
+
 add_executable(engine
 	"Main.cpp"
 	"Globals.cpp"
@@ -28,6 +38,7 @@ add_executable(engine
 	"framework/CameraManager.cpp"
 	"framework/Session.cpp"
 	"framework/KeyInput.cpp"
+	"framework/Editor.cpp"
 	"framework/Entity.cpp"
 	"framework/EntityManager.cpp"
 	"framework/ExampleManager.cpp"
@@ -40,11 +51,16 @@ add_executable(engine
 	"renderer/Texture.cpp"
 	"renderer/Shader.cpp"
 	"utils/ObjToMdl.cpp"
+	${IMGUI_SOURCES}
 )
 
 target_include_directories(engine PRIVATE
 	${CMAKE_SOURCE_DIR}/engine
+	${CMAKE_SOURCE_DIR}/engine/imgui
 )
+
+# Link imgui headers
+# target_include_directories(engine PRIVATE /imgui)
 
 # SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications
 if(TARGET SDL2::SDL2main)

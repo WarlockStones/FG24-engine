@@ -6,12 +6,14 @@
 #include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_timer.h>
 #include "Globals.hpp"
+#include "imgui_impl_sdl2.h"
 
 namespace FG24 {
 
 void KeyInput::ProcessInput() {
 	SDL_Event e{};
 	while (SDL_PollEvent(&e)) {
+		ImGui_ImplSDL2_ProcessEvent(&e);
 		if (e.type == SDL_QUIT) {
 			std::printf("KeyInput: SDL_QUIT received. Exiting game loop...\n");
 			g_runGameLoop = false;
@@ -21,6 +23,13 @@ void KeyInput::ProcessInput() {
 			std::printf("KeyInput: Escape key received. Exiting game loop...\n");
 			g_runGameLoop = false;
 			break;
+
+			case SDLK_F1:
+			static SDL_bool relativeMouse = SDL_TRUE;
+			SDL_SetRelativeMouseMode(relativeMouse); 
+			relativeMouse = static_cast<SDL_bool>(!relativeMouse);
+			break;
+			
 
 			// Movement keys
 			case SDLK_UP:

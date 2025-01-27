@@ -15,6 +15,10 @@
 
 #include "framework/MeshManager.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
+
 namespace FG24 {
 bool Renderer::Init() {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -152,6 +156,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 		e->Draw();
 	}
 	
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	SDL_GL_SwapWindow(m_window);
 }
 

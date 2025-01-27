@@ -7,6 +7,7 @@
 #include "renderer/Renderer.hpp"
 #include "framework/KeyInput.hpp"
 #include "framework/CameraManager.hpp"
+#include "framework/Editor.hpp"
 
 #include "utils/File.hpp"
 #include "framework/Lighting.hpp"
@@ -33,6 +34,8 @@ bool Session::Init() {
 		std::fprintf(stderr, "Error: Session failed to initialize Renderer!\n");
 		return 1;
 	}
+
+	Editor::Init(*renderer);
 
 	return 0;
 }
@@ -150,6 +153,7 @@ void Session::GameLoop() {
 
 		KeyInput::ProcessInput();
 		Update(deltaTime); 
+		Editor::Draw();
 		renderer->Draw(entityManager.GetEntities());
 	}
 }
@@ -209,6 +213,7 @@ Session::~Session() {
 	if (renderer != nullptr) {
 		delete renderer;
 	}
+	Editor::Destroy();
 	std::printf("Session destructor done\n");
 }
 
