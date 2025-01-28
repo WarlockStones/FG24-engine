@@ -86,7 +86,7 @@ void Draw(EntityManager& entityManager) {
 		if (!meshNames.empty()) {
 			previewName = e->GetMesh().m_name.data();
 			if (ImGui::BeginCombo("mesh", previewName)) {
-				for (int i = 0; i < meshNames.size(); ++i) {
+			  for (std::size_t i = 0; i < meshNames.size(); ++i) {
 					const bool isSelected = (previewName == meshNames[i]);
 					// Create new selectable as part of the combo. With label and bIsSelected
 					if (ImGui::Selectable(meshNames[i].data(), isSelected)) {
@@ -104,10 +104,11 @@ void Draw(EntityManager& entityManager) {
 		}
 
 		// Cool but messy use of ID mapped to index
-		static int textureIndex = e->m_textureId;
+		static std::size_t textureIndex = e->m_textureId;
 		previewName = Texture::GetName(textureIndex).data();
 		if (ImGui::BeginCombo("textures", previewName)) {
-			for (int i = 0; i < Texture::GetNames().size() + 1; ++i) { // +1 for "None" option
+			// +1 for "None" option
+			for (std::size_t i = 0; i < Texture::GetNames().size() + 1; ++i) { 
 				const bool isSelected = (textureIndex == i);
 				// Create a new selectable widget
 				if (ImGui::Selectable(Texture::GetName(i).data(), isSelected)) {
