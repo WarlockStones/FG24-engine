@@ -30,10 +30,6 @@ void Draw(EntityManager& entityManager) {
 #if FALSE
 	ImGui::ShowDemoWindow();
 #else
-	static float f = 0.0f;
-	static int counter = 0;
-	static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
 	ImGui::Begin("Entity Editor"); // Create a window                          
 	ImGui::Text("Press F1 to detach mouse cursor."); 
 
@@ -50,16 +46,14 @@ void Draw(EntityManager& entityManager) {
 		},
 		entityManager.GetEntities().data(),
 		entityManager.GetEntities().size(),
-		3); // Entries to show minimum
+		3); // Minimum entries to show
 
-	// Ability to manipulate name, model, texture, position, rotation
-	// TextEdit. InputText. 
 	if (entityManager.GetEntities().size() > 0) {
 		Entity* e = entityManager.GetEntities()[entityIndex];
 
 		// Populate new buffer containing name
 		char buf[32] = "";
-	    buf[0] = '\0';
+		buf[0] = '\0';
 		std::string name = e->GetName();
 		for (std::size_t i = 0; i < name.length() && i < 32; ++i) {
 			if (name[i] == '\0') {
@@ -108,7 +102,6 @@ void Draw(EntityManager& entityManager) {
 		} else {
 			ImGui::Combo("model", 0, "EMPTY", 1);
 		}
-
 
 		static int textureIndex = 0;
 		previewName = "EMPTY";
