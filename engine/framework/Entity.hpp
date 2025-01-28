@@ -24,8 +24,8 @@ public:
 	bool WriteTo(FILE* file) const override;
 	bool ReadFrom(FILE* file) override;
 
-    const std::string& GetName() const;
-    void SetName(const char* name);
+	const std::string& GetName() const;
+	void SetName(const char* name);
 
 	const Mesh& GetMesh() const;
 	void SetMesh(const Mesh* mesh);

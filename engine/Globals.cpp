@@ -15,7 +15,6 @@ int g_windowWidth = 800;
 int g_windowHeight = 600;
 
 std::uint32_t			g_shader{};
-std::vector<Texture>	g_textures;
 Entity*					g_entity1{};
 Entity*					g_entity2{};
 Camera*					g_camera{};

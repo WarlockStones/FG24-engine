@@ -103,27 +103,26 @@ void Draw(EntityManager& entityManager) {
 			ImGui::Combo("model", 0, "EMPTY", 1);
 		}
 
-		static int textureIndex = 0;
-		previewName = "EMPTY";
-		if (!g_textures.empty()) {
-			textureIndex = e->m_textureId;
-			previewName = g_textures[textureIndex].m_name;
-			if (ImGui::BeginCombo("textures", previewName)) {
-				for (int i = 0; i < g_textures.size(); ++i) {
-					const bool isSelected = (textureIndex == i);
-					if (ImGui::Selectable(g_textures[i].m_name, isSelected)) {
-						textureIndex = i;
-						e->m_textureId = textureIndex;
-					}
-					if (isSelected) {
-						ImGui::SetItemDefaultFocus();
-					}
+		// Cool but messy use of ID mapped to index
+		static int textureIndex = e->m_textureId;
+		previewName = Texture::GetName(textureIndex).data();
+		if (ImGui::BeginCombo("textures", previewName)) {
+			for (int i = 0; i < Texture::GetNames().size() + 1; ++i) { // +1 for "None" option
+				const bool isSelected = (textureIndex == i);
+				// Create a new selectable widget
+				if (ImGui::Selectable(Texture::GetName(i).data(), isSelected)) {
+					textureIndex = i;
+					std::printf(
+						"Updating texture %s with %s\n",
+						Texture::GetName(e->m_textureId).data(),
+						Texture::GetName(textureIndex).data());
+					e->m_textureId = textureIndex; // 0 TextureID means no texture
 				}
-				ImGui::EndCombo();
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();
+				}
 			}
-		} else {
-			textureIndex = 0;
-			ImGui::Combo("texture", &textureIndex, "EMPTY", 1);
+			ImGui::EndCombo();
 		}
 	}
 

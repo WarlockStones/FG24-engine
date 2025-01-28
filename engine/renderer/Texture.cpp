@@ -1,16 +1,18 @@
 #include "Texture.hpp"
 #include "utils/File.hpp"
 #include <cstdio>
+#include <string_view>
+#include <vector>
 #include <glad/gl.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_opengl.h>
 
 namespace FG24 {
-Texture::Texture(const char* name) : m_name(name) {
-}
+namespace Texture {
+std::vector<std::string_view> names;
 
-bool Texture::LoadFromFile(const char* path) {
+std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 	SDL_Surface* surface = IMG_Load(path);
 
 	if (surface == nullptr) {
@@ -46,11 +48,29 @@ bool Texture::LoadFromFile(const char* path) {
 
 	SDL_FreeSurface(surface);
 
-	m_id = textureID;
-	if (m_id == 0) {
-		return false;
+	if (textureID != 0) {
+		names.push_back(displayName);
 	}
 
-	return true;
+	return textureID;
 }
+
+std::string_view GetName(std::uint32_t id) {
+	if (id == 0 || names.empty()) {
+		// OpenGL id starts at 0 and means no texture
+		return "None";
+	}
+	if (id < names.size() + 1) {
+		return names[id - 1]; 
+	}
+	return "SOMETHING WENT WRONG"; // Attempting to access out of bounds
+}
+
+const std::vector<std::string_view>& GetNames() {
+	return names;
+}
+
+
+
+} // namespace Texture
 } // namespace FG24

@@ -44,14 +44,9 @@ void Session::Start() {
 	g_shader = Shader::CompileShader("../../assets/shaders/phong.vert",
 									 "../../assets/shaders/phong.frag");
 	assert(g_shader != 0);
-	Texture arcadeTex("Arcade");
-	assert(arcadeTex.LoadFromFile("../../assets/textures/arcade_carpet.png"));
-	g_textures.push_back(arcadeTex);
-
-	Texture helloTex("Hello");
-	if (arcadeTex.LoadFromFile("../../assets/textures/hello.png")) {
-		g_textures.push_back(helloTex);
-	}
+	std::uint32_t arcadeTex(Texture::LoadFromFile("../../assets/textures/arcade_carpet.png", "Arcade"));
+	assert(arcadeTex =! 0);
+	std::uint32_t helloTex(Texture::LoadFromFile("../../assets/textures/hello.png", "Hello"));
 
 	// Add mesh
 	auto* monkeyMesh = MeshManager::GetMesh("suzanne_tri");
