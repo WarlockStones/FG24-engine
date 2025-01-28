@@ -39,4 +39,5 @@ extern bool g_action3;
 extern bool g_action4;
 extern float g_xRelativeMouseMotion;
 extern float g_yRelativeMouseMotion;
+extern bool g_mouseIsGrabbed;
 } // namespace FG24

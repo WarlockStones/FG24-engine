@@ -35,7 +35,7 @@ void Draw(EntityManager& entityManager) {
 	static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	ImGui::Begin("Entity Editor"); // Create a window                          
-	ImGui::Text("This is some useful text."); 
+	ImGui::Text("Press F1 to detach mouse cursor."); 
 
 	static int entityIndex = 0;
 	ImGui::Text("Selected entity index = %d", entityIndex);

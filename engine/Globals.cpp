@@ -36,5 +36,6 @@ bool g_action4 = false;
 bool g_mouseMotion{};
 float g_xRelativeMouseMotion{};
 float g_yRelativeMouseMotion{};
+bool g_mouseIsGrabbed = true;
 }
 

@@ -10,7 +10,7 @@
 
 namespace FG24 {
 
-static SDL_bool relativeMouse = SDL_TRUE;
+static SDL_bool relativeMouse = SDL_FALSE;
 void KeyInput::ProcessInput() {
 	SDL_Event e{};
 	while (SDL_PollEvent(&e)) {
@@ -28,6 +28,7 @@ void KeyInput::ProcessInput() {
 			case SDLK_F1:
 			SDL_SetRelativeMouseMode(relativeMouse); 
 			relativeMouse = static_cast<SDL_bool>(!relativeMouse);
+			g_mouseIsGrabbed = !g_mouseIsGrabbed;
 			break;
 			
 

@@ -34,7 +34,7 @@ glm::mat4 Camera::GetViewMatrix() const {
 
 void Camera::Update(float deltaTime) {
 	// Camera pitch and yaw movement
-    if (g_xRelativeMouseMotion != 0 || g_yRelativeMouseMotion != 0) {
+	if (g_mouseIsGrabbed && (g_xRelativeMouseMotion != 0 || g_yRelativeMouseMotion != 0)) {
 		m_yaw += (g_xRelativeMouseMotion * m_mouseSensitivity);
 		m_pitch += (g_yRelativeMouseMotion * m_mouseSensitivity * -1); // -1 to reverse up
 		glm::clamp(m_pitch, -89.0f, 89.0f);
