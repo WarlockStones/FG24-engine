@@ -52,11 +52,10 @@ void Entity::SetMesh(const Mesh* mesh) {
 void Entity::Draw() const {
 	// Set m_shaderID and character specific things here 
 
-	if (m_textureId != 0) {
+	// if (m_textureId > -1) {
 		glActiveTexture(GL_TEXTURE0);
-	}
-
-	// Use m_shaderID and do m_shaderID stuff
+		glBindTexture(GL_TEXTURE_2D, m_textureId);
+	// }
 
 	m_mesh->Draw(m_shaderId);
 

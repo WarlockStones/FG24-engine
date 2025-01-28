@@ -31,7 +31,7 @@ public:
 	void SetMesh(const Mesh* mesh);
 
 	Transform m_transform;
-	std::uint32_t m_textureId = 0; // Texture m_ID 0 means has no m_textureID
+	std::int32_t m_textureId = -1; // -1 means no texture
 private:
 	const Mesh* m_mesh;
 	std::uint32_t m_shaderId{};

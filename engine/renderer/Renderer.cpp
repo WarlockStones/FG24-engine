@@ -153,6 +153,10 @@ void Renderer::Draw(const std::vector<Entity*>& entities) const {
 		glm::mat4 model = tr * rot * scl;
 		Shader::SetMat4(g_shader, "model", model);
 
+		// Telling each samper to which texture unit it belongs to only needs to be done once
+		// Shader::SetInt(g_shader, "tex", 0);
+
+		glUniform1i(glGetUniformLocation(g_shader, "tex"), 0);
 		e->Draw();
 	}
 	

@@ -29,14 +29,15 @@ std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 		mode = GL_RGBA;
 	}
 
-	glTexImage2D(GL_TEXTURE_2D,
-				 0, // Desired mipmap level if generating manually
-				 mode, // Color mode. RGB or RGBA
-				 surface->w, surface->h, // Image width and height
-				 0, // Legacy stuff no longer in use
-				 mode, // Color format of the source image
-				 GL_UNSIGNED_BYTE, // Datatype of source image
-				 surface->pixels); // The data of source image
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0, // Desired mipmap level if generating manually
+		mode, // Color mode. RGB or RGBA
+		surface->w, surface->h, // Image width and height
+		0, // Legacy stuff no longer in use
+		mode, // Color format of the source image
+		GL_UNSIGNED_BYTE, // Datatype of source image
+		surface->pixels); // The data of source image
 
 	// Set wrapping/filtering options
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -55,13 +56,13 @@ std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 	return textureID;
 }
 
-std::string_view GetName(std::uint32_t id) {
+std::string_view GetName(std::int32_t id) {
 	if (id == 0 || names.empty()) {
-		// OpenGL id starts at 0 and means no texture
+		// OpenGL id 0 and means no texture
 		return "None";
 	}
-	if (id < names.size() + 1) {
-		return names[id - 1]; 
+	if (id < static_cast<std::int32_t>(names.size())) {
+		return names[id]; 
 	}
 	return "SOMETHING WENT WRONG"; // Attempting to access out of bounds
 }

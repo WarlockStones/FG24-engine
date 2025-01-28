@@ -46,7 +46,7 @@ void Session::Start() {
 	assert(g_shader != 0);
 	std::uint32_t arcadeTex(Texture::LoadFromFile("../../assets/textures/arcade_carpet.png", "Arcade"));
 	assert(arcadeTex != 0);
-	std::uint32_t helloTex(Texture::LoadFromFile("../../assets/textures/hello.png", "Hello"));
+	// std::uint32_t helloTex(Texture::LoadFromFile("../../assets/textures/hello.png", "Hello"));
 
 	// Add mesh
 	auto* monkeyMesh = MeshManager::GetMesh("suzanne_tri");

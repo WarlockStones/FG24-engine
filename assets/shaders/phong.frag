@@ -61,10 +61,6 @@ float CalculateAttenuation(int index) {
 
 
 void main() {
-	vec4 texel = vec4(0.0, 1.0, 0.1, 1.0); // Placeholder color for textures
-	
-	fragColor = vec4(0,0,0,texel.w); // Initialize color at 0 lighting
-
 	// Cumulative luminosity calculated from every light combined
 	vec3 diffuseLuminosity = vec3(0);
 	vec3 specularLuminosity = vec3(0);
@@ -137,6 +133,8 @@ void main() {
 		diffuseLuminosity +
 		specularLuminosity +
 		vec3(materialAmbient * lightAmbient);
+
+	fragColor = texture(tex, uv_world) * vec4(0.0, 1.0, 0.1, 1.0);
 
 	// fragColor.xyz = diffuseLuminosity + specularLuminosity;
 

@@ -81,6 +81,8 @@ void Draw(EntityManager& entityManager) {
 		e->m_transform.SetRotation(glm::vec3(rot[0], rot[1], rot[2]));
 
 		// Drop down menu for model and texture selection
+		// TODO: Fix so that it works with OpenGL that id number is correct!
+		// texture id 0 is invalid id meaning texture could not be created in opengl
 		static const char* previewName = "EMPTY";
 		static const std::vector<std::string_view>& meshNames = MeshManager::GetNames();
 		if (!meshNames.empty()) {
@@ -103,11 +105,10 @@ void Draw(EntityManager& entityManager) {
 			ImGui::Combo("model", 0, "EMPTY", 1);
 		}
 
-		// Cool but messy use of ID mapped to index
-		static std::size_t textureIndex = e->m_textureId;
+		static std::int32_t textureIndex = e->m_textureId;
 		previewName = Texture::GetName(textureIndex).data();
 		if (ImGui::BeginCombo("textures", previewName)) {
-			// +1 for "None" option
+			// 0 is OpenGL for None or invalid texture
 			for (std::size_t i = 0; i < Texture::GetNames().size() + 1; ++i) { 
 				const bool isSelected = (textureIndex == i);
 				// Create a new selectable widget
@@ -117,7 +118,7 @@ void Draw(EntityManager& entityManager) {
 						"Updating texture %s with %s\n",
 						Texture::GetName(e->m_textureId).data(),
 						Texture::GetName(textureIndex).data());
-					e->m_textureId = textureIndex; // 0 TextureID means no texture
+						e->m_textureId = textureIndex;
 				}
 				if (isSelected) {
 					ImGui::SetItemDefaultFocus();
