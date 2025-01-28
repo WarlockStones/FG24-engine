@@ -58,14 +58,14 @@ void Session::Start() {
 	auto* cubeMesh = MeshManager::GetMesh("cube");
 
 	// ----- Configure entities -----
-	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader);
+	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader, "Monkey");
 
 	// Box
-	g_entity2 = entityManager.CreateEntity(cubeMesh, g_shader);
+	g_entity2 = entityManager.CreateEntity(cubeMesh, g_shader, "Box");
 	g_entity2->m_transform.SetLocation(glm::vec3(2, 2, -2));
 	g_entity2->m_transform.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
-	auto wall = entityManager.CreateEntity(cubeMesh, g_shader);
+	auto wall = entityManager.CreateEntity(cubeMesh, g_shader, "Wall");
 	wall->m_transform.SetLocation(glm::vec3(0, 0, -3.5));
 	wall->m_transform.SetScale(glm::vec3(4.0f, 4.0f, 1.0f));
 

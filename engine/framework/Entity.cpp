@@ -7,8 +7,12 @@
 #include <cstdio>
 
 namespace FG24 {
-Entity::Entity(const Mesh* mesh, std::uint32_t shaderId, std::uint32_t textureId) :
-	m_mesh(mesh), m_shaderId(shaderId), m_textureId(textureId) {
+Entity::Entity(
+	const Mesh* mesh,
+	std::uint32_t shaderId,
+	std::uint32_t textureId,
+	const char* name)
+	: m_mesh(mesh), m_shaderId(shaderId), m_textureId(textureId), m_name(name){
 }
 
 Entity::Entity(const Entity& other) 
@@ -35,6 +39,10 @@ const std::string& Entity::GetName() const {
 
 void Entity::SetName(const char* name) {
   m_name = name;
+}
+
+const Mesh& Entity::GetMesh() const {
+	return *m_mesh;
 }
 
 void Entity::SetMesh(const Mesh* mesh) {

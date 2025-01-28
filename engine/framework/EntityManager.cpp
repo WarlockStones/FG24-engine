@@ -14,8 +14,8 @@ EntityManager::~EntityManager() {
 	}
 }
 
-Entity* EntityManager::CreateEntity(const Mesh* mesh, std::uint32_t shaderId) {
-	Entity* e = new Entity(mesh, shaderId, 0); // Texture just 0 for now
+Entity* EntityManager::CreateEntity(const Mesh* mesh, std::uint32_t shaderId, const char* name = "Entity") {
+	Entity* e = new Entity(mesh, shaderId, 0, name); // Texture just 0 for now
 	m_entities.push_back(e);
 	return e;
 }

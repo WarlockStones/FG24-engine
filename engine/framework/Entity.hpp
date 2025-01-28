@@ -11,7 +11,11 @@ class Mesh;
 // An Entity is a thing in the game world
 class Entity : public IWritable {
 public:
-	explicit Entity(const Mesh* mesh, std::uint32_t shaderId, std::uint32_t textureId);
+	explicit Entity(
+		const Mesh* mesh,
+		std::uint32_t shaderId,
+		std::uint32_t textureId,
+		const char* name);
 	virtual ~Entity() = default;
 	Entity(const Entity& other); // Copy constructor
 	Entity& operator=(Entity&& other); // Move assignment
@@ -23,6 +27,7 @@ public:
     const std::string& GetName() const;
     void SetName(const char* name);
 
+	const Mesh& GetMesh() const;
 	void SetMesh(const Mesh* mesh);
 
 	Transform m_transform;
