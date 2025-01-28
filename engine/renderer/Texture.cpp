@@ -7,13 +7,15 @@
 #include <SDL2/SDL_opengl.h>
 
 namespace FG24 {
-namespace Texture {
-std::uint32_t LoadFromFile(const char* path) {
+Texture::Texture(const char* name) : m_name(name) {
+}
+
+bool Texture::LoadFromFile(const char* path) {
 	SDL_Surface* surface = IMG_Load(path);
 
 	if (surface == nullptr) {
 		std::fprintf(stderr, "Error: Texture failed to load m_textureID!\n");
-		return 0;
+		return false;
 	}
 
 	std::uint32_t textureID;
@@ -44,7 +46,11 @@ std::uint32_t LoadFromFile(const char* path) {
 
 	SDL_FreeSurface(surface);
 
-	return textureID;
+	m_id = textureID;
+	if (m_id == 0) {
+		return false;
+	}
+
+	return true;
 }
-} // namesapce Texture
 } // namespace FG24

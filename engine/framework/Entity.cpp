@@ -7,7 +7,7 @@
 #include <cstdio>
 
 namespace FG24 {
-Entity::Entity(const Mesh& mesh, std::uint32_t shaderId, std::uint32_t textureId) :
+Entity::Entity(const Mesh* mesh, std::uint32_t shaderId, std::uint32_t textureId) :
 	m_mesh(mesh), m_shaderId(shaderId), m_textureId(textureId) {
 }
 
@@ -16,7 +16,6 @@ Entity::Entity(const Entity& other)
 	m_transform(other.m_transform),
 	m_shaderId(other.m_shaderId),
 	m_textureId(other.m_textureId){
-
 }
 
 Entity& Entity::operator=(Entity&& other) {
@@ -38,6 +37,10 @@ void Entity::SetName(const char* name) {
   m_name = name;
 }
 
+void Entity::SetMesh(const Mesh* mesh) {
+	m_mesh = mesh;
+}
+
 void Entity::Draw() const {
 	// Set m_shaderID and character specific things here 
 
@@ -47,7 +50,7 @@ void Entity::Draw() const {
 
 	// Use m_shaderID and do m_shaderID stuff
 
-	m_mesh.Draw(m_shaderId);
+	m_mesh->Draw(m_shaderId);
 
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture
 }

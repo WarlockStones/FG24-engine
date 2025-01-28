@@ -18,7 +18,6 @@
 #include "framework/Entity.hpp"
 #include "renderer/Mesh.hpp"
 #include "framework/EntityManager.hpp"
-#include "framework/Lighting.hpp"
 #include "MeshManager.hpp"
 
 // Temp testing
@@ -45,22 +44,28 @@ void Session::Start() {
 	g_shader = Shader::CompileShader("../../assets/shaders/phong.vert",
 									 "../../assets/shaders/phong.frag");
 	assert(g_shader != 0);
-	g_arcadeTexture = Texture::LoadFromFile("../../assets/textures/arcade_carpet.png");
-	assert(g_arcadeTexture != 0);
+	Texture arcadeTex("Arcade");
+	assert(arcadeTex.LoadFromFile("../../assets/textures/arcade_carpet.png"));
+	g_textures.push_back(arcadeTex);
+
+	Texture helloTex("Hello");
+	if (arcadeTex.LoadFromFile("../../assets/textures/hello.png")) {
+		g_textures.push_back(helloTex);
+	}
 
 	// Add mesh
 	auto* monkeyMesh = MeshManager::GetMesh("suzanne_tri");
 	auto* cubeMesh = MeshManager::GetMesh("cube");
 
 	// ----- Configure entities -----
-	g_entity1 = entityManager.CreateEntity(*monkeyMesh, g_shader);
+	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader);
 
 	// Box
-	g_entity2 = entityManager.CreateEntity(*cubeMesh, g_shader);
+	g_entity2 = entityManager.CreateEntity(cubeMesh, g_shader);
 	g_entity2->m_transform.SetLocation(glm::vec3(2, 2, -2));
 	g_entity2->m_transform.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
-	auto wall = entityManager.CreateEntity(*cubeMesh, g_shader);
+	auto wall = entityManager.CreateEntity(cubeMesh, g_shader);
 	wall->m_transform.SetLocation(glm::vec3(0, 0, -3.5));
 	wall->m_transform.SetScale(glm::vec3(4.0f, 4.0f, 1.0f));
 

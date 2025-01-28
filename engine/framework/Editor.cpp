@@ -3,7 +3,9 @@
 #include "imgui_impl_opengl3.h"
 #include "renderer/Renderer.hpp"
 #include "framework/EntityManager.hpp"
+#include "framework/MeshManager.hpp"
 #include "framework/Entity.hpp"
+#include "Globals.hpp"
 
 namespace FG24 {
 namespace Editor {
@@ -55,6 +57,7 @@ void Draw(EntityManager& entityManager) {
 	if (entityManager.GetEntities().size() > 0) {
 		Entity* e = entityManager.GetEntities()[entityIndex];
 
+		// Populate new buffer containing name
 		char buf[32] = "";
 	    buf[0] = '\0';
 		std::string name = e->GetName();
@@ -74,7 +77,7 @@ void Draw(EntityManager& entityManager) {
 		ImGui::InputFloat3("position", pos);
 		e->m_transform.SetLocation(glm::vec3(pos[0], pos[1], pos[2]));
 
-		// BUG: Setting Y to certain values caues odd issues
+		// BUG: Setting Y to certain values causes odd issues
 		static float rot[3]{};
 		glm::vec v = e->m_transform.GetRotationEuler();
 		rot[0] = v.x;
@@ -84,13 +87,41 @@ void Draw(EntityManager& entityManager) {
 		e->m_transform.SetRotation(glm::vec3(rot[0], rot[1], rot[2]));
 
 		// Drop down menu for model and texture selection
-		// TODO: Get list of Mesh names from MeshManager. MeshManager should
-		// probably have that as a container or if it is not possible to get one
-		// from the map. Don't want to generate it every frame
-		// Send selected mesh to entity as set mesh
 		static int modelIndex = 0;
-		const char* items[] = { "Default", "Monkey", "Flag pole"};
-		ImGui::Combo("model", &modelIndex, items, IM_ARRAYSIZE(items));
+		static const std::vector<std::string_view>& meshNames = MeshManager::GetNames();
+		if (!meshNames.empty()) {
+			ImGui::Combo(
+				"model",
+				&modelIndex,
+				MeshManager::GetNames().data()->data(),
+				MeshManager::GetNames().size());
+			e->SetMesh(MeshManager::GetMesh(meshNames[modelIndex]));
+		} else {
+			ImGui::Combo("model", &modelIndex, "EMPTY", 1);
+		}
+
+		// Drop down for texture
+		static int textureIndex = 0;
+		static const char* previewName = "EMPTY";
+		if (!g_textures.empty()) {
+			textureIndex = e->m_textureId;
+			previewName = g_textures[textureIndex].m_name;
+			if (ImGui::BeginCombo("textures", previewName)) {
+				for (int i = 0; i < g_textures.size(); ++i) {
+					const bool isSelected = (textureIndex == i);
+					if (ImGui::Selectable(g_textures[i].m_name, isSelected)) {
+						textureIndex = i;
+					}
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
+			}
+			e->m_textureId = textureIndex;
+		} else {
+			previewName = "EMPTY";
+		}
 
 	}
 	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);

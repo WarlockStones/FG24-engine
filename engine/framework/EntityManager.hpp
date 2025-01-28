@@ -7,7 +7,7 @@ class Entity;
 class EntityManager {
 public:
 	~EntityManager();
-	Entity* CreateEntity(const Mesh& mesh, std::uint32_t shaderId);
+	Entity* CreateEntity(const Mesh* mesh, std::uint32_t shaderId);
 	void DeleteEntity(Entity* toDelete);
 	std::vector<Entity*>& GetEntities();
 private:
