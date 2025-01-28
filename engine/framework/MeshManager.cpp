@@ -32,7 +32,7 @@ Mesh* GetMesh(std::string_view meshSource) {
 		auto mdlEc = ObjToMdl::LoadMdlToVertexData(mdlPath.c_str(), mdlData);;
 		if (mdlEc == ObjToMdl::ErrorCode::Ok) {
 			// File exists and was loaded successfully. Use that as the result
-			Mesh* mesh = new Mesh;
+			Mesh* mesh = new Mesh(meshSource);
 			mesh->InitBuffers(mdlData.m_data, mdlData.m_numVertexData, mdlData.m_numVertices);
 			meshMap.insert({ meshSource, mesh });
 			names.push_back(meshSource);
@@ -52,7 +52,7 @@ Mesh* GetMesh(std::string_view meshSource) {
 			// This should probably be handled through editor UI
 			ObjToMdl::Serialize(meshSource, data);
 
-			Mesh* mesh = new Mesh;
+			Mesh* mesh = new Mesh(meshSource);
 			mesh->InitBuffers(data.m_data, data.m_numVertexData, data.m_numVertices);
 			meshMap.insert({ meshSource, mesh });
 			names.push_back(meshSource);

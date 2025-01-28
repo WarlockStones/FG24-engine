@@ -5,6 +5,10 @@
 
 namespace FG24 {
 
+Mesh::Mesh(std::string_view name) : m_name(name) {
+
+}
+
 void Mesh::InitBuffers(
 	const float* vertexData,
 	std::size_t numVertexData,

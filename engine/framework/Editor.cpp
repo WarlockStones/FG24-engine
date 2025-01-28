@@ -87,22 +87,31 @@ void Draw(EntityManager& entityManager) {
 		e->m_transform.SetRotation(glm::vec3(rot[0], rot[1], rot[2]));
 
 		// Drop down menu for model and texture selection
-		static int modelIndex = 0;
+		static const char* previewName = "EMPTY";
 		static const std::vector<std::string_view>& meshNames = MeshManager::GetNames();
 		if (!meshNames.empty()) {
-			ImGui::Combo(
-				"model",
-				&modelIndex,
-				MeshManager::GetNames().data()->data(),
-				MeshManager::GetNames().size());
-			e->SetMesh(MeshManager::GetMesh(meshNames[modelIndex]));
+			previewName = e->GetMesh().m_name.data();
+			if (ImGui::BeginCombo("mesh", previewName)) {
+				for (int i = 0; i < meshNames.size(); ++i) {
+					const bool isSelected = (previewName == meshNames[i]);
+					// Create new selectable as part of the combo. With label and bIsSelected
+					if (ImGui::Selectable(meshNames[i].data(), isSelected)) {
+						previewName = meshNames[i].data();
+						e->SetMesh(MeshManager::GetMesh(previewName)); // Mesh name is used as ID
+					}
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
+			}
 		} else {
-			ImGui::Combo("model", &modelIndex, "EMPTY", 1);
+			ImGui::Combo("model", 0, "EMPTY", 1);
 		}
 
-		// Drop down for texture
+
 		static int textureIndex = 0;
-		static const char* previewName = "EMPTY";
+		previewName = "EMPTY";
 		if (!g_textures.empty()) {
 			textureIndex = e->m_textureId;
 			previewName = g_textures[textureIndex].m_name;
@@ -111,6 +120,7 @@ void Draw(EntityManager& entityManager) {
 					const bool isSelected = (textureIndex == i);
 					if (ImGui::Selectable(g_textures[i].m_name, isSelected)) {
 						textureIndex = i;
+						e->m_textureId = textureIndex;
 					}
 					if (isSelected) {
 						ImGui::SetItemDefaultFocus();
@@ -118,21 +128,12 @@ void Draw(EntityManager& entityManager) {
 				}
 				ImGui::EndCombo();
 			}
-			e->m_textureId = textureIndex;
 		} else {
-			previewName = "EMPTY";
+			textureIndex = 0;
+			ImGui::Combo("texture", &textureIndex, "EMPTY", 1);
 		}
-
-	}
-	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-	ImGui::ColorEdit3("clear color", (float*)&clear_color);
-
-	if (ImGui::Button("Button")) { // Widget returns true when interacted with
-		counter++;
 	}
 
-	ImGui::SameLine();
-	ImGui::Text("counter = %d", counter);
 	ImGui::End(); // End of Entity Editor
 #endif
 
