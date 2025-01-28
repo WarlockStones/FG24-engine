@@ -1,9 +1,8 @@
 #include "Transform.hpp"
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <cstdio>
 
-constexpr int TransformVersion = 1; // For serialization
+// constexpr int TransformVersion = 1; // For serialization
 bool FG24::Transform::WriteTo(FILE* file) const {
 	/*
 	// FILE* will be an already opened file stream pointer and now we just have
