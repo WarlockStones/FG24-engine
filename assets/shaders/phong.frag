@@ -134,7 +134,7 @@ void main() {
 		specularLuminosity +
 		vec3(materialAmbient * lightAmbient);
 
-	fragColor = texture(tex, uv_world) * vec4(0.0, 1.0, 0.1, 1.0);
+	fragColor += texture(tex, uv_world);
 
 	// fragColor.xyz = diffuseLuminosity + specularLuminosity;
 

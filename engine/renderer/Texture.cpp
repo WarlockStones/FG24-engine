@@ -56,22 +56,22 @@ std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 	return textureID;
 }
 
-std::string_view GetName(std::int32_t id) {
+std::string_view GetName(std::uint32_t id) {
 	if (id == 0 || names.empty()) {
 		// OpenGL id 0 and means no texture
 		return "None";
 	}
-	if (id < static_cast<std::int32_t>(names.size())) {
-		return names[id]; 
+
+	if (id <= names.size()) {
+		return names[id - 1];  // OpenGL id starts at 1
 	}
+
 	return "SOMETHING WENT WRONG"; // Attempting to access out of bounds
 }
 
 const std::vector<std::string_view>& GetNames() {
 	return names;
 }
-
-
 
 } // namespace Texture
 } // namespace FG24

@@ -105,7 +105,7 @@ void Draw(EntityManager& entityManager) {
 			ImGui::Combo("model", 0, "EMPTY", 1);
 		}
 
-		static std::int32_t textureIndex = e->m_textureId;
+		std::uint32_t textureIndex = e->m_textureId;
 		previewName = Texture::GetName(textureIndex).data();
 		if (ImGui::BeginCombo("textures", previewName)) {
 			// 0 is OpenGL for None or invalid texture
@@ -114,11 +114,7 @@ void Draw(EntityManager& entityManager) {
 				// Create a new selectable widget
 				if (ImGui::Selectable(Texture::GetName(i).data(), isSelected)) {
 					textureIndex = i;
-					std::printf(
-						"Updating texture %s with %s\n",
-						Texture::GetName(e->m_textureId).data(),
-						Texture::GetName(textureIndex).data());
-						e->m_textureId = textureIndex;
+					e->m_textureId = textureIndex;
 				}
 				if (isSelected) {
 					ImGui::SetItemDefaultFocus();
