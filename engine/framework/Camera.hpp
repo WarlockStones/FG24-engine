@@ -4,6 +4,7 @@
 
 namespace FG24 {
 // The camera class is to be created from the Camera Manager
+enum class ProjectionType { Perspective, Orthographic };
 class Camera {
 public:
     Camera() = default;
@@ -12,10 +13,15 @@ public:
     Camera& operator=(Camera&& other);
 	glm::mat4 GetViewMatrix() const;
 	void Update(float deltaTime);
-	glm::vec3 GetPosition() const;
+	void SetPosition(float x, float y, float z);
+	const glm::vec3& GetPosition() const;
+	void SetYaw(float yaw);
 	float GetYaw() const;
+	void SetPitch(float pitch);
 	float GetPitch() const;
-    std::uint32_t m_id; 
+	std::uint32_t m_id; 
+	float m_fov = 45.0f;
+	ProjectionType projection = ProjectionType::Perspective;
 private:
 	void UpdateVectors();
 	glm::vec3 m_position;
@@ -26,7 +32,6 @@ private:
 	float m_pitch{};
 	float m_movementSpeed = 2.0f;
 	float m_mouseSensitivity = 0.1f;
-	float m_fov = 45.0f;
 	float m_xVel{};
 	float m_yVel{};
 	bool m_mouseMotion = false;

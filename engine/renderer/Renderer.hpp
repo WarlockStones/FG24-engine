@@ -9,7 +9,7 @@ class Renderer {
 public:
 	~Renderer();
 	bool Init();
-	void Draw(const std::vector<Entity*>& entities) const;
+	void Draw(const std::vector<Entity*>& entities);
 	void SetProjectionMatrix(float fov,
 		std::uint32_t windowWidth,
 		std::uint32_t windowHeight,

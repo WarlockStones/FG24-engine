@@ -55,15 +55,32 @@ void Camera::Update(float deltaTime) {
 	}
 }
 
-glm::vec3 Camera::GetPosition() const {
+void Camera::SetPosition(float x, float y, float z) {
+	m_position.x = x;
+	m_position.y = y;
+	m_position.z = z;
+}
+
+const glm::vec3& Camera::GetPosition() const {
 	return m_position;
+}
+
+void Camera::SetYaw(float yaw) {
+	m_yaw = yaw;
+	UpdateVectors();
 }
 
 float Camera::GetYaw() const {
 	return m_yaw;
 }
 
+void Camera::SetPitch(float pitch) {
+	m_pitch = pitch;
+	UpdateVectors();
+}
+
 float Camera::GetPitch() const {
 	return m_pitch;
 }
+
 } // namespace FG24

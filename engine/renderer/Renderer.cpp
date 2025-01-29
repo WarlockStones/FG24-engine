@@ -61,16 +61,25 @@ bool Renderer::Init() {
 	return true;
 }
 
-void Renderer::Draw(const std::vector<Entity*>& entities) const {
+void Renderer::Draw(const std::vector<Entity*>& entities) {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	const Camera* camera = CameraManager::GetActiveCamera();
 	if (camera == nullptr) {
 		// TODO: Draw error message in 3D view
-	    std::printf("No active camera...\n");
+		std::printf("No active camera...\n");
 		SDL_GL_SwapWindow(m_window);
 		return;
+	}
+
+	if (camera->projection == ProjectionType::Perspective) {
+		SetProjectionMatrix(camera->m_fov, g_windowWidth, g_windowHeight);
+	} else {
+		// Orthographic camera defines a cube like frustum in world space coordinates
+		m_projection = glm::ortho(
+			-10.0f, 10.0f, -10.0f, 10.0f, // left, right, bottom, top
+			0.0f, 100.0f);  // near clip, far clip
 	}
 
 	// Space / Coordinate systems

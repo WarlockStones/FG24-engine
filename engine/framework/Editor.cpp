@@ -5,7 +5,10 @@
 #include "framework/EntityManager.hpp"
 #include "framework/MeshManager.hpp"
 #include "framework/Entity.hpp"
+#include "framework/CameraManager.hpp"
+#include "framework/Camera.hpp"
 #include "Globals.hpp"
+#include <cstdio>
 
 namespace FG24 {
 namespace Editor {
@@ -22,17 +25,7 @@ void Init(const Renderer& renderer) {
 	ImGui_ImplOpenGL3_Init("#version 330");
 }
 
-void Draw(EntityManager& entityManager) {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame();
-	ImGui::NewFrame();
-
-#if FALSE
-	ImGui::ShowDemoWindow();
-#else
-	ImGui::Begin("Entity Editor"); // Create a window                          
-	ImGui::Text("Press F1 to detach mouse cursor."); 
-
+static void EntityEditor(EntityManager& entityManager) {
 	static int entityIndex = 0;
 	ImGui::Text("Selected entity index = %d", entityIndex);
 	ImGui::ListBox(
@@ -80,9 +73,7 @@ void Draw(EntityManager& entityManager) {
 		ImGui::InputFloat3("rotation", rot);
 		e->m_transform.SetRotation(glm::vec3(rot[0], rot[1], rot[2]));
 
-		// Drop down menu for model and texture selection
-		// TODO: Fix so that it works with OpenGL that id number is correct!
-		// texture id 0 is invalid id meaning texture could not be created in opengl
+		// Mesh selection
 		static const char* previewName = "EMPTY";
 		static const std::vector<std::string_view>& meshNames = MeshManager::GetNames();
 		if (!meshNames.empty()) {
@@ -105,6 +96,7 @@ void Draw(EntityManager& entityManager) {
 			ImGui::Combo("model", 0, "EMPTY", 1);
 		}
 
+		// Texture selection
 		std::uint32_t textureIndex = e->m_textureId;
 		previewName = Texture::GetName(textureIndex).data();
 		if (ImGui::BeginCombo("textures", previewName)) {
@@ -123,6 +115,91 @@ void Draw(EntityManager& entityManager) {
 			ImGui::EndCombo();
 		}
 	}
+}
+
+static void CameraEditor() {
+	// ListBox of Active cameras ids.
+	static int cameraSelectedIndex = 0; // Auto select top of list
+	if (ImGui::BeginListBox("Cameras")) {
+		for (std::size_t i = 0; i < CameraManager::GetNumCameras(); ++i) {
+			const bool isSelected = (cameraSelectedIndex == i);
+			std::uint32_t* activeIds = CameraManager::GetIdArray();
+			std::uint32_t camId = activeIds[i];
+			static char buf[32];
+			std::sprintf(buf, "Camera %d", camId);
+			if (ImGui::Selectable(buf, isSelected)) {
+				cameraSelectedIndex = i;
+			}
+		}
+		ImGui::EndListBox();
+	}
+	ImGui::Text("Selected camera: %d", cameraSelectedIndex);
+	if (CameraManager::GetNumCameras() > 0) {
+		auto camId = CameraManager::GetIdArray()[cameraSelectedIndex];
+		Camera* cam = CameraManager::GetCamera(camId);
+		if (cam) {
+			if (ImGui::Button("Control camera")) {
+				CameraManager::SetActiveCamera(camId);
+			}
+			// Display camera things
+			static float pos[3]{};
+			pos[0] = cam->GetPosition().x;
+			pos[1] = cam->GetPosition().y;
+			pos[2] = cam->GetPosition().z;
+			ImGui::InputFloat3("position", pos);
+			cam->SetPosition(pos[0], pos[1], pos[2]);
+
+			static float yaw;
+			yaw = cam->GetYaw();
+			ImGui::InputFloat("yaw", &yaw);
+			cam->SetYaw(yaw);
+
+			static float pitch;
+			pitch = cam->GetPitch();
+			ImGui::InputFloat("pitch", &pitch);
+			cam->SetPitch(pitch);
+
+			// FOV
+			ImGui::SliderFloat("fov", &cam->m_fov, 5, 120);
+
+			// Projection type
+			if (cam->projection == ProjectionType::Perspective) {
+				if (ImGui::Button("Switch to orthographic view")) {
+					cam->projection = ProjectionType::Orthographic;
+				}
+			} else {
+				if (ImGui::Button("Switch to perspective view")) {
+					cam->projection = ProjectionType::Perspective;
+				}
+			}
+		}
+	}
+}
+
+void Draw(EntityManager& entityManager) {
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
+
+#if false
+	ImGui::ShowDemoWindow();
+#else
+	ImGui::Begin("Editor"); // Create a window                          
+	ImGui::Text("Press F1 to detach mouse cursor."); 
+
+	if (ImGui::BeginTabBar("Editor")) {
+		if (ImGui::BeginTabItem("Entities")) {
+			EntityEditor(entityManager);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Cameras")) {
+			CameraEditor();
+			ImGui::EndTabItem();
+		}
+
+	ImGui::EndTabBar();
+	} // BeginTabBar
+
 
 	ImGui::End(); // End of Entity Editor
 #endif

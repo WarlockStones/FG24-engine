@@ -182,13 +182,6 @@ void Session::Update(float deltaTime) {
 		g_action2 = false;
 		lightShouldTick = !lightShouldTick;
 	}
-	if (g_action3) {
-		g_action3 = false;
-	    std::printf("Switching camera\n");
-		static bool UseCam1 = true;
-		UseCam1 ? CameraManager::SetActiveCamera(1) : CameraManager::SetActiveCamera(0);
-		UseCam1 = !UseCam1;
-	}
 	if (lightShouldTick) {
 		static float lightOffset = 0;
 		lightOffset += deltaTime;

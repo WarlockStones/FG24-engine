@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace FG24 {
-// Testing useage of sparse arrays and ways to avoid dynamic arrays and allocation
+// Testing usage of sparse arrays and ways to avoid dynamic arrays and allocation
 namespace CameraManager {
 Camera* activeCamera = nullptr;
 constexpr std::size_t maxCameras = 24;
@@ -17,11 +17,7 @@ Camera cameras[maxCameras]; // Sparse array of cameras
 //  into play to reduce size/redundancy. A Camera should probably only be a vec3
 //  pos, yaw, and pitch. Not the 13 variables it is now.)
 
-Camera* GetActiveCamera() {
-	return activeCamera;
-}
-
-bool CameraExists(std::uint32_t id) {
+static bool CameraExists(std::uint32_t id) {
 	// Naive algorithm
 	for (size_t i = 0; i < numCameras; ++i) {
 		if (activeIds[i] == id) {
@@ -31,6 +27,26 @@ bool CameraExists(std::uint32_t id) {
   
 	return false;
 }
+
+Camera* GetActiveCamera() {
+	return activeCamera;
+}
+
+Camera* GetCamera(std::uint32_t id) {
+	if (CameraExists(id)) {
+		return &cameras[id];
+	}
+	return nullptr;
+}
+
+std::size_t GetNumCameras() {
+	return numCameras;
+}
+
+std::uint32_t* GetIdArray() {
+	return activeIds;
+}
+
 
 void SetActiveCamera(std::uint32_t id) {
 	if (CameraExists(id)) {
