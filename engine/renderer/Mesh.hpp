@@ -12,7 +12,7 @@ public:
 	void InitBuffers(
 		const float* vertexData, std::size_t numVertexData,	std::size_t numVertices);
 
-	void Draw(std::uint32_t shaderID) const;
+	void Draw(std::uint32_t shaderID, bool asWireframe) const;
 
 	const std::string_view m_name;
 private:

@@ -8,6 +8,7 @@
 #include <utility>
 #include <cctype>
 #include <vector> // C++
+#include <array>
 #include <map> // C++
 #include <string_view> // C++
 #include <string>
@@ -98,7 +99,7 @@ struct Face { // TODO: Remove need for this Face struct
 };
 
 
-Face ParseF(const char* str) {
+void ParseF(const char* str, std::vector<Face>& faceVectorOut) {
 	// elements,  e1, e2, e3 
 	// v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
 	// vertex 1,  vertex 2,  vertex 3
@@ -179,9 +180,17 @@ Face ParseF(const char* str) {
 	}
 
 	// TODO: Triangulate
-	// if vertexCount > 3; triangulate
+	static std::vector<std::array<FaceIndexElement, 3>> triangulatedFaces;
+	triangulatedFaces.clear();
 	if (vertexCount > 3) {
-		std::printf("Triangulate me!\n");
+		// Fan triangulation
+		for (int i = 0; i < vertexCount - 2; ++i) {
+		  std::array<FaceIndexElement, 3> temp;
+		  temp[0] = f[0];
+		  temp[1] = f[i + 1];
+		  temp[2] = f[i + 2];
+		  triangulatedFaces.push_back(temp);
+		}
 	}
 
 #if false
@@ -191,23 +200,23 @@ Face ParseF(const char* str) {
 	}
 #endif
 
-	Face face;
 
-	if (elementTypesFound & uvBit) {
-		face.hasUV = true;
-	}
-	if (elementTypesFound & vnBit) {
-		face.hasNormal = true;
-	}
+	for (auto& f3 : triangulatedFaces) {
+		Face face;
+		if (elementTypesFound & uvBit) {
+			face.hasUV = true;
+		}
+		if (elementTypesFound & vnBit) {
+			face.hasNormal = true;
+		}
+		for (int i = 0; i < 3; ++i) {
+			face.v[i] = f3[i].v;
+			face.uv[i] = f3[i].uv;
+			face.vn[i] = f3[i].vn;
+		}
 
-	// TODO: Remove need of face and this awkward operation
-	for (int i = 0; i < 3; ++i) {
-		face.v[i] = f[i].v;
-		face.uv[i] = f[i].uv;
-		face.vn[i] = f[i].vn;
+		faceVectorOut.push_back(face);
 	}
-
-	return face;
 }
 
 // TODO: Support .obj files that has other attribute configuration than v,vt,vn
@@ -252,21 +261,25 @@ ErrorCode LoadObjToVertexData(Filepath path, VertexData& vertexDataOut) {
 		} else if (std::strcmp(prefix, "vn") == 0) {
 			tempNormals.push_back(ParseVN(buf));
 		} else if (std::strcmp(prefix, "f ") == 0) {
-			Face face = ParseF(buf);
-			vInd.push_back(face.v[0]);
-			vInd.push_back(face.v[1]);
-			vInd.push_back(face.v[2]);
+			static std::vector<Face> faces;
+			ParseF(buf, faces);
+			for (const Face& face : faces) {
+				vInd.push_back(face.v[0]);
+				vInd.push_back(face.v[1]);
+				vInd.push_back(face.v[2]);
 
-			if (face.hasUV) {
-				uvInd.push_back(face.uv[0]);
-				uvInd.push_back(face.uv[1]);
-				uvInd.push_back(face.uv[2]);
+				if (face.hasUV) {
+					uvInd.push_back(face.uv[0]);
+					uvInd.push_back(face.uv[1]);
+					uvInd.push_back(face.uv[2]);
+				}
+				if (face.hasNormal) {
+					vnInd.push_back(face.vn[0]);
+					vnInd.push_back(face.vn[1]);
+					vnInd.push_back(face.vn[2]);
+				}
 			}
-			if (face.hasNormal) {
-				vnInd.push_back(face.vn[0]);
-				vnInd.push_back(face.vn[1]);
-				vnInd.push_back(face.vn[2]);
-			}
+			faces.clear();
 		}
 	}
 
@@ -409,8 +422,6 @@ ErrorCode Serialize(std::string_view name, const VertexData& data) {
 
     // magic-word MUST be equal to 0x6D6F646C "modl".
 	// version number to detect old incompatible files.
-
-	std::size_t;
   
 	std::string path = "../../assets/mesh/";
 	path += name;

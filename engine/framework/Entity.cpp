@@ -57,7 +57,7 @@ void Entity::Draw() const {
 		glBindTexture(GL_TEXTURE_2D, m_textureId);
 	// }
 
-	m_mesh->Draw(m_shaderId);
+	m_mesh->Draw(m_shaderId, m_drawAsWireframe);
 
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture
 }

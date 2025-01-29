@@ -114,6 +114,8 @@ static void EntityEditor(EntityManager& entityManager) {
 			}
 			ImGui::EndCombo();
 		}
+
+		ImGui::Checkbox("Draw as wireframe", &e->m_drawAsWireframe);
 	}
 }
 

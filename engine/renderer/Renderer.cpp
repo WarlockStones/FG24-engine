@@ -136,7 +136,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 			// TODO: Light's mesh should use default unlit shader
 			Shader::SetMat4(g_shader, "model", model);
 			// TODO: Add diferent mesh for different light type
-			MeshManager::GetMesh("cube")->Draw(g_shader);
+			MeshManager::GetMesh("cube")->Draw(g_shader, true);
 		}
 	}
 

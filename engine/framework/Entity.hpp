@@ -32,6 +32,7 @@ public:
 
 	Transform m_transform;
 	std::uint32_t m_textureId = 0; // 0 means no texture
+	bool m_drawAsWireframe = false;
 private:
 	const Mesh* m_mesh;
 	std::uint32_t m_shaderId{};

@@ -61,9 +61,14 @@ void Mesh::InitBuffers(
 	glEnableVertexAttribArray(2);
 }
 
-void Mesh::Draw(std::uint32_t shaderID) const {
+void Mesh::Draw(std::uint32_t shaderID, bool asWireframe = false) const {
 	assert(shaderID != 0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
+	if (asWireframe) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+	} else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
+	}
+
 	glUseProgram(shaderID);
 
 	glBindVertexArray(VAO);
