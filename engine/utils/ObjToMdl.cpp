@@ -179,8 +179,10 @@ Face ParseF(const char* str) {
 	}
 
 	// TODO: Triangulate
-	// if vertexCount == 4; triangulate
-	// if vertexCount > 4; triangulate? complain
+	// if vertexCount > 3; triangulate
+	if (vertexCount > 3) {
+		std::printf("Triangulate me!\n");
+	}
 
 #if false
 	std::printf("VertexCount: %d\n", vertexCount);

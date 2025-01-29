@@ -51,6 +51,7 @@ void Session::Start() {
 	// Add mesh
 	auto* monkeyMesh = MeshManager::GetMesh("suzanne_tri");
 	auto* cubeMesh = MeshManager::GetMesh("cube");
+	auto* triangulateTest = MeshManager::GetMesh("triangtest_quad");
 
 	// ----- Configure entities -----
 	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader, "Monkey");
