@@ -48,7 +48,7 @@ Mesh* GetMesh(std::string_view meshSource) {
 			assert(ec == ObjToMdl::ErrorCode::Ok);
 
 			// Convert to .mdl
-			// TODO: Fix! Bad practice of hiding functionallity in GetMesh function
+			// TODO: Fix! Bad practice of hiding functionality in GetMesh function
 			// This should probably be handled through editor UI
 			ObjToMdl::Serialize(meshSource, data);
 

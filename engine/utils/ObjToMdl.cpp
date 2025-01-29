@@ -407,6 +407,8 @@ ErrorCode Serialize(std::string_view name, const VertexData& data) {
 
     // magic-word MUST be equal to 0x6D6F646C "modl".
 	// version number to detect old incompatible files.
+
+	std::size_t;
   
 	std::string path = "../../assets/mesh/";
 	path += name;
