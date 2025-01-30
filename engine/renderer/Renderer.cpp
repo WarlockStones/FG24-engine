@@ -101,7 +101,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 	// attenuation but add that to Light struct
 	int activeLights = 0;
 	for (const auto& l : Lighting::GetLights()) {
-		if (l->enabled) {
+		if (l->m_enabled) {
 			lightType[activeLights] = l->m_type;
 			diffuse [activeLights * 4 + 0] = l->m_diffuse.r;
 			diffuse [activeLights * 4 + 1] = l->m_diffuse.g;
@@ -129,15 +129,17 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 			cutoff[activeLights] = co;
 			
 			++activeLights;
+
+		}
 			// Draw render light default debug mesh
 			glm::mat4 model = glm::mat4(1);
 			model = glm::translate(model, l->m_position);
 			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-			// TODO: Light's mesh should use default unlit shader
+			// TODO: Light's mesh should use default unlit shader.
+			//       Shader should change color when light is disabled
 			Shader::SetMat4(g_shader, "model", model);
 			// TODO: Add diferent mesh for different light type
 			MeshManager::GetMesh("cube")->Draw(g_shader, g_drawLightsAsWireframe);
-		}
 	}
 
 	// Todo make Shader:: functions to set arrays

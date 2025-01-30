@@ -185,22 +185,23 @@ void Session::Update(float deltaTime) {
 		g_action2 = false;
 		lightShouldTick = !lightShouldTick;
 	}
+	auto& lights = Lighting::GetLights();
 	if (lightShouldTick) {
 		static float lightOffset = 0;
 		lightOffset += deltaTime;
-		if (g_light1) {
-			g_light1->m_position = glm::vec3(
+		if (lights.size() > 0) {
+			lights[0]->m_position = glm::vec3(
 				glm::sin(lightOffset * 1.1f) * 4.0f - 1,
 				3,
 				glm::cos(lightOffset * 1.1f) * 4.0f - 1);
 		}
 	}
-	if (g_light3) {
+	if (lights.size() > 1) {
 		static float pos = 0;
 		pos += deltaTime;
-		g_light3->m_position = glm::vec3(
-			g_light3->m_position.x,
-			g_light3->m_position.y,
+		lights[1]->m_position = glm::vec3(
+			lights[1]->m_position.x,
+			lights[1]->m_position.y,
 			glm::sin(pos * 1.1) * 4.0f + 4.5f);
 	}
 }

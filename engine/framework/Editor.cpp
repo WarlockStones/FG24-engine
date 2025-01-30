@@ -8,6 +8,8 @@
 #include "framework/CameraManager.hpp"
 #include "framework/Camera.hpp"
 #include "framework/LevelSaver.hpp"
+#include "framework/Lighting.hpp"
+#include "framework/Light.hpp"
 #include "Globals.hpp"
 #include <cstdio>
 
@@ -120,9 +122,88 @@ static void EntityEditor(EntityManager& entityManager) {
 	}
 }
 
+void LightEditor() {
+	const auto& lights = Lighting::GetLights();
+	static std::size_t lightSelectedIndex = 0;
+
+	if (ImGui::Button("Create light")) {
+		Lighting::CreateLight(
+			glm::vec3(0,0,0),
+			LightType::Point,
+			glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+			glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+			glm::vec3(2.0f, 0.01f, 0.001f));
+		lightSelectedIndex = lights.size() - 1;
+	}
+	
+	if (ImGui::BeginListBox("Lights")) {
+		for (std::size_t i = 0; i < lights.size(); ++i) {
+			const bool isSelected = (lightSelectedIndex == i);
+			static char buf[32];
+			std::sprintf(buf, "Light %ld", i);
+			if (ImGui::Selectable(buf, isSelected)) {
+				lightSelectedIndex = i;
+			}
+			  
+		}
+		ImGui::EndListBox();
+	}
+
+	if(!lights.empty()) {
+		auto* l = lights[lightSelectedIndex];
+
+		if (ImGui::Button("Delete selected light")) {
+			Lighting::DeleteLight(l);
+		} else {
+			int& type = l->m_type;
+			const char* typeNames[3] = { "Point", "Spot", "Directional" };
+			const char* typeName = (type >= 0 && type < 3) ? typeNames[type] : "Unknown";
+			ImGui::SliderInt("type", &type, 0, 2, typeName);
+			ImGui::Checkbox("enabled", &l->m_enabled);
+
+			static float pos[3]{};
+			pos[0] = l->m_position[0];
+			pos[1] = l->m_position[1];
+			pos[2] = l->m_position[2];
+			ImGui::InputFloat3("position", pos);
+			l->m_position = glm::vec3(pos[0], pos[1], pos[2]);
+
+			static float diff[4]{};
+			diff[0] = l->m_diffuse[0];
+			diff[1] = l->m_diffuse[1];
+			diff[2] = l->m_diffuse[2];
+			diff[3] = l->m_diffuse[3];
+			ImGui::ColorEdit4("diffuse", (float*)&diff, ImGuiColorEditFlags_Float);
+			l->m_diffuse = glm::vec4(diff[0], diff[1], diff[2], diff[3]);
+
+			static float spec[4]{};
+			spec[0] = l->m_specular[0];
+			spec[1] = l->m_specular[1];
+			spec[2] = l->m_specular[2];
+			spec[3] = l->m_specular[3];
+			ImGui::ColorEdit4("specular", (float*)&spec, ImGuiColorEditFlags_Float);
+			l->m_specular = glm::vec4(spec[0], spec[1], spec[2], spec[3]);
+
+			ImGui::Text("attenuation");
+			ImGui::SliderFloat("constant",  &l->m_attenuation.x, 0.1, 4);
+			ImGui::SliderFloat("linear",    &l->m_attenuation.y, 0.01, 0.1);
+			ImGui::SliderFloat("quadratic", &l->m_attenuation.z, 0.001, 0.01);
+
+			if (type == LightType::Spot) {
+				static float rot[3]{};
+				rot[0] = l->m_rotation[0];
+				rot[1] = l->m_rotation[1];
+				rot[2] = l->m_rotation[2];
+				ImGui::InputFloat3("rotation", rot);
+				l->m_rotation = glm::vec3(rot[0], rot[1], rot[2]);
+			}
+		}
+	}
+}
+
 static void CameraEditor() {
 	// ListBox of Active cameras ids.
-	static int cameraSelectedIndex = 0; // Auto select top of list
+	static std::size_t cameraSelectedIndex = 0; // Auto select top of list
 	if (ImGui::BeginListBox("Cameras")) {
 		for (std::size_t i = 0; i < CameraManager::GetNumCameras(); ++i) {
 			const bool isSelected = (cameraSelectedIndex == i);
@@ -136,7 +217,7 @@ static void CameraEditor() {
 		}
 		ImGui::EndListBox();
 	}
-	ImGui::Text("Selected camera: %d", cameraSelectedIndex);
+	ImGui::Text("Selected camera: %ld", cameraSelectedIndex);
 	if (CameraManager::GetNumCameras() > 0) {
 		auto camId = CameraManager::GetIdArray()[cameraSelectedIndex];
 		Camera* cam = CameraManager::GetCamera(camId);
@@ -209,7 +290,7 @@ void SceneEditor(EntityManager& entityManager) {
 		ecLoad = LevelSaver::LoadEntities(entityManager);
 	}
 	if (loadWasPressed) {
-		if (ec == code::Ok) {
+		if (ecLoad == code::Ok) {
 			ImGui::Text("Entities loaded successfully");
 		} else {
 			ImGui::Text("Failed to load entities");
@@ -231,6 +312,10 @@ void Draw(EntityManager& entityManager) {
 	if (ImGui::BeginTabBar("Editor")) {
 		if (ImGui::BeginTabItem("Entities")) {
 			EntityEditor(entityManager);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Lights")) {
+			LightEditor();
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Cameras")) {

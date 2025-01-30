@@ -17,8 +17,8 @@ struct Light {
 	glm::vec4 m_diffuse{1}; // diffuseColor?
 	glm::vec4 m_specular{1}; // specularColor?
 	glm::vec3 m_attenuation{};
-	glm::vec3 m_rotation{}; // Spotlights need no rotation
-	bool enabled = true;
+	glm::vec3 m_rotation{}; // Spotlights need a rotation
+	bool m_enabled = true;
 };
 
 } // namespace FG24
