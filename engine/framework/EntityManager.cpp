@@ -33,4 +33,13 @@ void EntityManager::DeleteEntity(Entity* toRemove) {
 std::vector<Entity*>& EntityManager::GetEntities() {
 	return m_entities;
 }
+
+void EntityManager::ReplaceEntities(const std::vector<Entity*>& newEntities) {
+    for (Entity* e : m_entities) {
+	  delete e;
+	}
+
+	m_entities = newEntities;
+}
+
 } // namespace FG24

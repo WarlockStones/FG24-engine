@@ -12,16 +12,16 @@ public:
 
 	void SetLocation(glm::vec3 newLocation);
 	const glm::vec3& GetLocation() const;
-	void SetScale(glm::vec3 newScale);
-	const glm::vec3& GetScale() const;
 	void SetRotation(glm::vec3 newEuler);
 	const glm::quat& GetRotation() const;
 	glm::vec3 GetRotationEuler() const;
 	glm::mat4 GetRotationMatrix() const;
+	void SetScale(glm::vec3 newScale);
+	const glm::vec3& GetScale() const;
 
 private:
 	glm::vec3 m_location = {0.0f, 0.0f, 0.0f};
-	glm::vec3 m_scale = {1.0f, 1.0f, 1.0f};
 	glm::quat m_rotation{};
+	glm::vec3 m_scale = {1.0f, 1.0f, 1.0f};
 };
 }

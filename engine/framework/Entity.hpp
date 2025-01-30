@@ -11,6 +11,7 @@ class Mesh;
 // An Entity is a thing in the game world
 class Entity : public IWritable {
 public:
+	Entity() = default;
 	explicit Entity(
 		const Mesh* mesh,
 		std::uint32_t shaderId,

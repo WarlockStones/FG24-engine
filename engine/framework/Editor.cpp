@@ -7,6 +7,7 @@
 #include "framework/Entity.hpp"
 #include "framework/CameraManager.hpp"
 #include "framework/Camera.hpp"
+#include "framework/LevelSaver.hpp"
 #include "Globals.hpp"
 #include <cstdio>
 
@@ -178,8 +179,36 @@ static void CameraEditor() {
 	}
 }
 
-void SceneEditor() {
+void SceneEditor(EntityManager& entityManager) {
+	using code = LevelSaver::ErrorCode;
+    static auto ec = code::Ok;
+	static bool saveWasPressed = false;
 	ImGui::Checkbox("Draw lights as wireframe", &g_drawLightsAsWireframe);
+	if (ImGui::Button("Save entities")) {
+		ec = LevelSaver::SaveEntities(entityManager);
+		saveWasPressed = true;
+	}
+	if (saveWasPressed) {
+	    if (ec == code::Ok) {
+			ImGui::Text("Level save created successfully");
+		} else if (ec == code::NoFile) {
+			ImGui::Text("Error: Level save failed! File path was invalid");
+		} else if (ec == code::Fail) {
+		    ImGui::Text("Error: Level was not able to be saved");
+		}
+	}
+	static auto ecLoad = code::Ok;
+	static bool loadWasPressed = false;
+	if (ImGui::Button("Load entities")) {
+		ecLoad = LevelSaver::LoadEntities(entityManager);
+	}
+	if (loadWasPressed) {
+		if (ec == code::Ok) {
+			ImGui::Text("Entities loaded successfully");
+		} else {
+			ImGui::Text("Failed to load entities");
+		}
+	}
 }
 
 void Draw(EntityManager& entityManager) {
@@ -203,7 +232,7 @@ void Draw(EntityManager& entityManager) {
 			ImGui::EndTabItem();
 		} 
 		if (ImGui::BeginTabItem("Scene")) {
-			SceneEditor();
+			SceneEditor(entityManager);
 			ImGui::EndTabItem();
 		}
 

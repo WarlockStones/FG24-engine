@@ -45,6 +45,7 @@ add_executable(engine
 	"framework/Transform.cpp"
 	"framework/Lighting.cpp"
 	"framework/Light.cpp"
+	"framework/LevelSaver.cpp"
 	"framework/MeshManager.cpp"
 	"renderer/Renderer.cpp"
 	"renderer/Mesh.cpp"

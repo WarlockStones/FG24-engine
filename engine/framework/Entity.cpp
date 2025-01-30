@@ -5,6 +5,7 @@
 #include "renderer/Mesh.hpp"
 #include <cstdint>
 #include <cstdio>
+#include "framework/MeshManager.hpp"
 
 namespace FG24 {
 Entity::Entity(
@@ -62,19 +63,63 @@ void Entity::Draw() const {
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture
 }
 
-constexpr int EntityVersion = 1; // For serialization
 bool Entity::WriteTo(FILE* file) const {
-	int version = EntityVersion;
-	std::fwrite(&version, sizeof(int), 1, file);
-	m_transform.WriteTo(file);
+	// Lets just write the mesh name for now but it bloats the file size
+    std::size_t n = 0;
+	std::uint32_t nameLength = m_name.length() + 1; // +1 for '\0'
+	assert(nameLength <= 32);
+	n += std::fwrite(&nameLength, sizeof(std::uint32_t), 1, file);
+	n += std::fwrite(m_name.c_str(), sizeof(char), nameLength, file);
+	std::uint32_t mNameLength = m_mesh->m_name.length() + 1;
+	assert(mNameLength <= 32);
+	n += std::fwrite(&mNameLength, sizeof(std::uint32_t), 1, file);
+	n += std::fwrite(m_mesh->m_name.data(), sizeof(char), mNameLength, file);
+	n += std::fwrite(&m_shaderId, sizeof(std::uint32_t), 1, file);
+	n += std::fwrite(&m_textureId, sizeof(std::uint32_t), 1, file);
+	// 4 for nameLength, mNameLength, shaderId, textureId
+	std::size_t expected = 4 + nameLength + mNameLength;
 
-	return true;
+	if (n != expected) {
+		std::fprintf(stderr, "Error: Entity did not write expected amount\n");
+		return false;
+	}
+
+	return m_transform.WriteTo(file);
+
 }
 
 bool Entity::ReadFrom(FILE* file) {
-	int version = 0;
-	std::fread(&version, sizeof(int), 1, file);
-	m_transform.ReadFrom(file);
+	std::size_t n = 0;
+	std::uint32_t nameLength = 0;
+	char name[32];
+	std::uint32_t meshNameLength = 0;
+	char meshName[32];
+	n += std::fread(&nameLength, sizeof(std::uint32_t), 1, file);
+	n += std::fread(&name[0], sizeof(char), nameLength, file);
+	n += std::fread(&meshNameLength, sizeof(std::uint32_t), 1, file);
+	n += std::fread(&meshName[0], sizeof(char), meshNameLength, file);
+
+	std::uint32_t shaderId = 0;
+	n += std::fread(&shaderId, sizeof(std::uint32_t), 1, file);
+	std::uint32_t textureId = 0;
+	n += std::fread(&textureId, sizeof(std::uint32_t), 1, file);
+	
+	std::size_t expected = 4 + nameLength + meshNameLength;
+	if (n != expected) {
+		std::fprintf(stderr, "Error: Entity did not read expected amount\n");
+		return false;
+	}
+
+	// Only apply if everything is good!
+	if (m_transform.ReadFrom(file) == false) {
+		return false;
+	}
+
+	// Apply everything only when all components are also good
+	m_name = name;
+	m_mesh = MeshManager::GetMesh(meshName);
+	m_shaderId = shaderId;
+	m_textureId = textureId;
 
 	return true;
 }
