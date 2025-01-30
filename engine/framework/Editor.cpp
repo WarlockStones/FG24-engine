@@ -178,6 +178,10 @@ static void CameraEditor() {
 	}
 }
 
+void SceneEditor() {
+	ImGui::Checkbox("Draw lights as wireframe", &g_drawLightsAsWireframe);
+}
+
 void Draw(EntityManager& entityManager) {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
@@ -196,6 +200,10 @@ void Draw(EntityManager& entityManager) {
 		}
 		if (ImGui::BeginTabItem("Cameras")) {
 			CameraEditor();
+			ImGui::EndTabItem();
+		} 
+		if (ImGui::BeginTabItem("Scene")) {
+			SceneEditor();
 			ImGui::EndTabItem();
 		}
 

@@ -14,6 +14,8 @@ bool g_runGameLoop = false;
 int g_windowWidth = 800;
 int g_windowHeight = 600;
 
+bool g_drawLightsAsWireframe = true;
+
 std::uint32_t			g_shader{};
 Entity*					g_entity1{};
 Entity*					g_entity2{};

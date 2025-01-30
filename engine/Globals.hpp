@@ -18,6 +18,8 @@ extern int g_windowHeight;
 constexpr glm::vec3 g_worldUp = glm::vec3(0, 1, 0);
 constexpr glm::vec3 g_worldForward = glm::vec3(0, 0, -1);
 
+extern bool g_drawLightsAsWireframe;
+
 // Assets / Entities
 extern std::uint32_t				g_shader;
 extern std::uint32_t				g_arcadeTexture;
