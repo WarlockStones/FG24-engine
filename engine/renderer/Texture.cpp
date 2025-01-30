@@ -10,7 +10,7 @@
 
 namespace FG24 {
 namespace Texture {
-std::vector<std::string_view> names;
+std::vector<std::string_view> names; // Id maps to name index
 
 std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 	SDL_Surface* surface = IMG_Load(path);
@@ -71,6 +71,21 @@ std::string_view GetName(std::uint32_t id) {
 
 const std::vector<std::string_view>& GetNames() {
 	return names;
+}
+
+// This can be improved in OpenGL 3.2 using "Texture Sampler Objects"
+void UpdateMipMapSettings(bool linear) {
+	// Texture test, this should probably not be on tick
+	for (int i = 0; i < Texture::GetNames().size(); ++i) {
+		glBindTexture(GL_TEXTURE_2D, i + 1); // OpenGL id starts at 1
+		if (linear) {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}  else {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		}
+	}
 }
 
 } // namespace Texture

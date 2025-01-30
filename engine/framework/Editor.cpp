@@ -184,6 +184,12 @@ void SceneEditor(EntityManager& entityManager) {
     static auto ec = code::Ok;
 	static bool saveWasPressed = false;
 	ImGui::Checkbox("Draw lights as wireframe", &g_drawLightsAsWireframe);
+	if (ImGui::Button("Switch texture MipMap settings")) {
+		static bool flipFlop = false;
+		Texture::UpdateMipMapSettings(flipFlop);
+		flipFlop = !flipFlop;
+	}
+
 	if (ImGui::Button("Save entities")) {
 		ec = LevelSaver::SaveEntities(entityManager);
 		saveWasPressed = true;
