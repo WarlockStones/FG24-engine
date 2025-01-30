@@ -261,9 +261,14 @@ static void CameraEditor() {
 }
 
 void SceneEditor(EntityManager& entityManager) {
-	using code = LevelSaver::ErrorCode;
-    static auto ec = code::Ok;
-	static bool saveWasPressed = false;
+	float ambient[4]{};
+	ambient[0] = Lighting::ambient.r;
+	ambient[1] = Lighting::ambient.g;
+	ambient[2] = Lighting::ambient.b;
+	ambient[3] = Lighting::ambient.a;
+	ImGui::ColorEdit4("Ambient light", (float*)&ambient, ImGuiColorEditFlags_Float);
+	Lighting::ambient = glm::vec4(ambient[0], ambient[1], ambient[2], ambient[3]);
+
 	ImGui::Checkbox("Draw lights as wireframe", &g_drawLightsAsWireframe);
 	if (ImGui::Button("Switch texture MipMap settings")) {
 		static bool flipFlop = false;
@@ -271,6 +276,9 @@ void SceneEditor(EntityManager& entityManager) {
 		flipFlop = !flipFlop;
 	}
 
+	using code = LevelSaver::ErrorCode;
+    static auto ec = code::Ok;
+	static bool saveWasPressed = false;
 	if (ImGui::Button("Save entities")) {
 		ec = LevelSaver::SaveEntities(entityManager);
 		saveWasPressed = true;
