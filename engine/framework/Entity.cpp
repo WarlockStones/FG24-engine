@@ -51,16 +51,13 @@ void Entity::SetMesh(const Mesh* mesh) {
 }
 
 void Entity::Draw() const {
-	// Set m_shaderID and character specific things here 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_textureId);
 
-	if (m_textureId > 0) {
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_textureId);
-	}
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_textureSpecularId);
 
 	m_mesh->Draw(m_shaderId, m_drawAsWireframe);
-
-	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture
 }
 
 bool Entity::WriteTo(FILE* file) const {

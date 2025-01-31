@@ -33,6 +33,7 @@ public:
 
 	Transform m_transform;
 	std::uint32_t m_textureId = 0; // 0 means no texture
+	std::uint32_t m_textureSpecularId = 0;
 	bool m_drawAsWireframe = false;
 private:
 	const Mesh* m_mesh;

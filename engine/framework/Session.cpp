@@ -48,7 +48,7 @@ void Session::Start() {
 	assert(arcadeTex != 0);
 	std::uint32_t helloTex(Texture::LoadFromFile("../../assets/textures/hello.png", "Hello"));
 
-	Texture::LoadFromFile("../../assets/textures/barrel.png", "Barrel_albedo");
+	Texture::LoadFromFile("../../assets/textures/barrel_albedo.png", "Barrel_albedo");
 	Texture::LoadFromFile("../../assets/textures/barrel_specular.png", "Barrel_specular");
 	
 	Texture::LoadFromFile("../../assets/textures/barrel2.png", "Barrel2_albedo");

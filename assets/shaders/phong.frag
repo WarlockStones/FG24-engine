@@ -5,7 +5,8 @@
 #define SPOT 1
 #define DIRECTIONAL 2
 
-uniform sampler2D tex;
+uniform sampler2D albedoMap;
+uniform sampler2D specularMap;
 
 uniform vec3 cameraPosition = vec3(0.0, 5.0, 0.0);
 
@@ -65,6 +66,12 @@ void main() {
 	vec3 diffuseLuminosity = vec3(0);
 	vec3 specularLuminosity = vec3(0);
 
+	vec4 albedoTexel = texture(albedoMap, uv_world);
+	// Set initial color to get correct alpha/transparency
+	fragColor = vec4(0,0,0, albedoTexel.w); 
+
+	vec4 specularTexel = texture(specularMap, uv_world); // Should be vec3
+
 	// Add from each light
 	for (int i = 0; i < activeLights; ++i) {
 		vec3 diffuseToAdd = vec3(0,0,0);
@@ -86,7 +93,7 @@ void main() {
 
 				specularToAdd +=
 					CalculateSpecular(lightDirection, normalizedNormal, i) *
-					attenuation;
+					attenuation * specularTexel.xyz;
 			}
 			diffuseLuminosity += diffuseToAdd;
 			specularLuminosity += specularToAdd;
@@ -129,12 +136,12 @@ void main() {
 		}
 	} // End of for each light loop
 
-	fragColor.xyz =
-		diffuseLuminosity +
-		specularLuminosity +
-		vec3(materialAmbient * lightAmbient);
-
-	fragColor += texture(tex, uv_world);
+	// Add ambient
+	fragColor.xyz += albedoTexel.xyz * materialAmbient.xyz * lightAmbient.xyz;
+	// Add diffuse
+	fragColor.xyz += albedoTexel.xyz * diffuseLuminosity.xyz;
+	// Add specular
+	fragColor.xyz += specularLuminosity.xyz;
 
 	// fragColor.xyz = diffuseLuminosity + specularLuminosity;
 

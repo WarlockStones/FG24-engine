@@ -16,7 +16,7 @@ std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 	SDL_Surface* surface = IMG_Load(path);
 
 	if (surface == nullptr) {
-		std::fprintf(stderr, "Error: Texture failed to load m_textureID!\n");
+		std::fprintf(stderr, "Error: Texture failed to load!\n\t%s\n", path);
 		return false;
 	}
 

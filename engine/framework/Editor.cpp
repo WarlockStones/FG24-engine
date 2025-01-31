@@ -100,16 +100,32 @@ static void EntityEditor(EntityManager& entityManager) {
 		}
 
 		// Texture selection
-		std::uint32_t textureIndex = e->m_textureId;
-		previewName = Texture::GetName(textureIndex).data();
-		if (ImGui::BeginCombo("textures", previewName)) {
+		std::uint32_t albedoIndex = e->m_textureId;
+		previewName = Texture::GetName(albedoIndex).data();
+		if (ImGui::BeginCombo("albedo texture", previewName)) {
 			// 0 is OpenGL for None or invalid texture
 			for (std::size_t i = 0; i < Texture::GetNames().size() + 1; ++i) { 
-				const bool isSelected = (textureIndex == i);
+				const bool isSelected = (albedoIndex == i);
 				// Create a new selectable widget
 				if (ImGui::Selectable(Texture::GetName(i).data(), isSelected)) {
-					textureIndex = i;
-					e->m_textureId = textureIndex;
+					albedoIndex = i;
+					e->m_textureId = albedoIndex;
+				}
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		std::uint32_t specularIndex = e->m_textureSpecularId;
+		previewName = Texture::GetName(specularIndex).data();
+		if (ImGui::BeginCombo("specular texture", previewName)){
+			for (std::size_t i = 0; i < Texture::GetNames().size() + 1; ++i) {
+				const bool isSelected = (specularIndex == i);
+				if (ImGui::Selectable(Texture::GetName(i).data(), isSelected)) {
+					specularIndex = i;
+					e->m_textureSpecularId = specularIndex;
 				}
 				if (isSelected) {
 					ImGui::SetItemDefaultFocus();
