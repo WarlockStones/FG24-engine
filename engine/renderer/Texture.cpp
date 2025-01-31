@@ -20,6 +20,26 @@ std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 		return false;
 	}
 
+	// Flip SDL surface
+	SDL_LockSurface(surface);
+	int pitch = surface->pitch; // Distance in bytes between rows of pixels
+	std::uint8_t* temp = new std::uint8_t[pitch];
+	std::uint8_t* pixels = static_cast<std::uint8_t*>(surface->pixels);
+
+	for (int i = 0; i < surface->h / 2; ++i) {
+		std::uint8_t* r1 = pixels + i * pitch; // Access row i
+		// Use height of surface to access opposing row on other side
+		std::uint8_t* r2 = pixels + (surface->h - i - 1) * pitch;
+
+		// Swap rows
+		std::memcpy(temp, r1, pitch);
+		std::memcpy(r1, r2, pitch);
+		std::memcpy(r2, temp, pitch);
+	}
+	delete[] temp;
+	SDL_UnlockSurface(surface); 
+
+	// Generate OpenGL Texture
 	std::uint32_t textureID;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);

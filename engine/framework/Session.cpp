@@ -47,9 +47,15 @@ void Session::Start() {
 	std::uint32_t arcadeTex(Texture::LoadFromFile("../../assets/textures/arcade_carpet.png", "Arcade"));
 	assert(arcadeTex != 0);
 	std::uint32_t helloTex(Texture::LoadFromFile("../../assets/textures/hello.png", "Hello"));
+
+	Texture::LoadFromFile("../../assets/textures/barrel.png", "Barrel_albedo");
+	Texture::LoadFromFile("../../assets/textures/barrel_specular.png", "Barrel_specular");
 	
-	Texture::LoadFromFile("../../assets/textures/barrel2_specular.png", "Barrel_specular");
-	Texture::LoadFromFile("../../assets/textures/barrel2.png", "Barrel_albedo");
+	Texture::LoadFromFile("../../assets/textures/barrel2.png", "Barrel2_albedo");
+	Texture::LoadFromFile("../../assets/textures/barrel2_specular.png", "Barrel2_specular");
+
+	Texture::LoadFromFile("../../assets/textures/box_uv_albedo.png", "Box_uv_albedo");
+	Texture::LoadFromFile("../../assets/textures/uv_test.png", "uv_test");
 
 	// Add mesh
 	auto* monkeyMesh = MeshManager::GetMesh("suzanne_tri");
@@ -57,7 +63,9 @@ void Session::Start() {
 	auto* triangulateTest = MeshManager::GetMesh("triangtest_quad");
 	auto* triangulateTest2 = MeshManager::GetMesh("triangtest_cube");
 	auto* triangulateTest3 = MeshManager::GetMesh("triangtest_pie");
-	auto* barrelMesh = MeshManager::GetMesh("barrel2");
+	auto* barrelMesh = MeshManager::GetMesh("barrel");
+	auto* barrelMesh2 = MeshManager::GetMesh("barrel2");
+	auto* uvTest = MeshManager::GetMesh("box_uv");
 
 	// ----- Configure entities -----
 	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader, "Monkey");
