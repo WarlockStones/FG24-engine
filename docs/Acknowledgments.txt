@@ -1,3 +1,6 @@
 # Assets
-Arcade Carpet Textures. (C) 2022 Luckius. License: Creative Commonds CC0.\
+Arcade Carpet Textures. (C) 2022 Luckius. License: Creative Commons CC0.\
 https://opengameart.org/content/arcade-carpet-textures
+
+Wooden Barrels Pack. (C) 2011 Yughues. License: Creatice Commons CC0.\
+https://opengameart.org/content/wood-barrels-pack

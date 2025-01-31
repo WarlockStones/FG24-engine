@@ -191,15 +191,13 @@ void ParseF(const char* str, std::vector<Face>& faceVectorOut) {
 		  temp[2] = f[i + 2];
 		  triangulatedFaces.push_back(temp);
 		}
+	} else {
+	  // TODO:
+		// TODO: Fix this! Just add face to triangulatedFace
+	  // TODO:
+	  // TODO:
+	  // TODO:
 	}
-
-#if false
-	std::printf("VertexCount: %d\n", vertexCount);
-	for (int i = 0; i < vertexCount; ++i) {
-		std::printf("%d %d %d\n", f[i].v, f[i].uv, f[i].vn);
-	}
-#endif
-
 
 	for (auto& f3 : triangulatedFaces) {
 		Face face;
