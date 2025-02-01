@@ -1,6 +1,7 @@
 #include "Texture.hpp"
 #include "utils/File.hpp"
 #include <cstdio>
+#include <cstring>
 #include <string_view>
 #include <vector>
 #include <glad/gl.h>
