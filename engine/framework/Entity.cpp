@@ -60,6 +60,10 @@ void Entity::Draw() const {
 	m_mesh->Draw(m_shaderId, m_drawAsWireframe);
 }
 
+void Entity::DrawLightPass(std::uint32_t lightPassShaderId) const {
+	m_mesh->Draw(lightPassShaderId, false);
+}
+
 bool Entity::WriteTo(FILE* file) const {
 	// Lets just write the mesh name for now but it bloats the file size
     std::size_t n = 0;

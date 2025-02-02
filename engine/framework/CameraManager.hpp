@@ -9,7 +9,7 @@ namespace CameraManager {
 	std::size_t GetNumCameras(); // Get number of initialized cameras
 	std::uint32_t* GetIdArray(); // Get packed array of ids for initialized cameras
 	void SetActiveCamera(std::uint32_t id);
-	Camera& CreateCamera(glm::vec3 position, float yaw, float pitch);
+	std::uint32_t CreateCamera(glm::vec3 position, float yaw, float pitch); // Returns id
 	void RemoveCamera(std::uint32_t id);
 
 } // namespace CameraManager

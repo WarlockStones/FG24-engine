@@ -60,12 +60,12 @@ void Session::Start() {
 	// Add mesh
 	auto* monkeyMesh = MeshManager::GetMesh("suzanne_tri");
 	auto* cubeMesh = MeshManager::GetMesh("cube");
-	auto* triangulateTest = MeshManager::GetMesh("triangtest_quad");
-	auto* triangulateTest2 = MeshManager::GetMesh("triangtest_cube");
-	auto* triangulateTest3 = MeshManager::GetMesh("triangtest_pie");
-	auto* barrelMesh = MeshManager::GetMesh("barrel");
-	auto* barrelMesh2 = MeshManager::GetMesh("barrel2");
-	auto* uvTest = MeshManager::GetMesh("box_uv");
+	MeshManager::GetMesh("triangtest_quad");
+	MeshManager::GetMesh("triangtest_cube");
+	MeshManager::GetMesh("triangtest_pie");
+	MeshManager::GetMesh("barrel");
+	MeshManager::GetMesh("barrel2");
+	MeshManager::GetMesh("box_uv");
 
 	// ----- Configure entities -----
 	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader, "Monkey");
@@ -110,8 +110,8 @@ void Session::Start() {
 
 	// exampleManager->StartThread();
 	
-	Camera& c = CameraManager::CreateCamera(glm::vec3(0,0,4), -90, 0);
-	CameraManager::SetActiveCamera(c.m_id);
+	auto startCamId = CameraManager::CreateCamera(glm::vec3(0,0,4), -90, 0);
+	CameraManager::SetActiveCamera(startCamId);
 	CameraManager::CreateCamera(glm::vec3(-3,2,2), -45, -45);
 	
 	return;
@@ -169,6 +169,7 @@ void Session::GameLoop() {
 		KeyInput::ProcessInput();
 		Update(deltaTime); 
 		Editor::Draw(entityManager);
+		renderer->DrawLightOnly(entityManager.GetEntities());
 		renderer->Draw(entityManager.GetEntities());
 	}
 }

@@ -51,6 +51,7 @@ add_executable(engine
 	"renderer/Mesh.cpp"
 	"renderer/Texture.cpp"
 	"renderer/Shader.cpp"
+	"renderer/ShadowMapping.cpp"
 	"utils/ObjToMdl.cpp"
 	${IMGUI_SOURCES}
 )

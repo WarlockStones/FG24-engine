@@ -56,7 +56,7 @@ void SetActiveCamera(std::uint32_t id) {
 }
 
 [[nodiscard]]
-Camera& CreateCamera(glm::vec3 position, float yaw = 0, float pitch = 0) {
+std::uint32_t CreateCamera(glm::vec3 position, float yaw = 0, float pitch = 0) {
     std::uint32_t id = numCameras;
 	if (numRecycledIds > 0) {
 		id = recycledIds[0];
@@ -70,7 +70,7 @@ Camera& CreateCamera(glm::vec3 position, float yaw = 0, float pitch = 0) {
 	activeIds[numCameras] = id;
 	numCameras++;
 
-	return cameras[id];
+	return id;
 }
 
 void RemoveCamera(std::uint32_t id) {

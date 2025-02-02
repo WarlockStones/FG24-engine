@@ -58,7 +58,9 @@ bool Renderer::Init() {
 
 	SetProjectionMatrix(45.0f, g_windowWidth, g_windowHeight);
 
-	return true;
+	return shadowMapping.Init(1024);
+
+	// return true;
 }
 
 void Renderer::Draw(const std::vector<Entity*>& entities) {
@@ -66,6 +68,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	const Camera* camera = CameraManager::GetActiveCamera();
+
 	if (camera == nullptr) {
 		// TODO: Draw error message in 3D view
 		std::printf("No active camera...\n");
@@ -173,6 +176,11 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 	
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	SDL_GL_SwapWindow(m_window);
+}
+
+
+void Renderer::DrawLightOnly(const std::vector<Entity*>& entities) {
+  shadowMapping.Render(entities);
 }
 
 void Renderer::SetProjectionMatrix(float fov,

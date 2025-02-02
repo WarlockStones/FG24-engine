@@ -21,6 +21,7 @@ public:
 	Entity(const Entity& other); // Copy constructor
 	Entity& operator=(Entity&& other); // Move assignment
 	void Draw() const;
+    void DrawLightPass(std::uint32_t lightPassShaderId) const;
 
 	bool WriteTo(FILE* file) const override;
 	bool ReadFrom(FILE* file) override;

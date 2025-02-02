@@ -22,8 +22,8 @@ public:
 	std::uint32_t m_id; 
 	float m_fov = 45.0f;
 	ProjectionType projection = ProjectionType::Perspective;
-private:
 	void UpdateVectors();
+private:
 	glm::vec3 m_position;
 	glm::vec3 m_front;
     glm::vec3 m_right;
