@@ -121,7 +121,6 @@ static void EntityEditor(EntityManager& entityManager) {
 		    e->m_textureId = 0;
 		}
 
-
 		previewName = Texture::GetName(e->m_textureSpecularId).data();
 		if (ImGui::BeginCombo("specular texture", previewName)) {
 			for (std::size_t i = 0; i < texNames.size(); ++i) {
@@ -138,25 +137,6 @@ static void EntityEditor(EntityManager& entityManager) {
 		if (ImGui::Button("remove specular")) {
 		    e->m_textureSpecularId = 0;
 		}
-		
-
-		/*
-		std::uint32_t specularIndex = e->m_textureSpecularId;
-		previewName = Texture::GetName(specularIndex).data();
-		if (ImGui::BeginCombo("specular texture", previewName)){
-			for (std::size_t i = 0; i < Texture::GetNames().size() + 1; ++i) {
-				const bool isSelected = (specularIndex == i);
-				if (ImGui::Selectable(Texture::GetName(i).data(), isSelected)) {
-					specularIndex = i;
-					e->m_textureSpecularId = specularIndex;
-				}
-				if (isSelected) {
-					ImGui::SetItemDefaultFocus();
-				}
-			}
-			ImGui::EndCombo();
-		}
-		*/
 
 		ImGui::Checkbox("Draw as wireframe", &e->m_drawAsWireframe);
 	}
