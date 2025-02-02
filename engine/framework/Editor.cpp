@@ -100,16 +100,16 @@ static void EntityEditor(EntityManager& entityManager) {
 		}
 
 		// Texture selection
-		std::uint32_t albedoIndex = e->m_textureId;
-		previewName = Texture::GetName(albedoIndex).data();
+		// Go through index in names. But when assigning use the GLuint ID
+		const auto& texNames = Texture::GetNames();
+		previewName = Texture::GetName(e->m_textureId).data();
 		if (ImGui::BeginCombo("albedo texture", previewName)) {
 			// 0 is OpenGL for None or invalid texture
-			for (std::size_t i = 0; i < Texture::GetNames().size() + 1; ++i) { 
-				const bool isSelected = (albedoIndex == i);
+			for (std::size_t i = 0; i < texNames.size(); ++i) { 
+				const bool isSelected = (previewName == texNames[i]);
 				// Create a new selectable widget
-				if (ImGui::Selectable(Texture::GetName(i).data(), isSelected)) {
-					albedoIndex = i;
-					e->m_textureId = albedoIndex;
+				if (ImGui::Selectable(texNames[i].data(), isSelected)) {
+					e->m_textureId = Texture::GetId(texNames[i]);
 				}
 				if (isSelected) {
 					ImGui::SetItemDefaultFocus();
@@ -117,7 +117,30 @@ static void EntityEditor(EntityManager& entityManager) {
 			}
 			ImGui::EndCombo();
 		}
+		if (ImGui::Button("remove albedo")) {
+		    e->m_textureId = 0;
+		}
 
+
+		previewName = Texture::GetName(e->m_textureSpecularId).data();
+		if (ImGui::BeginCombo("specular texture", previewName)) {
+			for (std::size_t i = 0; i < texNames.size(); ++i) {
+				const bool isSelected = (previewName == texNames[i]);
+				if (ImGui::Selectable(texNames[i].data(), isSelected)) {
+					e->m_textureSpecularId = Texture::GetId(texNames[i]);
+				}
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+		if (ImGui::Button("remove specular")) {
+		    e->m_textureSpecularId = 0;
+		}
+		
+
+		/*
 		std::uint32_t specularIndex = e->m_textureSpecularId;
 		previewName = Texture::GetName(specularIndex).data();
 		if (ImGui::BeginCombo("specular texture", previewName)){
@@ -133,6 +156,7 @@ static void EntityEditor(EntityManager& entityManager) {
 			}
 			ImGui::EndCombo();
 		}
+		*/
 
 		ImGui::Checkbox("Draw as wireframe", &e->m_drawAsWireframe);
 	}

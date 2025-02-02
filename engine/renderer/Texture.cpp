@@ -4,6 +4,7 @@
 #include <cstring>
 #include <string_view>
 #include <vector>
+#include <unordered_map>
 #include <glad/gl.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_surface.h>
@@ -11,7 +12,12 @@
 
 namespace FG24 {
 namespace Texture {
-std::vector<std::string_view> names; // Id maps to name index
+// Because of shadowmap texture I can not just map directly to texture id
+// Textures that can be assigned to mesh (i.e. does not include shadowmap)
+std::unordered_map<std::string_view, GLuint> nameToId; 
+std::unordered_map<GLuint, std::string_view> idToName;
+std::vector<std::string_view> names; // To easy access for UI
+
 
 std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 	SDL_Surface* surface = IMG_Load(path);
@@ -41,9 +47,9 @@ std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 	SDL_UnlockSurface(surface); 
 
 	// Generate OpenGL Texture
-	std::uint32_t textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	std::uint32_t textureId;
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId);
 
 	int mode = GL_RGB;
 	if(surface->format->BytesPerPixel == 4) {
@@ -70,24 +76,32 @@ std::uint32_t LoadFromFile(const char* path, const char* displayName) {
 
 	SDL_FreeSurface(surface);
 
-	if (textureID != 0) {
+	if (textureId != 0) {
+		nameToId.insert({displayName, textureId});
+		idToName.insert({textureId, displayName});
 		names.push_back(displayName);
 	}
 
-	return textureID;
+	return textureId;
+}
+
+std::uint32_t GetId(std::string_view name) { 
+	if (auto search = nameToId.find(name); search != nameToId.end()) {
+		return search->second;
+	} 
+
+	std::printf( "Texture:GetId: Could not find texture of name: %s\n", name.data());
+	return 0;
 }
 
 std::string_view GetName(std::uint32_t id) {
-	if (id == 0 || names.empty()) {
-		// OpenGL id 0 and means no texture
-		return "None";
+	if (auto search = idToName.find(id); search != idToName.end()) {
+		return search->second;
 	}
 
-	if (id <= names.size()) {
-		return names[id - 1];  // OpenGL id starts at 1
-	}
+	// std::printf( "Texture:GetName: Could not find texture with id: %u\n", id);
 
-	return "SOMETHING WENT WRONG"; // Attempting to access out of bounds
+	return "None";
 }
 
 const std::vector<std::string_view>& GetNames() {
