@@ -41,8 +41,8 @@ bool Session::Init() {
 
 void Session::Start() {
 	// ----- Load assets -----
-	g_shader = Shader::CompileShader("../../assets/shaders/phong.vert",
-									 "../../assets/shaders/phong.frag");
+	g_shader = Shader::CompileShader("../../assets/shaders/phongshadow.vert",
+									 "../../assets/shaders/phongshadow.frag");
 	assert(g_shader != 0);
 	std::uint32_t arcadeTex(Texture::LoadFromFile("../../assets/textures/arcade_carpet.png", "Arcade"));
 	assert(arcadeTex != 0);

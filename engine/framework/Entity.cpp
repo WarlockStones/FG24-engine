@@ -52,10 +52,12 @@ void Entity::SetMesh(const Mesh* mesh) {
 
 void Entity::Draw() const {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_textureId);
+	glBindTexture(GL_TEXTURE_2D, m_textureId); 
+	glUniform1i(glGetUniformLocation(m_shaderId, "albedoMap"), 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_textureSpecularId);
+	glUniform1i(glGetUniformLocation(m_shaderId, "specularMap"), 1);
 
 	m_mesh->Draw(m_shaderId, m_drawAsWireframe);
 }

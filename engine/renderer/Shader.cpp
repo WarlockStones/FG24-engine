@@ -70,13 +70,19 @@ void SetFloat(std::uint32_t shaderID, const char* name, float value) {
 	glUniform1f(glGetUniformLocation(shaderID, name), value);
 
 }
-void SetVec3 (std::uint32_t shaderID, const char* name, glm::vec3 value) {
+void SetVec2(std::uint32_t shaderID, const char* name, glm::vec2 value) {
+	glUniform2f(glGetUniformLocation(shaderID, name),
+				value.x,
+				value.y);
+}
+
+void SetVec3(std::uint32_t shaderID, const char* name, glm::vec3 value) {
 	glUniform3f(glGetUniformLocation(shaderID, name),
 				value.x,
 				value.y,
 				value.z);
 }
-void SetVec4 (std::uint32_t shaderID, const char* name, glm::vec4 value) {
+void SetVec4(std::uint32_t shaderID, const char* name, glm::vec4 value) {
 	glUniform4f(glGetUniformLocation(shaderID, name),
 				value.r,
 				value.g,

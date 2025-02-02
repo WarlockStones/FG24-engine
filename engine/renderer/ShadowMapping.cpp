@@ -75,7 +75,7 @@ bool ShadowMapping::Init(float resolution) {
 	 }
 
 	// Camera attributes may need tweaking. Frustum must be good
-	m_lightPovCameraId = CameraManager::CreateCamera(glm::vec3(2, 6, -6), -90, -20);
+	m_lightPovCameraId = CameraManager::CreateCamera(glm::vec3(4, 5, 10), -100, -25);
 	m_cam = CameraManager::GetCamera(m_lightPovCameraId);
 	m_cam->projection = ProjectionType::Orthographic;
 	m_cam->UpdateVectors();
@@ -119,14 +119,21 @@ void ShadowMapping::Render(const std::vector<Entity*>& entities) {
 	// TODO: Calculate camera view to be able to configure a "light direction" from pos
 	glm::mat4 view = m_cam->GetViewMatrix();
 	static glm::mat4 proj = glm::ortho<float>(-10, 10, -10, 10, -10, 100); // Hard coded
-	static glm::mat4 model = glm::mat4(1.0); // Uniform, change nothing
-	static glm::mat4 depthMvp = proj * view * model;
 	Shader::Use(m_lightPassShaderId);
-	Shader::SetMat4(m_lightPassShaderId, "depthMvp", depthMvp);
-	
 	// Render entities
 	for (const Entity* e : entities) {
-		e->DrawLightPass(m_lightPassShaderId);
+		if (e->m_drawAsWireframe == false) {
+			glm::mat4 tr =  glm::mat4(1);
+			glm::mat4 rot = glm::mat4(1);
+			glm::mat4 scl = glm::mat4(1);
+			tr = glm::translate(tr, e->m_transform.GetLocation());
+			rot = e->m_transform.GetRotationMatrix();
+			scl = glm::scale(scl, e->m_transform.GetScale());
+			glm::mat4 model = tr * rot * scl;
+			glm::mat4 depthMvp = proj * view * model;
+			Shader::SetMat4(m_lightPassShaderId, "depthMvp", depthMvp);
+			e->DrawLightPass(m_lightPassShaderId);
+		}
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

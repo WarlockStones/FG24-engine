@@ -64,8 +64,24 @@ bool Renderer::Init() {
 }
 
 void Renderer::Draw(const std::vector<Entity*>& entities) {
+	glViewport(0, 0, g_windowWidth, g_windowHeight); // Reset from shadowmapping res
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Handle shadowmapping stuff from previous depth pass
+	Shader::Use(g_shader);
+	Shader::SetMat4(
+		g_shader,
+		"shadowMapMatrix",
+		shadowMapping.m_shadowMappingMatrix);
+	
+	Shader::SetVec2(g_shader, "shadowMapTexelSize", glm::vec2(shadowMapping.m_resolution));
+	// glUniform1i(glGetUniformLocation(g_shader, "shadowMap"), shadowMapping.m_textureId);
+	// std::printf("Setting shadow map id to : %d\n", shadowMapping.m_textureId);
+
+	// TODO:  Send shadowMap to new PhongShadow and render scene with that to window
+	
+	
 
 	const Camera* camera = CameraManager::GetActiveCamera();
 
@@ -169,8 +185,11 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 
 		// Telling each sampler to which texture unit it belongs to only needs to be done once
 		// Shader::SetInt(g_shader, "tex", 0);
-		glUniform1i(glGetUniformLocation(g_shader, "albedoMap"), 0);
-		glUniform1i(glGetUniformLocation(g_shader, "specularMap"), 1);
+		// But now I tis hard coded 0, 1, but what is shadowMap texture id???
+		glActiveTexture(GL_TEXTURE2); // 0 = alebedo. 1 = specular. 2 = shadowmap
+		glBindTexture(GL_TEXTURE_2D, shadowMapping.m_textureId);
+		glUniform1i(glGetUniformLocation(g_shader, "shadowMap"), 2); // GL_TEXTURE2??
+		
 		e->Draw();
 	}
 	
