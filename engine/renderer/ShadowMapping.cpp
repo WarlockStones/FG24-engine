@@ -141,7 +141,7 @@ void ShadowMapping::Render(const std::vector<Entity*>& entities) {
 
 
 // Needs to be run if view matrix (attributes) of ShadowMapping camera is updated
-void ShadowMapping::CalcShadowMappingMatrix() {
+glm::mat4 ShadowMapping::GetDepthBiasMVP(const glm::mat4& model) {
 	// Update camera vectors
 	// Update m_shadowMApping
 	static glm::mat4 biasMatrix {
@@ -150,7 +150,12 @@ void ShadowMapping::CalcShadowMappingMatrix() {
 		0.0f, 0.0f, 0.5f, 0.0f,
 		0.5f, 0.5f, 0.5f, 1.0f
 	};
-	m_shadowMappingMatrix = biasMatrix * m_cam->GetViewMatrix();
+	glm::mat4 view = m_cam->GetViewMatrix();
+	static glm::mat4 proj = glm::ortho<float>(-10, 10, -10, 10, -10, 100); // Hard coded
+
+	return biasMatrix * proj * view * model;
+	
+	// m_shadowMappingMatrix = biasMatrix * m_cam->GetViewMatrix(); // Wrong?
 }
 
 } // namespace FG24

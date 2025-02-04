@@ -70,10 +70,6 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 
 	// Handle shadowmapping stuff from previous depth pass
 	Shader::Use(g_shader);
-	Shader::SetMat4(
-		g_shader,
-		"shadowMapMatrix",
-		shadowMapping.m_shadowMappingMatrix);
 	
 	Shader::SetVec2(g_shader, "shadowMapTexelSize", glm::vec2(shadowMapping.m_resolution));
 	// glUniform1i(glGetUniformLocation(g_shader, "shadowMap"), shadowMapping.m_textureId);
@@ -182,6 +178,11 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 		scl = glm::scale(scl, e->m_transform.GetScale());
 		glm::mat4 model = tr * rot * scl;
 		Shader::SetMat4(g_shader, "model", model);
+
+		Shader::SetMat4(
+			g_shader,
+			"shadowMapMatrix",
+			shadowMapping.GetDepthBiasMVP(model)); // depthBiasMVP
 
 		// Telling each sampler to which texture unit it belongs to only needs to be done once
 		// Shader::SetInt(g_shader, "tex", 0);

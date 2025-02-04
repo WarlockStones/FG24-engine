@@ -9,7 +9,6 @@ uniform sampler2D albedoMap;
 uniform sampler2D specularMap;
 uniform sampler2D shadowMap;
 
-uniform mat4 shadowMapMatrix;
 uniform vec2 shadowMapTexelSize = vec2(1024, 1024);
 uniform float shadowCalcBias = 0.0005;
 
@@ -37,16 +36,21 @@ in vec2 uv_world;
 in vec3 normal_world;
 in vec3 pos_world; // World coordinates of the vertex
 
+in vec4 shadowCoord;
 out vec4 fragColor;
 
 float CalculateShadowFactor() {
-	vec4 shadowSpace = shadowMapMatrix * vec4(pos_world, 1);
+	// float shad = texture(shadowMap, shadowCoord.xy).x; // hmm worked ok
+/*
+	vec4 shadowSpace = shadowMapMatrix * vec4(pos_world, 1); // World space? Try local
 	float shadowSample = texture(shadowMap, shadowSpace.xy).r;
 	if (shadowSample < 0) {
 		shadowSample = 0;
 	}
 
 	return shadowSample;
+*/
+  return 0;
 }
 
 vec3 CalculateSpecular(vec3 lightDirection, vec3 normalizedNormal, int index) {
@@ -166,8 +170,13 @@ void main() {
 	fragColor.xyz += specularLuminosity.xyz;
 
 	// Debugging shadow
-	float s = CalculateShadowFactor();
-	fragColor.xyz = vec3(s, s, s);
+	// WORKS!
+	float shad = texture(shadowMap, shadowCoord.xy).x; // hmm worked ok
+	fragColor *= shad;
+
+
+	// fragColor.xyz = vec3(vis, vis, vis);
+
 	// fragColor.xyz = diffuseLuminosity + specularLuminosity;
 
 	// Debug color override

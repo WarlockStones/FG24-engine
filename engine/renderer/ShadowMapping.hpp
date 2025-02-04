@@ -13,7 +13,7 @@ class ShadowMapping {
 public:
 	bool Init(float resolution);
     void Render(const std::vector<Entity*>& entities);
-    void CalcShadowMappingMatrix();
+	glm::mat4 GetDepthBiasMVP(const glm::mat4& modelMatrix);
 	GLuint m_textureId; // Shadow map texture id. Where we store depth render data
 	glm::mat4x4 m_shadowMappingMatrix;
     float m_resolution;
