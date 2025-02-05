@@ -14,6 +14,7 @@ bool ShadowMapping::Init(float resolution) {
     m_resolution = resolution;
 
 	// Create a render buffer for the depth pass
+	glGenFramebuffers(1, &m_framebufferId);
 
 	/* // Lecture notes made Renderbuffer. But I could not get it to work
     glGenRenderbuffers(1, &m_renderbufferId);
@@ -31,7 +32,6 @@ bool ShadowMapping::Init(float resolution) {
 		GL_RENDERBUFFER,
 		m_renderbufferId);
 	*/
-	glGenFramebuffers(1, &m_framebufferId);
 
 	// Create a texture to store data to pass to the normal render pass
 	glGenTextures(1, &m_textureId);
@@ -75,26 +75,27 @@ bool ShadowMapping::Init(float resolution) {
 	 }
 
 	// Camera attributes may need tweaking. Frustum must be good
+	// TODO: Get light position should be same as directional light
 	m_lightPovCameraId = CameraManager::CreateCamera(glm::vec3(4, 5, 10), -100, -25);
 	m_cam = CameraManager::GetCamera(m_lightPovCameraId);
 	m_cam->projection = ProjectionType::Orthographic;
 	m_cam->UpdateVectors();
 
-	// Prepare shadow mapping matrix
+	// Shadow Mapping Matrix. MVP transform for the light pass
 	glm::mat4 biasMatrix {
 		0.5f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.5f, 0.0f, 0.0f,
 		0.0f, 0.0f, 0.5f, 0.0f,
 		0.5f, 0.5f, 0.5f, 1.0f
 	};
-
 	m_shadowMappingMatrix = biasMatrix * m_cam->GetViewMatrix();
 
 	m_lightPassShaderId = Shader::CompileShader(
 		"../../assets/shaders/lightpass.vert",
 		"../../assets/shaders/lightpass.frag");
 	
-	return true; // if all is good, you can check the buffer (look: opengl-tutorials)
+	// TODO: Check and make sure buffer is good
+	return true; 
 }
 
 void ShadowMapping::Render(const std::vector<Entity*>& entities) {
@@ -106,21 +107,17 @@ void ShadowMapping::Render(const std::vector<Entity*>& entities) {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	
-	// ---- Update shader and matricies: .... ----
-
-	// Tell OpenGL to draw to the new buffers
-	// This does nothing now that I am not following lecture and using a FBO
+	// Lecture note RenderBuffer stuff that I could not get wokring
 	// GLenum buffers[1]; // We only need 1 for depth test
 	// buffers[0] = GL_DEPTH_ATTACHMENT;
 	// Tell opengl to render to this buffer and not to the actual window as by default
 	// glDrawBuffers(1, buffers);
 
 	// No need to set or get active camera, just have reference to it
-	// TODO: Calculate camera view to be able to configure a "light direction" from pos
 	glm::mat4 view = m_cam->GetViewMatrix();
 	static glm::mat4 proj = glm::ortho<float>(-10, 10, -10, 10, -10, 100); // Hard coded
 	Shader::Use(m_lightPassShaderId);
-	// Render entities
+
 	for (const Entity* e : entities) {
 		if (e->m_drawAsWireframe == false) {
 			glm::mat4 tr =  glm::mat4(1);
@@ -139,11 +136,7 @@ void ShadowMapping::Render(const std::vector<Entity*>& entities) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-
-// Needs to be run if view matrix (attributes) of ShadowMapping camera is updated
 glm::mat4 ShadowMapping::GetDepthBiasMVP(const glm::mat4& model) {
-	// Update camera vectors
-	// Update m_shadowMApping
 	static glm::mat4 biasMatrix {
 		0.5f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.5f, 0.0f, 0.0f,
@@ -154,8 +147,5 @@ glm::mat4 ShadowMapping::GetDepthBiasMVP(const glm::mat4& model) {
 	static glm::mat4 proj = glm::ortho<float>(-10, 10, -10, 10, -10, 100); // Hard coded
 
 	return biasMatrix * proj * view * model;
-	
-	// m_shadowMappingMatrix = biasMatrix * m_cam->GetViewMatrix(); // Wrong?
 }
-
 } // namespace FG24

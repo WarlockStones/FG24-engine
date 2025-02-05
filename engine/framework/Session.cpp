@@ -103,7 +103,7 @@ void Session::Start() {
 		glm::vec3(0, 0, -1)); // rotation
 
 	g_lightDir = Lighting::CreateLight(
-		glm::vec3(0, 10, -5),
+		glm::vec3(4, 5, 10), // Fit to ShadowMap Light POV Camer.
 		LightType::Directional,
 		glm::vec4(0.7f, 0.6f, 0.5f, 1.0f),
 		glm::vec4(0.7f, 0.6f, 0.5f, 1.0f));

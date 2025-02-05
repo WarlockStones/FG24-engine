@@ -12,9 +12,7 @@
 #include "framework/CameraManager.hpp"
 #include "framework/Lighting.hpp"
 #include "renderer/Mesh.hpp"
-
 #include "framework/MeshManager.hpp"
-
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
@@ -68,17 +66,6 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Handle shadowmapping stuff from previous depth pass
-	Shader::Use(g_shader);
-	
-	Shader::SetVec2(g_shader, "shadowMapTexelSize", glm::vec2(shadowMapping.m_resolution));
-	// glUniform1i(glGetUniformLocation(g_shader, "shadowMap"), shadowMapping.m_textureId);
-	// std::printf("Setting shadow map id to : %d\n", shadowMapping.m_textureId);
-
-	// TODO:  Send shadowMap to new PhongShadow and render scene with that to window
-	
-	
-
 	const Camera* camera = CameraManager::GetActiveCamera();
 
 	if (camera == nullptr) {
@@ -102,6 +89,8 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 
 	// TODO: Support more than one shaderID
 	Shader::Use(g_shader);
+	Shader::SetVec2(g_shader, "shadowMapTexelSize", glm::vec2(shadowMapping.m_resolution));
+
 	Shader::SetMat4(g_shader, "view", camera->GetViewMatrix());
 	Shader::SetMat4(g_shader, "projection", m_projection);
 	Shader::SetVec3(g_shader, "cameraPosition", camera->GetPosition());
@@ -168,6 +157,10 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 	glUniform1iv(glGetUniformLocation(g_shader, "lightType"), activeLights, lightType);
 	Shader::SetVec4(g_shader, "lightAmbient", Lighting::ambient);
 
+	// Telling each sampler to which texture unit it belongs to only needs to be done once
+	glActiveTexture(GL_TEXTURE2); // 0 = alebedo. 1 = specular. 2 = shadowmap
+	glBindTexture(GL_TEXTURE_2D, shadowMapping.m_textureId);
+	glUniform1i(glGetUniformLocation(g_shader, "shadowMap"), 2); // 2 = GL_TEXTURE2 ?
 
 	for(const Entity* e : entities) {
 		glm::mat4 tr =  glm::mat4(1);
@@ -182,14 +175,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 		Shader::SetMat4(
 			g_shader,
 			"shadowMapMatrix",
-			shadowMapping.GetDepthBiasMVP(model)); // depthBiasMVP
-
-		// Telling each sampler to which texture unit it belongs to only needs to be done once
-		// Shader::SetInt(g_shader, "tex", 0);
-		// But now I tis hard coded 0, 1, but what is shadowMap texture id???
-		glActiveTexture(GL_TEXTURE2); // 0 = alebedo. 1 = specular. 2 = shadowmap
-		glBindTexture(GL_TEXTURE_2D, shadowMapping.m_textureId);
-		glUniform1i(glGetUniformLocation(g_shader, "shadowMap"), 2); // GL_TEXTURE2??
+			shadowMapping.GetDepthBiasMVP(model)); // depthBiasMVP requires model matrix
 		
 		e->Draw();
 	}
