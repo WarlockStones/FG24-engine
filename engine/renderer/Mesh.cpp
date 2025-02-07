@@ -9,22 +9,18 @@ Mesh::Mesh(std::string_view name) : m_name(name) {
 
 }
 
-void Mesh::InitBuffers(
-	const float* vertexData,
-	std::size_t numVertexData,
-	std::size_t numVertices)
-{
+void Mesh::InitBuffers(VertexData& vertexData) {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	numVerticesToDraw = numVertices;
+	numVerticesToDraw = vertexData.m_numVertices;
   
-	assert(vertexData != nullptr);
+	assert(vertexData.m_data != nullptr);
 	glBufferData(
-		GL_ARRAY_BUFFER,                    // Type
-		sizeof(float) * numVertexData, // Size in bytes of buffer
-		vertexData,                    // Pointer to data to be copied
-		GL_STATIC_DRAW);                    // Usage pattern
+		GL_ARRAY_BUFFER,    // Type
+		sizeof(float) * vertexData.m_numVertexData,  // Size in bytes of buffer
+		vertexData.m_data,  // Pointer to data to be copied
+		GL_STATIC_DRAW);    // Usage pattern
 	
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -61,28 +57,18 @@ void Mesh::InitBuffers(
 	glEnableVertexAttribArray(2);
 }
 
-void Mesh::Draw(std::uint32_t shaderID, bool asWireframe = false) const {
-	assert(shaderID != 0);
+void Mesh::Draw(std::uint32_t shaderId, bool asWireframe = false) const {
+	assert(shaderId != 0);
 	if (asWireframe) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 	} else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
 	}
 
-	glUseProgram(shaderID);
-
+	glUseProgram(shaderId);
 	glBindVertexArray(VAO);
 
-	if (numVertexIndices > 0) { // MeshData
-		glDrawElements(GL_TRIANGLES, numVertexIndices, GL_UNSIGNED_INT, 0);  
-	}
-	else if (EBO > 0) { // Just an EBO but nothing from MeshData
-		// Draw the square. It has an EBO and 6 vertices
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
-	} else if (EBO == 0) {
-		// glDrawArrays(GL_TRIANGLES, 0, 3); // Draw triangle which has only 3 vertices
-		glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw); 
-	}
+	glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw); 
 	
 	glBindVertexArray(0); // Unbind
 }

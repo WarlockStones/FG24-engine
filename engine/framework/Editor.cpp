@@ -96,7 +96,8 @@ static void EntityEditor(EntityManager& entityManager) {
 				ImGui::EndCombo();
 			}
 		} else {
-			ImGui::Combo("model", 0, "EMPTY", 1);
+			// ImGui::Combo("model", 0, "EMPTY", 1);
+			ImGui::Text("No mesh loaded");
 		}
 
 		// Texture selection

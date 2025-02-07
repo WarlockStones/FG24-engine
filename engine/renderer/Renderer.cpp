@@ -142,8 +142,11 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 			// TODO: Light's mesh should use default unlit shader.
 			//       Shader should change color when light is disabled
 			Shader::SetMat4(g_shader, "model", model);
-			// TODO: Add diferent mesh for different light type
-			MeshManager::GetMesh("cube")->Draw(g_shader, g_drawLightsAsWireframe);
+
+			// TODO: Handle default mesh better than assert that it exists
+			static auto* cubeMesh = MeshManager::GetMesh("cube");
+			assert(cubeMesh);
+			cubeMesh->Draw(g_shader, g_drawLightsAsWireframe);
 	}
 
 	// Todo make Shader:: functions to set arrays

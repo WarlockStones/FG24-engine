@@ -15,6 +15,7 @@
 // I should probably not do these rendering stuff here
 #include "renderer/Shader.hpp"
 #include "renderer/Texture.hpp"
+#include "renderer/VertexData.hpp"
 #include "framework/Entity.hpp"
 #include "renderer/Mesh.hpp"
 #include "framework/EntityManager.hpp"
@@ -23,7 +24,6 @@
 // Temp testing
 #include "framework/ExampleManager.hpp"
 #include "framework/Message.hpp"
-
 
 namespace FG24 {
 bool Session::Init() {
@@ -57,15 +57,18 @@ void Session::Start() {
 	Texture::LoadFromFile("../../assets/textures/box_uv_albedo.png", "Box_uv_albedo");
 	Texture::LoadFromFile("../../assets/textures/uv_test.png", "uv_test");
 
-	// Add mesh
-	auto* monkeyMesh = MeshManager::GetMesh("suzanne_tri");
-	auto* cubeMesh = MeshManager::GetMesh("cube");
-	MeshManager::GetMesh("triangtest_quad");
-	MeshManager::GetMesh("triangtest_cube");
-	MeshManager::GetMesh("triangtest_pie");
-	MeshManager::GetMesh("barrel");
-	MeshManager::GetMesh("barrel2");
-	MeshManager::GetMesh("box_uv");
+	// Load mesh
+	// TODO: Don't assert, use default mesh
+	VertexData monkeyData = MeshManager::LoadVertexData("suzanne_tri");
+	Mesh* monkeyMesh = MeshManager::AddMesh("suzanne_tri", monkeyData);
+	VertexData cubeData = MeshManager::LoadVertexData("cube");
+	auto* cubeMesh = MeshManager::AddMesh("cube", cubeData);
+	auto barrel = MeshManager::LoadVertexData("barrel");
+	MeshManager::AddMesh("barrel", barrel);
+	auto barrel2 = MeshManager::LoadVertexData("barrel2");
+	MeshManager::AddMesh("barrel2", barrel2);
+	auto boxUv = MeshManager::LoadVertexData("box_uv");
+	MeshManager::AddMesh("box_uv", boxUv);
 
 	// ----- Configure entities -----
 	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader, "Monkey");
