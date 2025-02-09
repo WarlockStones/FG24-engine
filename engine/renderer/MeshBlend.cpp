@@ -103,7 +103,11 @@ void MeshBlend::Init(
 }
 
 void MeshBlend::Draw(bool asWireframe = false) const {
-	assert(g_blendShader != 0); // BlendShader
+    auto shader = g_blendShader;
+	if (g_useFlatShader) {
+	  shader = g_flatBlendShader;
+	}
+	assert(shader != 0); // BlendShader
 
 	if (asWireframe) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
@@ -111,13 +115,13 @@ void MeshBlend::Draw(bool asWireframe = false) const {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
 	}
 
-	glUseProgram(g_blendShader); // Use Blend shader
+	glUseProgram(shader); // Use Blend shader
 	glBindVertexArray(m_VAO);
 
 	glDrawArrays(GL_TRIANGLES, 0, m_numVertices); 
 
 	// Send blend amount uniform
-	Shader::SetFloat(g_blendShader, "blendAmount", m_blendAmount);
+	Shader::SetFloat(shader, "blendAmount", m_blendAmount);
 
 	glBindVertexArray(0); // Unbind
 }

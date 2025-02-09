@@ -19,10 +19,13 @@ constexpr glm::vec3 g_worldUp = glm::vec3(0, 1, 0);
 constexpr glm::vec3 g_worldForward = glm::vec3(0, 0, -1);
 
 extern bool g_drawLightsAsWireframe;
+extern bool g_useFlatShader;
 
 // Assets / Entities
 extern std::uint32_t				g_shader;
 extern std::uint32_t		        g_blendShader;
+extern std::uint32_t		        g_flatShader;
+extern std::uint32_t		        g_flatBlendShader;
 extern std::uint32_t				g_arcadeTexture;
 extern Entity*						g_entity1;
 extern Entity*						g_entity2;

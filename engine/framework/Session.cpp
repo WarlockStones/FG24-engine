@@ -47,6 +47,11 @@ void Session::Start() {
 	g_blendShader = Shader::CompileShader("../../assets/shaders/phongshadowblend.vert",
 										  "../../assets/shaders/phongshadow.frag");
 	assert(g_blendShader != 0);
+	g_flatShader = Shader::CompileShader("../../assets/shaders/flat.vert",
+										 "../../assets/shaders/flat.frag");
+	assert(g_flatShader != 0);
+
+
 	std::uint32_t arcadeTex(Texture::LoadFromFile("../../assets/textures/arcade_carpet.png", "Arcade"));
 	assert(arcadeTex != 0);
 	std::uint32_t helloTex(Texture::LoadFromFile("../../assets/textures/hello.png", "Hello"));

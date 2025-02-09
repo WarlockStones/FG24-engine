@@ -302,6 +302,9 @@ void SceneEditor(EntityManager& entityManager) {
 	Lighting::ambient = glm::vec4(ambient[0], ambient[1], ambient[2], ambient[3]);
 
 	ImGui::Checkbox("Draw lights as wireframe", &g_drawLightsAsWireframe);
+
+	ImGui::Checkbox("Flat shader", &g_useFlatShader);
+	
 	if (ImGui::Button("Switch texture MipMap settings")) {
 		static bool flipFlop = false;
 		Texture::UpdateMipMapSettings(flipFlop);

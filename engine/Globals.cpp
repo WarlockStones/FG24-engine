@@ -15,9 +15,13 @@ int g_windowWidth = 800;
 int g_windowHeight = 600;
 
 bool g_drawLightsAsWireframe = true;
+bool g_useFlatShader = false;
 
 std::uint32_t			g_shader{};
 std::uint32_t			g_blendShader{};
+std::uint32_t			g_flatShader{};
+std::uint32_t	        g_flatBlendShader{};
+
 Entity*					g_entity1{};
 Entity*					g_entity2{};
 Camera*					g_camera{};

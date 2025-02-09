@@ -58,18 +58,32 @@ void Entity::SetMesh(const Mesh* mesh) {
 
 void Entity::Draw() const {
     auto shader = m_shaderId;
-	if (m_mesh->IsBlend()) {
-		shader = g_blendShader;
+	assert(shader != 0);
+	if (g_useFlatShader) {
+	    if (m_mesh->IsBlend()) {
+			shader = g_flatBlendShader;
+		} else {
+			shader = g_flatShader;
+		}
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_textureId); 
+		glUniform1i(glGetUniformLocation(shader, "albedoMap"), 0);
+		
+		m_mesh->Draw(shader, m_drawAsWireframe);
+	} else {
+		if (m_mesh->IsBlend()) {
+			shader = g_blendShader;
+		}
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_textureId); 
+		glUniform1i(glGetUniformLocation(shader, "albedoMap"), 0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, m_textureSpecularId);
+		glUniform1i(glGetUniformLocation(shader, "specularMap"), 1);
+
+		m_mesh->Draw(shader, m_drawAsWireframe);
 	}
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_textureId); 
-	glUniform1i(glGetUniformLocation(shader, "albedoMap"), 0);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_textureSpecularId);
-	glUniform1i(glGetUniformLocation(shader, "specularMap"), 1);
-
-	m_mesh->Draw(shader, m_drawAsWireframe);
 }
 
 void Entity::DrawLightPass(std::uint32_t lightPassShaderId) const {
