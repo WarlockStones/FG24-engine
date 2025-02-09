@@ -44,6 +44,9 @@ void Session::Start() {
 	g_shader = Shader::CompileShader("../../assets/shaders/phongshadow.vert",
 									 "../../assets/shaders/phongshadow.frag");
 	assert(g_shader != 0);
+	g_blendShader = Shader::CompileShader("../../assets/shaders/phongshadowblend.vert",
+										  "../../assets/shaders/phongshadow.frag");
+	assert(g_blendShader != 0);
 	std::uint32_t arcadeTex(Texture::LoadFromFile("../../assets/textures/arcade_carpet.png", "Arcade"));
 	assert(arcadeTex != 0);
 	std::uint32_t helloTex(Texture::LoadFromFile("../../assets/textures/hello.png", "Hello"));
@@ -69,11 +72,13 @@ void Session::Start() {
 	MeshManager::AddMesh("barrel2", barrel2);
 	auto boxUv = MeshManager::LoadVertexData("box_uv");
 	MeshManager::AddMesh("box_uv", boxUv);
+	auto blend1 = MeshManager::LoadVertexData("blend1");
+	auto blend2 = MeshManager::LoadVertexData("blend2");
+	MeshManager::AddMesh("blend", blend1, blend2);
 
 	// ----- Configure entities -----
 	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader, "Monkey");
 
-	// Box
 	g_entity2 = entityManager.CreateEntity(cubeMesh, g_shader, "Box");
 	g_entity2->m_transform.SetLocation(glm::vec3(2, 2, -2));
 	g_entity2->m_transform.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
@@ -194,7 +199,7 @@ void Session::Update(float deltaTime) {
 		c->Update(deltaTime);
 	}
 
-	float rot = static_cast<float>(SDL_GetTicks()) * 0.1f;
+	float rot = static_cast<float>(SDL_GetTicks()) * 0.001f;
 	g_entity2->m_transform.SetRotation(glm::vec3(0, rot, 0.0f));
 
 	if (g_action2) {

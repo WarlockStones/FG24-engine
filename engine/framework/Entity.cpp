@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cstdio>
 #include "framework/MeshManager.hpp"
+#include "Globals.hpp"
 
 namespace FG24 {
 Entity::Entity(
@@ -56,15 +57,19 @@ void Entity::SetMesh(const Mesh* mesh) {
 }
 
 void Entity::Draw() const {
+    auto shader = m_shaderId;
+	if (m_mesh->IsBlend()) {
+		shader = g_blendShader;
+	}
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_textureId); 
-	glUniform1i(glGetUniformLocation(m_shaderId, "albedoMap"), 0);
+	glUniform1i(glGetUniformLocation(shader, "albedoMap"), 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_textureSpecularId);
-	glUniform1i(glGetUniformLocation(m_shaderId, "specularMap"), 1);
+	glUniform1i(glGetUniformLocation(shader, "specularMap"), 1);
 
-	m_mesh->Draw(m_shaderId, m_drawAsWireframe);
+	m_mesh->Draw(shader, m_drawAsWireframe);
 }
 
 void Entity::DrawLightPass(std::uint32_t lightPassShaderId) const {

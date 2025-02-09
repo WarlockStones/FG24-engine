@@ -88,9 +88,14 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 	// Local/object space > World space > View/eye space > Clip space > Screen space.
 
 	// TODO: Support more than one shaderID
+	Shader::Use(g_blendShader);
+	Shader::SetVec2(g_blendShader, "shadowMapTexelSize", glm::vec2(shadowMapping.m_resolution));
+	Shader::SetMat4(g_blendShader, "view", camera->GetViewMatrix());
+	Shader::SetMat4(g_blendShader, "projection", m_projection);
+	Shader::SetVec3(g_blendShader, "cameraPosition", camera->GetPosition());
+
 	Shader::Use(g_shader);
 	Shader::SetVec2(g_shader, "shadowMapTexelSize", glm::vec2(shadowMapping.m_resolution));
-
 	Shader::SetMat4(g_shader, "view", camera->GetViewMatrix());
 	Shader::SetMat4(g_shader, "projection", m_projection);
 	Shader::SetVec3(g_shader, "cameraPosition", camera->GetPosition());
@@ -149,21 +154,30 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 			cubeMesh->Draw(g_shader, g_drawLightsAsWireframe);
 	}
 
-	// Todo make Shader:: functions to set arrays
-	glUniform1i(glGetUniformLocation(g_shader, "activeLights"), activeLights);
-	glUniform4fv(glGetUniformLocation(g_shader, "lightDiffuse"), activeLights, diffuse);
-	glUniform4fv(glGetUniformLocation(g_shader, "lightSpecular"), activeLights, specular);
-	glUniform3fv(glGetUniformLocation(g_shader, "lightPosition"), activeLights, position);
-	glUniform3fv(glGetUniformLocation(g_shader, "lightAttenuation"), activeLights, attenuation);
-	glUniform3fv(glGetUniformLocation(g_shader, "lightRotation"), activeLights, rotation);
-	glUniform1fv(glGetUniformLocation(g_shader, "lightCutoff"), activeLights, cutoff);
-	glUniform1iv(glGetUniformLocation(g_shader, "lightType"), activeLights, lightType);
-	Shader::SetVec4(g_shader, "lightAmbient", Lighting::ambient);
+	// TODO: make Shader:: functions to set arrays
+	// TODO: make clever way of handling multiple shader
+	for (int i = 0; i < 2; i++) {
+		auto shader = g_shader;
+		if (i != 0) {
+			shader = g_blendShader;
+		}
+		Shader::Use(shader);
+		glUniform1i(glGetUniformLocation(shader, "activeLights"), activeLights);
+		glUniform4fv(glGetUniformLocation(shader, "lightDiffuse"), activeLights, diffuse);
+		glUniform4fv(glGetUniformLocation(shader, "lightSpecular"), activeLights, specular);
+		glUniform3fv(glGetUniformLocation(shader, "lightPosition"), activeLights, position);
+		glUniform3fv(glGetUniformLocation(shader, "lightAttenuation"), activeLights, attenuation);
+		glUniform3fv(glGetUniformLocation(shader, "lightRotation"), activeLights, rotation);
+		glUniform1fv(glGetUniformLocation(shader, "lightCutoff"), activeLights, cutoff);
+		glUniform1iv(glGetUniformLocation(shader, "lightType"), activeLights, lightType);
+		Shader::SetVec4(shader, "lightAmbient", Lighting::ambient);
 
-	// Telling each sampler to which texture unit it belongs to only needs to be done once
-	glActiveTexture(GL_TEXTURE2); // 0 = alebedo. 1 = specular. 2 = shadowmap
-	glBindTexture(GL_TEXTURE_2D, shadowMapping.m_textureId);
-	glUniform1i(glGetUniformLocation(g_shader, "shadowMap"), 2); // 2 = GL_TEXTURE2 ?
+		// Telling each sampler to which texture unit it belongs to only needs to be done once
+		glActiveTexture(GL_TEXTURE2); // 0 = alebedo. 1 = specular. 2 = shadowmap
+		glBindTexture(GL_TEXTURE_2D, shadowMapping.m_textureId);
+		glUniform1i(glGetUniformLocation(shader, "shadowMap"), 2); // 2 = GL_TEXTURE2 ?
+
+	}
 
 	for(const Entity* e : entities) {
 		glm::mat4 tr =  glm::mat4(1);
@@ -173,12 +187,22 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 		rot = e->m_transform.GetRotationMatrix();
 		scl = glm::scale(scl, e->m_transform.GetScale());
 		glm::mat4 model = tr * rot * scl;
-		Shader::SetMat4(g_shader, "model", model);
-
-		Shader::SetMat4(
-			g_shader,
-			"shadowMapMatrix",
-			shadowMapping.GetDepthBiasMVP(model)); // depthBiasMVP requires model matrix
+		if (e->GetMesh()->IsBlend()) {
+		    Shader::Use(g_blendShader);
+			Shader::SetMat4(g_blendShader, "model", model);
+			Shader::SetMat4(
+				g_blendShader,
+				"shadowMapMatrix",
+				shadowMapping.GetDepthBiasMVP(model)); // depthBiasMVP requires model matrix
+			
+		} else {
+		    Shader::Use(g_shader);
+			Shader::SetMat4(g_shader, "model", model);
+			Shader::SetMat4(
+				g_shader,
+				"shadowMapMatrix",
+				shadowMapping.GetDepthBiasMVP(model)); // depthBiasMVP requires model matrix
+		}
 		
 		e->Draw();
 	}

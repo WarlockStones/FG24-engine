@@ -4,6 +4,8 @@
 #include <cassert>
 #include <string_view>
 #include "renderer/VertexData.hpp"
+#include "renderer/Shader.hpp"
+#include "Globals.hpp"
 
 #include <cstdlib>
 
@@ -101,9 +103,7 @@ void MeshBlend::Init(
 }
 
 void MeshBlend::Draw(bool asWireframe = false) const {
-	// assert(shaderId != 0); // BlendShader
-	std::printf("IMPLEMENT MeshBlend Draw!\n");
-    std::abort();
+	assert(g_blendShader != 0); // BlendShader
 
 	if (asWireframe) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
@@ -111,13 +111,14 @@ void MeshBlend::Draw(bool asWireframe = false) const {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
 	}
 
-	// glUseProgram(shaderId); // Use Blend shader
+	glUseProgram(g_blendShader); // Use Blend shader
 	glBindVertexArray(m_VAO);
 
 	glDrawArrays(GL_TRIANGLES, 0, m_numVertices); 
 
 	// Send blend amount uniform
-	
+	Shader::SetFloat(g_blendShader, "blendAmount", m_blendAmount);
+
 	glBindVertexArray(0); // Unbind
 }
   

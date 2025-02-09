@@ -14,7 +14,7 @@ void Mesh::InitSingle(std::string_view name, const VertexData& vertexData) {
 }
 
 // Init a mesh that has multiple buffer for blend shapes
-void Mesh::InitBlended(
+void Mesh::InitBlend(
 	std::string_view name, 
 	const VertexData& data1,
 	const VertexData& data2) 
@@ -60,4 +60,21 @@ void Mesh::Draw(std::uint32_t shaderId, bool asWireframe) const {
 			"Error: Mesh::SetName. Could not value of std::variant!\n");
 	}
 }
+
+float* Mesh::GetBlendPointer() {
+	if (MeshBlend* p = std::get_if<MeshBlend>(&m_mesh)) {
+		return &p->m_blendAmount;
+	} 
+
+	return nullptr;
+}
+
+bool Mesh::IsBlend() const {
+	if (const MeshBlend* p = std::get_if<MeshBlend>(&m_mesh)) {
+	    return true;
+	}
+
+	return false;
+}
+
 } // namespace FG24

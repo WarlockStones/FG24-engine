@@ -100,6 +100,12 @@ static void EntityEditor(EntityManager& entityManager) {
 				}
 				ImGui::EndCombo();
 			}
+
+			float* blendPtr = MeshManager::GetMesh(mesh->GetName())->GetBlendPointer();
+			if (blendPtr != nullptr) {
+				ImGui::SliderFloat("Blend amount",  blendPtr, 0, 1);
+			}
+
 		} else {
 			// ImGui::Combo("model", 0, "EMPTY", 1);
 			ImGui::Text("No mesh loaded");

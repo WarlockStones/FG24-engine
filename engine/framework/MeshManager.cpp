@@ -51,7 +51,7 @@ VertexData LoadVertexData(std::string_view meshSource) {
 	return data;
 }
 
-Mesh* AddMesh(std::string_view meshSource, VertexData& data) {
+Mesh* AddMesh(std::string_view meshSource, const VertexData& data) {
 	Mesh* mPtr = GetMesh(meshSource);
 	assert(mPtr == nullptr); // Attempting to add mesh that already exists
 
@@ -60,6 +60,22 @@ Mesh* AddMesh(std::string_view meshSource, VertexData& data) {
 
 	meshMap.insert({ meshSource, m });
     names.push_back(meshSource);
+
+	return m;
+}
+
+Mesh* AddMesh(
+	std::string_view meshSource,
+	const VertexData& data1,
+	const VertexData& data2) 
+{
+	Mesh* mPtr = GetMesh(meshSource);
+	assert(mPtr == nullptr); // Attempting to add mesh that already exists
+	
+	Mesh* m = new Mesh;
+	m->InitBlend(meshSource, data1, data2);
+	meshMap.insert({ meshSource, m });
+	names.push_back(meshSource);
 
 	return m;
 }

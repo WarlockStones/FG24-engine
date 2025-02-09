@@ -32,6 +32,7 @@ public:
 	void SetName(const char* name);
 
 	const Mesh* GetMesh() const;
+
 	void SetMesh(const Mesh* mesh);
 
 	Transform m_transform;
