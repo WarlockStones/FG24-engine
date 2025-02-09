@@ -1,12 +1,14 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <variant>
+#include "renderer/Mesh.hpp"
+#include "renderer/MeshBlend.hpp"
 #include "Transform.hpp"
 #include "utils/Writable.hpp"
 
 namespace FG24 {
 class Material;
-class Mesh;
 
 // An Entity is a thing in the game world
 class Entity : public IWritable {
@@ -29,7 +31,7 @@ public:
 	const std::string& GetName() const;
 	void SetName(const char* name);
 
-	const Mesh& GetMesh() const;
+	const Mesh* GetMesh() const;
 	void SetMesh(const Mesh* mesh);
 
 	Transform m_transform;
@@ -37,7 +39,7 @@ public:
 	std::uint32_t m_textureSpecularId = 0;
 	bool m_drawAsWireframe = false;
 private:
-	const Mesh* m_mesh;
+	const Mesh* m_mesh = nullptr;
 	std::uint32_t m_shaderId{};
 	std::string m_name = "Nil";
 };

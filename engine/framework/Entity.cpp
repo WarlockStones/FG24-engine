@@ -3,6 +3,7 @@
 #include <cassert>
 #include "Entity.hpp"
 #include "renderer/Mesh.hpp"
+#include "renderer/MeshBlend.hpp"
 #include <cstdint>
 #include <cstdio>
 #include "framework/MeshManager.hpp"
@@ -13,7 +14,11 @@ Entity::Entity(
 	std::uint32_t shaderId,
 	std::uint32_t textureId,
 	const char* name)
-	: m_mesh(mesh), m_shaderId(shaderId), m_textureId(textureId), m_name(name){
+	: m_mesh(mesh),
+	  m_shaderId(shaderId),
+	  m_textureId(textureId),
+	  m_name(name) {
+  
 }
 
 Entity::Entity(const Entity& other) 
@@ -35,15 +40,15 @@ Entity& Entity::operator=(Entity&& other) {
 }
 
 const std::string& Entity::GetName() const {
-  return m_name;
+	return m_name;
 }
 
 void Entity::SetName(const char* name) {
-  m_name = name;
+	m_name = name;
 }
 
-const Mesh& Entity::GetMesh() const {
-	return *m_mesh;
+const Mesh* Entity::GetMesh() const {
+	return m_mesh;
 }
 
 void Entity::SetMesh(const Mesh* mesh) {
@@ -73,10 +78,10 @@ bool Entity::WriteTo(FILE* file) const {
 	assert(nameLength <= 32);
 	n += std::fwrite(&nameLength, sizeof(std::uint32_t), 1, file);
 	n += std::fwrite(m_name.c_str(), sizeof(char), nameLength, file);
-	std::uint32_t mNameLength = m_mesh->m_name.length() + 1;
+	std::uint32_t mNameLength = m_mesh->GetName().length() + 1;
 	assert(mNameLength <= 32);
 	n += std::fwrite(&mNameLength, sizeof(std::uint32_t), 1, file);
-	n += std::fwrite(m_mesh->m_name.data(), sizeof(char), mNameLength, file);
+	n += std::fwrite(m_mesh->GetName().data(), sizeof(char), mNameLength, file);
 	n += std::fwrite(&m_shaderId, sizeof(std::uint32_t), 1, file);
 	n += std::fwrite(&m_textureId, sizeof(std::uint32_t), 1, file);
 	// 4 for nameLength, mNameLength, shaderId, textureId

@@ -1,75 +1,63 @@
 #include "Mesh.hpp"
-#include <glad/gl.h>
-#include <SDL2/SDL_opengl.h>
-#include <cassert>
+#include <string_view>
+#include <variant>
+#include "renderer/MeshSingle.hpp"
+#include "renderer/MeshBlend.hpp"
+#include "renderer/VertexData.hpp"
 
 namespace FG24 {
-
-Mesh::Mesh(std::string_view name) : m_name(name) {
-
+// Init a single mesh
+void Mesh::InitSingle(std::string_view name, const VertexData& vertexData) {
+	// Init std::variant as MeshSingle
+	m_mesh.emplace<MeshSingle>();
+	std::get_if<MeshSingle>(&m_mesh)->Init(name, vertexData);
 }
 
-void Mesh::InitBuffers(VertexData& vertexData) {
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	numVerticesToDraw = vertexData.m_numVertices;
-  
-	assert(vertexData.m_data != nullptr);
-	glBufferData(
-		GL_ARRAY_BUFFER,    // Type
-		sizeof(float) * vertexData.m_numVertexData,  // Size in bytes of buffer
-		vertexData.m_data,  // Pointer to data to be copied
-		GL_STATIC_DRAW);    // Usage pattern
-	
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	// Vertex Position
-	glVertexAttribPointer(
-		0, // index of stream of data for m_shaderID [[ layout (location = 0) in  ]]
-		3, // num components. xyz = 3 
-		GL_FLOAT, // Type
-		GL_FALSE, // Normalize
-		8 * sizeof(float), // Stride. Size in bytes until next consecutive attrib
-		reinterpret_cast<void*>(0)); // Starting position of this type
-
-	// UV
-	glVertexAttribPointer(
-		1, 
-		2, 
-		GL_FLOAT, 
-		GL_FALSE, 
-		8 * sizeof(float), 
-		reinterpret_cast<void*>(3 * sizeof(float))); 
-
-	// Normal
-	glVertexAttribPointer(
-		2, 
-		3, 
-		GL_FLOAT, 
-		GL_FALSE, 
-		8 * sizeof(float), 
-		reinterpret_cast<void*>(5 * sizeof(float)));
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+// Init a mesh that has multiple buffer for blend shapes
+void Mesh::InitBlended(
+	std::string_view name, 
+	const VertexData& data1,
+	const VertexData& data2) 
+{
+	m_mesh.emplace<MeshBlend>();
+	std::get_if<MeshBlend>(&m_mesh)->Init(name, data1, data2);
 }
 
-void Mesh::Draw(std::uint32_t shaderId, bool asWireframe = false) const {
-	assert(shaderId != 0);
-	if (asWireframe) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+std::string_view Mesh::GetName() const {
+	if (const MeshSingle* p = std::get_if<MeshSingle>(&m_mesh)) {
+		return p->m_name;
+	} else if (const MeshBlend* p = std::get_if<MeshBlend>(&m_mesh)) {
+		return p->m_name;
 	} else {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Full polygons
+		std::fprintf(
+			stderr,
+			"Error: Mesh::GetName. Could not get value of std::variant!\n");
 	}
 
-	glUseProgram(shaderId);
-	glBindVertexArray(VAO);
+	return "ERROR IN Mesh::GetName()!";
+}
 
-	glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw); 
-	
-	glBindVertexArray(0); // Unbind
+void Mesh::SetName(std::string_view name) {
+	if (MeshSingle* p = std::get_if<MeshSingle>(&m_mesh)) {
+		p->m_name = name;
+	} else if (MeshBlend* p = std::get_if<MeshBlend>(&m_mesh)) {
+		p->m_name = name;
+	} else {
+		std::fprintf(
+			stderr,
+			"Error: Mesh::SetName. Could not value of std::variant!\n");
+	}
+}
+
+void Mesh::Draw(std::uint32_t shaderId, bool asWireframe) const {
+	if (const MeshSingle* p = std::get_if<MeshSingle>(&m_mesh)) {
+		p->Draw(shaderId, asWireframe);
+	} else if (const MeshBlend* p = std::get_if<MeshBlend>(&m_mesh)) {
+		p->Draw(asWireframe);
+	} else {
+		std::fprintf(
+			stderr,
+			"Error: Mesh::SetName. Could not value of std::variant!\n");
+	}
 }
 } // namespace FG24

@@ -52,11 +52,11 @@ VertexData LoadVertexData(std::string_view meshSource) {
 }
 
 Mesh* AddMesh(std::string_view meshSource, VertexData& data) {
-	Mesh* m = GetMesh(meshSource);
-	assert(m == nullptr); // Attempting to add mesh that already exists
+	Mesh* mPtr = GetMesh(meshSource);
+	assert(mPtr == nullptr); // Attempting to add mesh that already exists
 
-	m = new Mesh(meshSource);
-	m->InitBuffers(data);
+	Mesh* m = new Mesh;
+	m->InitSingle(meshSource, data);
 
 	meshMap.insert({ meshSource, m });
     names.push_back(meshSource);

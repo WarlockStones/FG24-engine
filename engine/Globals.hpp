@@ -22,6 +22,7 @@ extern bool g_drawLightsAsWireframe;
 
 // Assets / Entities
 extern std::uint32_t				g_shader;
+extern std::uint32_t		        g_blendShader;
 extern std::uint32_t				g_arcadeTexture;
 extern Entity*						g_entity1;
 extern Entity*						g_entity2;

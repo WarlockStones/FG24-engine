@@ -1,26 +1,24 @@
 #pragma once
-#include <cstdint>
-#include <cstddef>
+#include <variant>
 #include <string_view>
-#include "utils/Vec.hpp"
+#include "renderer/MeshSingle.hpp"
+#include "renderer/MeshBlend.hpp"
 #include "renderer/VertexData.hpp"
 
 namespace FG24 {
-
 class Mesh {
 public:
-	Mesh(std::string_view name);
-	void InitBuffers(VertexData& vertexData);
-	void Draw(std::uint32_t shaderID, bool asWireframe) const;
-
-	const std::string_view m_name;
+	Mesh() = default;
+    ~Mesh() = default;
+    void InitSingle(std::string_view name, const VertexData& vertexData);
+    void InitBlended(
+		std::string_view name,
+		const VertexData& data1,
+		const VertexData& data2);
+	std::string_view GetName() const;
+    void SetName(std::string_view name);
+	void Draw(std::uint32_t shaderId, bool asWireframe) const;
 private:
-	std::size_t numVerticesToDraw = 0; // Used for OpenGL draw array calls
-
-	// OpenGL IDs
-	std::uint32_t VBO{}; // Stores vertices
-	std::uint32_t VAO{}; // Stores vertex attributes
-	std::uint32_t EBO{}; // Stores indicies
+	std::variant<MeshSingle, MeshBlend> m_mesh;
 };
-
 } // namespace FG24

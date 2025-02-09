@@ -49,6 +49,8 @@ add_executable(engine
 	"framework/MeshManager.cpp"
 	"renderer/Renderer.cpp"
 	"renderer/Mesh.cpp"
+	"renderer/MeshBlend.cpp"
+	"renderer/MeshSingle.cpp"
 	"renderer/Texture.cpp"
 	"renderer/Shader.cpp"
 	"renderer/ShadowMapping.cpp"

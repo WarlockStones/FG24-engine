@@ -2,6 +2,8 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 #include "renderer/Renderer.hpp"
+#include "renderer/Mesh.hpp"
+#include "renderer/MeshBlend.hpp"
 #include "framework/EntityManager.hpp"
 #include "framework/MeshManager.hpp"
 #include "framework/Entity.hpp"
@@ -12,6 +14,7 @@
 #include "framework/Light.hpp"
 #include "Globals.hpp"
 #include <cstdio>
+#include <variant>
 
 namespace FG24 {
 namespace Editor {
@@ -80,7 +83,9 @@ static void EntityEditor(EntityManager& entityManager) {
 		static const char* previewName = "EMPTY";
 		static const std::vector<std::string_view>& meshNames = MeshManager::GetNames();
 		if (!meshNames.empty()) {
-			previewName = e->GetMesh().m_name.data();
+		    const Mesh* mesh = e->GetMesh();
+			previewName = e->GetMesh()->GetName().data(); 
+			
 			if (ImGui::BeginCombo("mesh", previewName)) {
 			  for (std::size_t i = 0; i < meshNames.size(); ++i) {
 					const bool isSelected = (previewName == meshNames[i]);
