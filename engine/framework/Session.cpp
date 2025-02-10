@@ -50,7 +50,9 @@ void Session::Start() {
 	g_flatShader = Shader::CompileShader("../../assets/shaders/flat.vert",
 										 "../../assets/shaders/flat.frag");
 	assert(g_flatShader != 0);
-
+	g_flatBlendShader = Shader::CompileShader("../../assets/shaders/flatblend.vert",
+											  "../../assets/shaders/flat.frag");
+	assert(g_flatBlendShader != 0);
 
 	std::uint32_t arcadeTex(Texture::LoadFromFile("../../assets/textures/arcade_carpet.png", "Arcade"));
 	assert(arcadeTex != 0);
@@ -80,6 +82,8 @@ void Session::Start() {
 	auto blend1 = MeshManager::LoadVertexData("blend1");
 	auto blend2 = MeshManager::LoadVertexData("blend2");
 	MeshManager::AddMesh("blend", blend1, blend2);
+	auto pieData = MeshManager::LoadVertexData("triangtest_pie");
+	MeshManager::AddMesh("triangtest_pie", pieData);
 
 	// ----- Configure entities -----
 	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader, "Monkey");
@@ -204,8 +208,8 @@ void Session::Update(float deltaTime) {
 		c->Update(deltaTime);
 	}
 
-	float rot = static_cast<float>(SDL_GetTicks()) * 0.001f;
-	g_entity2->m_transform.SetRotation(glm::vec3(0, rot, 0.0f));
+	// float rot = static_cast<float>(SDL_GetTicks()) * 0.001f;
+	// g_entity2->m_transform.SetRotation(glm::vec3(0, rot, 0.0f));
 
 	if (g_action2) {
 		g_action2 = false;

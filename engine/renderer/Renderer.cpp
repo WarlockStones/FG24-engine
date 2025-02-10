@@ -84,6 +84,12 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 			0.0f, 100.0f);  // near clip, far clip
 	}
 
+	// Lights will always use flatShader
+	Shader::Use(g_flatShader);
+	Shader::SetMat4(g_flatShader, "view", camera->GetViewMatrix());
+	Shader::SetMat4(g_flatShader, "projection", m_projection);
+	Shader::SetVec3(g_flatShader, "cameraPosition", camera->GetPosition());
+
 	for (const auto& l : Lighting::GetLights()) {
 		// Draw render light default debug mesh
 		glm::mat4 model = glm::mat4(1);
@@ -98,9 +104,6 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 
 	if (g_useFlatShader) {
 	    Shader::Use(g_flatShader);
-		Shader::SetMat4(g_flatShader, "view", camera->GetViewMatrix());
-		Shader::SetMat4(g_flatShader, "projection", m_projection);
-		Shader::SetVec3(g_flatShader, "cameraPosition", camera->GetPosition());
 
 	    Shader::Use(g_flatBlendShader);
 		Shader::SetMat4(g_flatBlendShader, "view", camera->GetViewMatrix());
@@ -241,7 +244,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 
 
 void Renderer::DrawLightOnly(const std::vector<Entity*>& entities) {
-  shadowMapping.Render(entities);
+	shadowMapping.Render(entities);
 }
 
 void Renderer::SetProjectionMatrix(float fov,

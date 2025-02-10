@@ -181,8 +181,7 @@ void ParseF(const char* str, std::vector<Face>& faceVectorOut) {
 
 	// TODO: This would be fun to optimize. Atm I make lots of copies
 	// Move scemantics? Construct in place? 
-	static std::vector<std::array<FaceIndexElement, 3>> triangulatedFaces;
-	triangulatedFaces.clear();
+	std::vector<std::array<FaceIndexElement, 3>> triangulatedFaces;
 	if (vertexCount > 3) {
 		// Fan triangulation
 		for (int i = 0; i < vertexCount - 2; ++i) {

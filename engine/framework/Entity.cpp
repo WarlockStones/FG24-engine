@@ -102,6 +102,7 @@ bool Entity::WriteTo(FILE* file) const {
 	n += std::fwrite(&mNameLength, sizeof(std::uint32_t), 1, file);
 	n += std::fwrite(m_mesh->GetName().data(), sizeof(char), mNameLength, file);
 	n += std::fwrite(&m_shaderId, sizeof(std::uint32_t), 1, file);
+	// TODO: Add specular mapping!
 	n += std::fwrite(&m_textureId, sizeof(std::uint32_t), 1, file);
 	// 4 for nameLength, mNameLength, shaderId, textureId
 	std::size_t expected = 4 + nameLength + mNameLength;

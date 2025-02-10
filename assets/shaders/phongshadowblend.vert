@@ -30,7 +30,9 @@ void main() {
 
 	pos_world = (model * vec4(pos, 1)).xyz;
 
-	uv_world = uv_local + blendAmount * uv_local2;
+	// Don't blend UV/Texture, it does not look good
+	// uv_world = uv_local + blendAmount * uv_local2;
+	uv_world = uv_local; 
 
 	// Create a normal model matrix
 	// TODO: Do this on the CPU once and send as uniform

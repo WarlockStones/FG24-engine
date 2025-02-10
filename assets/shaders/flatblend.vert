@@ -16,6 +16,6 @@ out vec2 uv_world;
 void main() {
 	// Order of matrix multiplication is important!
     vec3 pos = pos_local + blendAmount * pos_local2;
-	gl_Position =  projection * view * model * vec4(pos_local, 1.0);
+	gl_Position =  projection * view * model * vec4(pos, 1.0);
 	uv_world = uv_local;
 }
