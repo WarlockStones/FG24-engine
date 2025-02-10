@@ -54,6 +54,9 @@ add_executable(engine
 	"renderer/Texture.cpp"
 	"renderer/Shader.cpp"
 	"renderer/ShadowMapping.cpp"
+	# "physics/Collider.cpp"
+	# "physics/Collision.cpp"
+	"physics/PhysicsSimulation.cpp"
 	"utils/ObjToMdl.cpp"
 	${IMGUI_SOURCES}
 )
