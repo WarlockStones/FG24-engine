@@ -8,11 +8,9 @@ enum class ColliderType {
 	Box,
 };
 
+// Abstract class only accessible through inheritance
 class Collider {
 public:
-	explicit Collider(ColliderType type);
-	virtual ~Collider() = default;
-
 	glm::vec3 GetPosition() const;
 	void SetPosition(const glm::vec3& newPos);
 
@@ -22,7 +20,10 @@ public:
 	float m_mass{};
 	const ColliderType m_type;
 	
-private:
+protected:
+	// Restrict construction
+	explicit Collider(ColliderType type);
+	virtual ~Collider() = default;
 	glm::mat4 m_transform{ 0 };
 	glm::vec3 m_center{ 0 };
 };
