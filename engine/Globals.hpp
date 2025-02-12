@@ -22,18 +22,20 @@ extern bool g_drawLightsAsWireframe;
 extern bool g_useFlatShader;
 
 // Assets / Entities
-extern std::uint32_t				g_shader;
-extern std::uint32_t		        g_blendShader;
-extern std::uint32_t		        g_flatShader;
-extern std::uint32_t		        g_flatBlendShader;
-extern std::uint32_t				g_arcadeTexture;
-extern Entity*						g_entity1;
-extern Entity*						g_entity2;
-extern Camera*						g_camera;
-extern Light*						g_light1;
-extern Light*						g_light2;
-extern Light*						g_light3;
-extern Light*						g_lightDir;
+extern std::uint32_t		g_shader;
+extern std::uint32_t		g_blendShader;
+extern std::uint32_t		g_flatShader;
+extern std::uint32_t		g_flatBlendShader;
+extern std::uint32_t		g_arcadeTexture;
+extern Entity*				g_entity1;
+extern Entity*				g_entity2;
+extern Camera*				g_camera;
+extern Light*				g_light1;
+extern Light*				g_light2;
+extern Light*				g_light3;
+extern Light*				g_lightDir;
+extern Mesh*				g_sphereMesh;
+extern Mesh*				g_cubeMesh;
 
 // Inputs
 extern float g_yvel;

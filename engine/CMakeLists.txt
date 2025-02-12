@@ -59,7 +59,7 @@ add_executable(engine
 	"physics/PhysicsSimulation.cpp"
 	"utils/ObjToMdl.cpp"
 	${IMGUI_SOURCES}
-)
+ "physics/Collider.cpp")
 
 target_include_directories(engine PRIVATE
 	${CMAKE_SOURCE_DIR}/engine

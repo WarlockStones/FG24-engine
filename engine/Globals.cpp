@@ -30,6 +30,8 @@ Light*					g_light1{};
 Light*					g_light2{};
 Light*					g_light3{};
 Light*					g_lightDir{};
+Mesh*					g_sphereMesh;
+Mesh*					g_cubeMesh;
 
 // Key inputs
 float g_yvel = 0;

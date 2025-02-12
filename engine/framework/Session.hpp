@@ -1,5 +1,6 @@
 #pragma once
 #include <thread>
+#include <vector>
 #include "framework/Camera.hpp"
 #include <glm/glm.hpp> // For camera initialization
 #include "framework/KeyInput.hpp"
@@ -11,6 +12,7 @@ class Renderer;
 class KeyInput;
 class ExampleManager;
 class EntityManager;
+class Collider;
 
 class Session {
 public:
@@ -25,5 +27,7 @@ private:
 	KeyInput keyInput;
 	ExampleManager exampleManager;
 	EntityManager entityManager;
+
+	std::vector<Collider*> colliders;
 };
 }

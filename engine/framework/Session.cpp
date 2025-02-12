@@ -8,6 +8,7 @@
 #include "framework/KeyInput.hpp"
 #include "framework/CameraManager.hpp"
 #include "framework/Editor.hpp"
+#include <vector>
 
 #include "utils/File.hpp"
 #include "framework/Lighting.hpp"
@@ -25,6 +26,11 @@
 #include "framework/ExampleManager.hpp"
 #include "framework/Message.hpp"
 
+#include "physics/PhysicsSimulation.hpp"
+#include "physics/Collider.hpp"
+#include "physics/SphereCollider.hpp"
+
+
 namespace FG24 {
 bool Session::Init() {
 	renderer = new Renderer();
@@ -38,6 +44,7 @@ bool Session::Init() {
 
 	return 0;
 }
+
 
 void Session::Start() {
 	// ----- Load assets -----
@@ -72,7 +79,9 @@ void Session::Start() {
 	VertexData monkeyData = MeshManager::LoadVertexData("suzanne_tri");
 	Mesh* monkeyMesh = MeshManager::AddMesh("suzanne_tri", monkeyData);
 	VertexData cubeData = MeshManager::LoadVertexData("cube");
-	auto* cubeMesh = MeshManager::AddMesh("cube", cubeData);
+	g_cubeMesh = MeshManager::AddMesh("cube", cubeData);
+	auto sphereData = MeshManager::LoadVertexData("sphere");
+	g_sphereMesh = MeshManager::AddMesh("sphere", sphereData);
 	auto barrel = MeshManager::LoadVertexData("barrel");
 	MeshManager::AddMesh("barrel", barrel);
 	auto barrel2 = MeshManager::LoadVertexData("barrel2");
@@ -88,11 +97,11 @@ void Session::Start() {
 	// ----- Configure entities -----
 	g_entity1 = entityManager.CreateEntity(monkeyMesh, g_shader, "Monkey");
 
-	g_entity2 = entityManager.CreateEntity(cubeMesh, g_shader, "Box");
+	g_entity2 = entityManager.CreateEntity(g_cubeMesh, g_shader, "Box");
 	g_entity2->m_transform.SetLocation(glm::vec3(2, 2, -2));
 	g_entity2->m_transform.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
-	auto wall = entityManager.CreateEntity(cubeMesh, g_shader, "Wall");
+	auto wall = entityManager.CreateEntity(g_cubeMesh, g_shader, "Wall");
 	wall->m_transform.SetLocation(glm::vec3(0, 0, -3.5));
 	wall->m_transform.SetScale(glm::vec3(4.0f, 4.0f, 1.0f));
 
@@ -130,6 +139,18 @@ void Session::Start() {
 	auto startCamId = CameraManager::CreateCamera(glm::vec3(0,0,4), -90, 0);
 	CameraManager::SetActiveCamera(startCamId);
 	CameraManager::CreateCamera(glm::vec3(-3,2,2), -45, -45);
+
+	// Create physics collider objects
+	auto* s1 = new SphereCollider();
+	s1->m_radius = 1;
+	s1->SetPosition(glm::vec3(0, 0, 0));
+	s1->m_hasGravity = false;
+	colliders.push_back(s1);
+
+	auto* s2 = new SphereCollider();
+	s2->m_radius = 1;
+	s2->SetPosition(glm::vec3(0, 10, 0));
+	colliders.push_back(s2);
 	
 	return;
 
@@ -187,13 +208,21 @@ void Session::GameLoop() {
 		Update(deltaTime); 
 		Editor::Draw(entityManager);
 		renderer->DrawLightOnly(entityManager.GetEntities());
-		renderer->Draw(entityManager.GetEntities());
+		renderer->Draw(entityManager.GetEntities(), &colliders);
 	}
 }
 
 static bool lightShouldTick = true;
 // Update game state
 void Session::Update(float deltaTime) {
+	{
+		// Update physics
+		using namespace PhysicsSimulation;
+		ApplyGravity(colliders, deltaTime);
+		HandleCollisions(CheckIntersections(colliders));
+		ApplyVelocity(colliders, deltaTime);
+	}
+
 	// Testing sending messages to manager on another thread
 	if (g_action1) { // Press keyboard key 1
 		std::uint32_t ms = SDL_GetTicks();

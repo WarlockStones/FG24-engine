@@ -45,7 +45,7 @@ void Mesh::SetName(std::string_view name) {
 	} else {
 		std::fprintf(
 			stderr,
-			"Error: Mesh::SetName. Could not value of std::variant!\n");
+			"Error: Mesh::SetName. Could not set value of std::variant!\n");
 	}
 }
 
@@ -57,7 +57,7 @@ void Mesh::Draw(std::uint32_t shaderId, bool asWireframe) const {
 	} else {
 		std::fprintf(
 			stderr,
-			"Error: Mesh::SetName. Could not value of std::variant!\n");
+			"Error: Mesh::Draw. Could not get value of std::variant!\n");
 	}
 }
 

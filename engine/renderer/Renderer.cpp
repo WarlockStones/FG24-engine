@@ -16,6 +16,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
+#include "physics/Collider.hpp"
 
 namespace FG24 {
 bool Renderer::Init() {
@@ -61,7 +62,10 @@ bool Renderer::Init() {
 	// return true;
 }
 
-void Renderer::Draw(const std::vector<Entity*>& entities) {
+void Renderer::Draw(
+	const std::vector<Entity*>& entities,
+	const std::vector<Collider*>* colliders = nullptr) 
+{
 	glViewport(0, 0, g_windowWidth, g_windowHeight); // Reset from shadowmapping res
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -84,28 +88,49 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 			0.0f, 100.0f);  // near clip, far clip
 	}
 
-	// Lights will always use flatShader
+	// Lights and Colliders will always use flatShader
 	Shader::Use(g_flatShader);
 	Shader::SetMat4(g_flatShader, "view", camera->GetViewMatrix());
 	Shader::SetMat4(g_flatShader, "projection", m_projection);
 	Shader::SetVec3(g_flatShader, "cameraPosition", camera->GetPosition());
 
+	assert(g_cubeMesh);
 	for (const auto& l : Lighting::GetLights()) {
 		// Draw render light default debug mesh
 		glm::mat4 model = glm::mat4(1);
 		model = glm::translate(model, l->m_position);
 		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
 		Shader::SetMat4(g_flatShader, "model", model);
+		Shader::SetVec3(g_flatShader, "color", glm::vec3(1, 1, 0));
 
-		static auto* cubeMesh = MeshManager::GetMesh("cube");
-		assert(cubeMesh);
-		cubeMesh->Draw(g_flatShader, g_drawLightsAsWireframe);
+		g_cubeMesh->Draw(g_flatShader, g_drawLightsAsWireframe);
+	}
+
+	assert(g_sphereMesh);
+	if (colliders) {
+		for (Collider* c : *colliders) {
+			glm::mat4 model = glm::mat4(1);
+			model = glm::translate(model, c->GetPosition());
+			model = glm::scale(model, glm::vec3(1));
+			Shader::SetMat4(g_flatShader, "model", model);
+			Shader::SetVec3(g_flatShader, "color", glm::vec3(1, 0.5, 0));
+			
+			switch (c->m_type) {
+			case ColliderType::Sphere:
+			g_sphereMesh->Draw(g_flatShader, true);
+			break;
+
+			case ColliderType::Box:
+			g_cubeMesh->Draw(g_flatBlendShader, true);
+			break;
+			}
+		}
 	}
 
 	if (g_useFlatShader) {
-	    Shader::Use(g_flatShader);
+		Shader::Use(g_flatShader);
 
-	    Shader::Use(g_flatBlendShader);
+		Shader::Use(g_flatBlendShader);
 		Shader::SetMat4(g_flatBlendShader, "view", camera->GetViewMatrix());
 		Shader::SetMat4(g_flatBlendShader, "projection", m_projection);
 		Shader::SetVec3(g_flatBlendShader, "cameraPosition", camera->GetPosition());
@@ -129,6 +154,7 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 
 			e->Draw();
 		}
+
 
 	} else  { // Draw light shaders
 		Shader::Use(g_blendShader);
@@ -232,16 +258,13 @@ void Renderer::Draw(const std::vector<Entity*>& entities) {
 					"shadowMapMatrix",
 					shadowMapping.GetDepthBiasMVP(model)); // depthBiasMVP requires model matrix
 			}
-
 			e->Draw();
 		}
 	}
-
 	
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	SDL_GL_SwapWindow(m_window);
 }
-
 
 void Renderer::DrawLightOnly(const std::vector<Entity*>& entities) {
 	shadowMapping.Render(entities);
