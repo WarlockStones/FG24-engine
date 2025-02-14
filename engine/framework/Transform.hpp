@@ -16,6 +16,7 @@ public:
 	const glm::quat& GetRotation() const;
 	glm::vec3 GetRotationEuler() const;
 	glm::mat4 GetRotationMatrix() const;
+	glm::mat4 Transform::GetModelMatrix() const;
 	void SetScale(glm::vec3 newScale);
 	const glm::vec3& GetScale() const;
 

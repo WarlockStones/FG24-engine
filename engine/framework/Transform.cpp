@@ -1,6 +1,7 @@
 #include "Transform.hpp"
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <cstdio>
 
 // constexpr int TransformVersion = 1; // For serialization
@@ -55,5 +56,16 @@ glm::vec3 FG24::Transform::GetRotationEuler() const {
 }
 
 glm::mat4 FG24::Transform::GetRotationMatrix() const {
-  return glm::mat4_cast(m_rotation); // This crashes
+  return glm::mat4_cast(m_rotation); 
+}
+
+// This is sometimes called the Transform
+glm::mat4 FG24::Transform::GetModelMatrix() const {
+	glm::mat4 tr =  glm::mat4(1);
+	glm::mat4 rot = glm::mat4(1);
+	glm::mat4 scl = glm::mat4(1);
+	tr = glm::translate(tr, m_location);
+	rot = GetRotationMatrix();
+	scl = glm::scale(scl, m_scale);
+	return tr * rot * scl;
 }

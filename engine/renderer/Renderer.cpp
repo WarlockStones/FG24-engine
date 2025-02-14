@@ -109,9 +109,7 @@ void Renderer::Draw(
 	assert(g_sphereMesh);
 	if (colliders) {
 		for (Collider* c : *colliders) {
-			glm::mat4 model = glm::mat4(1);
-			model = glm::translate(model, c->GetPosition());
-			model = glm::scale(model, glm::vec3(1));
+			glm::mat4 model = c->m_transform.GetModelMatrix();
 			Shader::SetMat4(g_flatShader, "model", model);
 			Shader::SetVec3(g_flatShader, "color", glm::vec3(1, 0.5, 0));
 			
@@ -121,7 +119,7 @@ void Renderer::Draw(
 			break;
 
 			case ColliderType::Box:
-			g_cubeMesh->Draw(g_flatBlendShader, true);
+			g_cubeMesh->Draw(g_flatShader, true);
 			break;
 			}
 		}
@@ -136,13 +134,7 @@ void Renderer::Draw(
 		Shader::SetVec3(g_flatBlendShader, "cameraPosition", camera->GetPosition());
 
 		for(const Entity* e : entities) {
-			glm::mat4 tr =  glm::mat4(1);
-			glm::mat4 rot = glm::mat4(1);
-			glm::mat4 scl = glm::mat4(1);
-			tr = glm::translate(tr, e->m_transform.GetLocation());
-			rot = e->m_transform.GetRotationMatrix();
-			scl = glm::scale(scl, e->m_transform.GetScale());
-			glm::mat4 model = tr * rot * scl;
+			glm::mat4 model = e->m_transform.GetModelMatrix();
 			if (e->GetMesh()->IsBlend()) {
 				Shader::Use(g_flatBlendShader);
 				Shader::SetMat4(g_flatBlendShader, "model", model);
