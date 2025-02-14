@@ -2,12 +2,6 @@
   "dependencies": [
     "glm",
     "sdl2",
-    "sdl2-image",
-    {
-      "name": "qtbase",
-      "features": [
-        "widgets"
-      ]
-    }
+    "sdl2-image"
   ]
 }

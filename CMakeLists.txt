@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 ### End of preamble ###
 add_subdirectory(${CMAKE_SOURCE_DIR}/engine)
-add_subdirectory(${CMAKE_SOURCE_DIR}/editor)
+# add_subdirectory(${CMAKE_SOURCE_DIR}/editor)
 
 # TODO: Test on windows
 add_custom_target(run
