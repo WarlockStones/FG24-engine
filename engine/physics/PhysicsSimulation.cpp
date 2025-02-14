@@ -1,7 +1,8 @@
 #include "PhysicsSimulation.hpp"
+#include "physics/Collision.hpp"
 #include "physics/Collider.hpp"
 #include "physics/SphereCollider.hpp"
-#include "physics/Collision.hpp"
+#include "physics/BoxCollider.hpp"
 
 namespace FG24 {
 namespace PhysicsSimulation {
@@ -26,13 +27,36 @@ std::vector<Collision> CheckIntersections(std::vector<Collider*>& colliders) {
 			const auto* s1 = dynamic_cast<const SphereCollider*>(c1);
 			const auto* s2 = dynamic_cast<const SphereCollider*>(c2);
 
-			float dist = glm::distance(s1->GetPosition(), s2->GetPosition());
+			float dist = glm::distance(
+				s1->m_transform.GetLocation(), s2->m_transform.GetLocation());
 			if (dist < s1->m_radius + s2->m_radius) {
-				std::printf("SPHERE SPHERE INTERSECTION!\n");
+				std::printf("Sphere Sphere intersection!\n");
 				return true;
 			}
 
 			return false;
+		}
+
+		// Sphere box collision
+		if (c2->m_type == ColliderType::Box) {
+			const auto* s1 = dynamic_cast<const SphereCollider*>(c1);
+			const auto* b = dynamic_cast<const BoxCollider*>(c2);
+
+			glm::mat4 boxTra = b->m_transform.GetModelMatrix();
+			glm::vec4 sphereCent = glm::vec4(s1->m_transform.GetLocation(), 1);
+			glm::mat4 inv = glm::inverse(boxTra); 
+			glm::vec3 localSphereCenter = inv * sphereCent;
+			glm::vec3 closestPoint = glm::clamp(
+				localSphereCenter,
+				-b->m_extents,
+				b->m_extents);
+			float dist = glm::length(localSphereCenter - closestPoint);
+			if (dist < s1->m_radius * s1->m_radius) {
+				std::printf("Sphere Box intersection!\n");
+				return true;
+			} else {
+				return false;
+			}
 		}
 		break;
 
@@ -64,7 +88,8 @@ void HandleCollisions(const std::vector<Collision>& collisions) {
 void ApplyVelocity(std::vector<Collider*>& colliders, float deltaTime) {
 	// Apply gravity
 	for (Collider* c : colliders) {
-		c->SetPosition(c->GetPosition() + c->m_velocity * deltaTime);
+		c->m_transform.SetLocation(
+			c->m_transform.GetLocation() + c->m_velocity * deltaTime);
 	}
 }
 

@@ -29,6 +29,7 @@
 #include "physics/PhysicsSimulation.hpp"
 #include "physics/Collider.hpp"
 #include "physics/SphereCollider.hpp"
+#include "physics/BoxCollider.hpp"
 
 
 namespace FG24 {
@@ -143,14 +144,20 @@ void Session::Start() {
 	// Create physics collider objects
 	auto* s1 = new SphereCollider();
 	s1->m_radius = 1;
-	s1->SetPosition(glm::vec3(0, 0, 0));
+	s1->m_transform.SetLocation(glm::vec3(0, 0, 0));
 	s1->m_hasGravity = false;
 	colliders.push_back(s1);
 
+
 	auto* s2 = new SphereCollider();
 	s2->m_radius = 1;
-	s2->SetPosition(glm::vec3(0, 10, 0));
+	s2->m_transform.SetLocation(glm::vec3(0, 15, 0));
 	colliders.push_back(s2);
+
+	auto* b1 = new BoxCollider();
+	b1->m_transform.SetLocation(glm::vec3(0.5f, 05, 0));
+	colliders.push_back(b1);
+
 	
 	return;
 
