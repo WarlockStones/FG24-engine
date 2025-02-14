@@ -8,9 +8,9 @@ struct Collision {
 
 	}
 
+	const glm::vec3 m_point; // Point of collision
 	const Collider& m_col1;
 	const Collider& m_col2;
-	const glm::vec3 m_point; // Point of collision
 };
 
 } // namespace FG24

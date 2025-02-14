@@ -12,13 +12,13 @@ enum class ColliderType {
 // Abstract class only accessible through inheritance
 class Collider {
 public:
-	const ColliderType m_type;
 	Transform m_transform;
+	const ColliderType m_type;
 
 	// Move to dynamic body once that is added
-	bool m_hasGravity = true;
 	glm::vec3 m_velocity{0};
 	float m_mass{};
+	bool m_hasGravity = true;
 	
 protected:
 	// Restrict construction

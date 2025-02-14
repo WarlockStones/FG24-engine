@@ -142,8 +142,8 @@ void Session::Start() {
 	CameraManager::CreateCamera(glm::vec3(-3,2,2), -45, -45);
 
 	// Create physics collider objects
-	auto* s1 = new SphereCollider();
-	s1->m_radius = 1;
+	auto* s1 = new BoxCollider();
+	// s1->m_radius = 1;
 	s1->m_transform.SetLocation(glm::vec3(0, 0, 0));
 	s1->m_hasGravity = false;
 	colliders.push_back(s1);
@@ -155,7 +155,7 @@ void Session::Start() {
 	colliders.push_back(s2);
 
 	auto* b1 = new BoxCollider();
-	b1->m_transform.SetLocation(glm::vec3(0.5f, 05, 0));
+	b1->m_transform.SetLocation(glm::vec3(1.0f, 05, 1.0f));
 	colliders.push_back(b1);
 
 	

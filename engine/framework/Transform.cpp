@@ -59,7 +59,6 @@ glm::mat4 FG24::Transform::GetRotationMatrix() const {
   return glm::mat4_cast(m_rotation); 
 }
 
-// This is sometimes called the Transform
 glm::mat4 FG24::Transform::GetModelMatrix() const {
 	glm::mat4 tr =  glm::mat4(1);
 	glm::mat4 rot = glm::mat4(1);

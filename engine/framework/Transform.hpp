@@ -13,10 +13,9 @@ public:
 	void SetLocation(glm::vec3 newLocation);
 	const glm::vec3& GetLocation() const;
 	void SetRotation(glm::vec3 newEuler);
-	const glm::quat& GetRotation() const;
 	glm::vec3 GetRotationEuler() const;
 	glm::mat4 GetRotationMatrix() const;
-	glm::mat4 Transform::GetModelMatrix() const;
+	glm::mat4 Transform::GetModelMatrix() const; // Model is sometimes called the Transform
 	void SetScale(glm::vec3 newScale);
 	const glm::vec3& GetScale() const;
 
