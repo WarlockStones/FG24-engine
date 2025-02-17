@@ -69,26 +69,20 @@ std::vector<Collision> CheckIntersections(std::vector<Collider*>& colliders) {
 				glm::mat3 rot1 = glm::mat3(box1->m_transform.GetModelMatrix());
 				glm::mat3 rot2 = glm::mat3(box2->m_transform.GetModelMatrix());
 				glm::vec3 translation = 
-					glm::vec3(box1->m_transform.GetLocation()) -
-					glm::vec3(box2->m_transform.GetLocation());
+					glm::vec3(box2->m_transform.GetLocation()) -
+					glm::vec3(box1->m_transform.GetLocation());
 				translation = glm::transpose(rot1) * translation;
 				
 				glm::mat3 rot = glm::transpose(rot1) * rot2;
 				glm::mat3 absRot = glm::mat3(
-					glm::abs(rot[0]) + 0.000001f,
-					glm::abs(rot[1]) + 0.000001f,
-					glm::abs(rot[2]) + 0.000001f);
+					glm::abs(rot[0]), glm::abs(rot[1]), glm::abs(rot[2]));
 
-				// TODO: I have my logic twisted. Look at bools printed
-				bool one = false;
-				bool two = false;
-				// SAT (Separating Axis Theorem)
+				// Separating Axis Theorem to detect if intersection impossible
 				for (int i = 0; i < 3; ++i) {
 					float ra = box1->m_extents[i];
 					float rb = glm::dot(absRot[i], box2->m_extents);
 					if (glm::abs(translation[i]) > ra + rb) {
-						// return false;
-						one = true;
+						return false;
 					}
 				}
 
@@ -96,11 +90,12 @@ std::vector<Collision> CheckIntersections(std::vector<Collider*>& colliders) {
 					float ra = glm::dot(absRot[i], box1->m_extents);
 					float rb = box2->m_extents[i];
 					if (glm::abs(glm::dot(rot[i], translation)) > ra + rb){
-						// return false;
-						two = true;
+						return false;
 					}
 				}
-				std::printf("Col? %d %d\n", one, two);
+
+				// Separting Axis Theorem passed boxes must be intersecting
+				std::printf("Box Box Intersection\n");
 				return true;
 			}
 		}
