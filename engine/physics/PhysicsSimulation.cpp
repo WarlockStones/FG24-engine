@@ -94,7 +94,7 @@ std::vector<Collision> CheckIntersections(std::vector<Collider*>& colliders) {
 					}
 				}
 
-				// Separting Axis Theorem passed boxes must be intersecting
+				// Separating Axis Theorem passed, boxes must be intersecting
 				std::printf("Box Box Intersection\n");
 				return true;
 			}
