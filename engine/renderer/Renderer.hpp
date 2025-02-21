@@ -27,6 +27,6 @@ private:
 	// Translation matrices
 	glm::mat4 m_view;
 	glm::mat4 m_projection;
-    ShadowMapping shadowMapping;
+	ShadowMapping shadowMapping;
 };
 }

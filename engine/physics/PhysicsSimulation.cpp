@@ -1,5 +1,6 @@
 #include "PhysicsSimulation.hpp"
 #include <vector>
+#include <optional>
 #include "physics/Collision.hpp"
 #include "physics/Collider.hpp"
 #include "physics/SphereCollider.hpp"
@@ -7,6 +8,11 @@
 #include "physics/Intersect.hpp"
 
 namespace FG24 {
+
+RayHit::RayHit(const glm::vec3& point, const Collider* collider, float distance) 
+	: m_point(point), m_collider(collider), m_distance(distance) {
+}
+
 namespace PhysicsSimulation {
 std::vector<Collider*> colliders;
 
@@ -75,10 +81,34 @@ void HandleCollisions(const std::vector<Collision>& collisions) {
 	// Do the responses
 }
 
-bool Raycast(const glm::vec3& origin, const glm::vec3& dir) {
-	return false;
-}
+std::optional<const RayHit> Raycast(const glm::vec3& origin, const glm::vec3& dir) {
+	for (const Collider* c : colliders) {
+		// Check intersect
+		if ([origin, dir, c] {
+			switch (c->m_type) {
+			case ColliderType::Sphere:
+			return Intersect::RaySphere(
+				origin, dir, dynamic_cast<const SphereCollider*>(c));
+			break;
 
+			case ColliderType::Box:
+			return Intersect::RayBox(
+				origin, dir, dynamic_cast<const BoxCollider*>(c));
+
+			default:
+			return false; // No such ray intersect exists
+			}
+		}()) {
+			// Intersect was successful
+			return std::make_optional<const RayHit>(RayHit(
+				glm::vec3(0, 0, 0), // Collision point TODO????
+				c,                  // Collider
+				10.0f));            // Distance TODO???
+		}
+	}
+
+	return std::nullopt;
+}
 
 void ApplyVelocity(float deltaTime) {
 	// Apply gravity

@@ -92,6 +92,7 @@ bool RayBox(const glm::vec3& origin, const glm::vec3& dir, const BoxCollider* b)
 	glm::vec3 min = localBoxLoc - localBox.m_extents;
 	glm::vec3 max = localBoxLoc + localBox.m_extents;
 
+	// BUG: Vector of 0 results in a division of 0 resulting in an 'inf' value
 	glm::vec3 invDir = 1.0f / dir;
 
 	float t1 = (min.x - origin.x) * invDir.x;
@@ -109,7 +110,19 @@ bool RayBox(const glm::vec3& origin, const glm::vec3& dir, const BoxCollider* b)
 
 bool RaySphere(const glm::vec3& origin, const glm::vec3& dir, const SphereCollider* s) {
 
-	return false;
+	glm::vec3 originToSphere = s->m_transform.GetLocation() - origin;
+	float t0 = glm::dot(originToSphere, dir);
+	float distSq = glm::dot(originToSphere, originToSphere) - t0 * t0;
+	float radSq = s->m_radius * s->m_radius;
+	if (distSq > radSq) {
+		return false;
+	}
+
+	float t1 = glm::sqrt(radSq - distSq);
+	constexpr float eps = 0.000001f;
+	float intersectDist = (t1 > t1 + eps) ? t0 - t1 : t0 + t1;
+
+	return intersectDist > eps;
 }
 
 } // namespace Intersect

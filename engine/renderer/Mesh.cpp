@@ -76,5 +76,4 @@ bool Mesh::IsBlend() const {
 
 	return false;
 }
-
 } // namespace FG24

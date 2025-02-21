@@ -123,6 +123,58 @@ void Renderer::Draw(
 		}
 	}
 
+	// Draw debug rays
+	{
+		// Generate and initialize OpenGL mesh object for ray
+		static GLuint rayVao = []() {
+			Mesh m = m;
+
+			std::uint32_t vbo;
+			glGenBuffers(1, &vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+			float data[] = { 0,0,0, 1,1,1 };
+			glBufferData(
+				GL_ARRAY_BUFFER,
+				sizeof(float) * 6,
+				data,
+				GL_STATIC_DRAW);
+
+			std::uint32_t vao;
+			glGenVertexArrays(1, &vao);
+			glBindVertexArray(vao);
+
+			glVertexAttribPointer(
+				0,
+				3,
+				GL_FLOAT,
+				GL_FALSE,
+				3 * sizeof(float),
+				reinterpret_cast<void*>(0));
+
+			glEnableVertexAttribArray(0);
+
+			return vao;
+		}(); // Static value from lambda is invoked only once
+
+		glm::mat4 tr =  glm::mat4(1);
+		glm::mat4 rot = glm::mat4(1); // No rotation
+		glm::mat4 scl = glm::mat4(1);
+		// TODO: Use origin and direction from ray as 'tr' and 'scl'
+		// TODO: Draw more than one hard coded ray
+		tr = glm::translate(tr, glm::vec3(0, -3, 10)); // Loc
+		scl = glm::scale(scl, glm::vec3(0.01, 0.01, -1) * 1000.0f); // Dir
+		glm::mat model = tr * rot * scl;
+		Shader::SetMat4(g_flatShader, "model", model);
+		Shader::SetVec3(g_flatShader, "color", glm::vec3(1, 1, 1));
+		
+		// Manually draw
+		glBindVertexArray(rayVao);
+		glDrawArrays(GL_LINES, 0, 2);
+		glBindVertexArray(0);
+	}
+
+
 	if (g_useFlatShader) {
 		Shader::Use(g_flatShader);
 

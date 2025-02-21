@@ -2,7 +2,6 @@
 #include <thread>
 #include <vector>
 #include "framework/Camera.hpp"
-#include <glm/glm.hpp> // For camera initialization
 #include "framework/KeyInput.hpp"
 #include "framework/ExampleManager.hpp"
 #include "framework/EntityManager.hpp"

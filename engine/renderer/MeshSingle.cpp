@@ -11,7 +11,7 @@ void MeshSingle::Init(std::string_view name, const VertexData& vertexData) {
 
 	numVerticesToDraw = vertexData.m_numVertices;
 	m_name = name;
-  
+
 	assert(vertexData.m_data != nullptr);
 	glBufferData(
 		GL_ARRAY_BUFFER,    // Type
