@@ -5,10 +5,16 @@
 
 namespace FG24 {
 namespace PhysicsSimulation {
-void ApplyGravity(const std::vector<Collider*>& colliders, float deltaTime);
-std::vector<Collision> CheckIntersections(std::vector<Collider*>& colliders);
+void AddCollider(Collider* c);
+const std::vector<Collider*>& GetColliders();
+void ApplyGravity(float deltaTime);
+std::vector<Collision> CheckIntersections();
 void HandleCollisions(const std::vector<Collision>& collisions);
-void ApplyVelocity(std::vector<Collider*>& colliders, float deltaTime);
+
+bool Raycast(
+	const glm::vec3& origin,
+	const glm::vec3& dir);
+void ApplyVelocity(float deltaTime);
 // Update visuals
 
 } // namespace PhysicsSimulation

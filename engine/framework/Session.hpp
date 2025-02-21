@@ -27,7 +27,5 @@ private:
 	KeyInput keyInput;
 	ExampleManager exampleManager;
 	EntityManager entityManager;
-
-	std::vector<Collider*> colliders;
 };
 }

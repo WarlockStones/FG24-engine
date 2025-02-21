@@ -64,7 +64,7 @@ bool Renderer::Init() {
 
 void Renderer::Draw(
 	const std::vector<Entity*>& entities,
-	const std::vector<Collider*>* colliders = nullptr) 
+	const std::vector<Collider*>& colliders) 
 {
 	glViewport(0, 0, g_windowWidth, g_windowHeight); // Reset from shadowmapping res
 	glClearColor(0.21f, 0.21f, 0.21f, 1.0f);
@@ -107,21 +107,19 @@ void Renderer::Draw(
 	}
 
 	assert(g_sphereMesh);
-	if (colliders) {
-		for (Collider* c : *colliders) {
-			glm::mat4 model = c->m_transform.GetModelMatrix();
-			Shader::SetMat4(g_flatShader, "model", model);
-			Shader::SetVec3(g_flatShader, "color", glm::vec3(1, 0.5, 0));
-			
-			switch (c->m_type) {
-			case ColliderType::Sphere:
-			g_sphereMesh->Draw(g_flatShader, true);
-			break;
+	for (Collider* c : colliders) {
+		glm::mat4 model = c->m_transform.GetModelMatrix();
+		Shader::SetMat4(g_flatShader, "model", model);
+		Shader::SetVec3(g_flatShader, "color", glm::vec3(1, 0.5, 0));
+		
+		switch (c->m_type) {
+		case ColliderType::Sphere:
+		g_sphereMesh->Draw(g_flatShader, true);
+		break;
 
-			case ColliderType::Box:
-			g_cubeMesh->Draw(g_flatShader, true);
-			break;
-			}
+		case ColliderType::Box:
+		g_cubeMesh->Draw(g_flatShader, true);
+		break;
 		}
 	}
 

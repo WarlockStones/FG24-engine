@@ -1,4 +1,5 @@
 #include "PhysicsSimulation.hpp"
+#include <vector>
 #include "physics/Collision.hpp"
 #include "physics/Collider.hpp"
 #include "physics/SphereCollider.hpp"
@@ -7,8 +8,17 @@
 
 namespace FG24 {
 namespace PhysicsSimulation {
+std::vector<Collider*> colliders;
 
-void ApplyGravity(const std::vector<Collider*>& colliders, float deltaTime) {
+void AddCollider(Collider* c) {
+	colliders.push_back(c);
+}
+
+const std::vector<Collider*>& GetColliders() {
+	return colliders;
+}
+
+void ApplyGravity(float deltaTime) {
 	for (Collider* c : colliders) {
 		if (c->m_hasGravity) {
 			constexpr float GravityMultiplier = -2;
@@ -17,7 +27,7 @@ void ApplyGravity(const std::vector<Collider*>& colliders, float deltaTime) {
 	}
 }
 
-std::vector<Collision> CheckIntersections(std::vector<Collider*>& colliders) {
+std::vector<Collision> CheckIntersections() {
 
 	// Define collision intersections
 	static auto Check = [](const Collider* c1, const Collider* c2) {
@@ -62,10 +72,15 @@ std::vector<Collision> CheckIntersections(std::vector<Collider*>& colliders) {
 }
 
 void HandleCollisions(const std::vector<Collision>& collisions) {
-
+	// Do the responses
 }
 
-void ApplyVelocity(std::vector<Collider*>& colliders, float deltaTime) {
+bool Raycast(const glm::vec3& origin, const glm::vec3& dir) {
+	return false;
+}
+
+
+void ApplyVelocity(float deltaTime) {
 	// Apply gravity
 	for (Collider* c : colliders) {
 		c->m_transform.SetLocation(

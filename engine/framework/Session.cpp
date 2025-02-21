@@ -146,17 +146,17 @@ void Session::Start() {
 	// s1->m_radius = 1;
 	s1->m_transform.SetLocation(glm::vec3(0, 0, 0));
 	s1->m_hasGravity = false;
-	colliders.push_back(s1);
+	PhysicsSimulation::AddCollider(s1);
 
 
 	auto* s2 = new SphereCollider();
 	s2->m_radius = 1;
 	s2->m_transform.SetLocation(glm::vec3(0, 15, 0));
-	colliders.push_back(s2);
+	PhysicsSimulation::AddCollider(s2);
 
 	auto* b1 = new BoxCollider();
 	b1->m_transform.SetLocation(glm::vec3(1.0f, 05, 1.0f));
-	colliders.push_back(b1);
+	PhysicsSimulation::AddCollider(b1);
 
 	
 	return;
@@ -215,7 +215,7 @@ void Session::GameLoop() {
 		Update(deltaTime); 
 		Editor::Draw(entityManager);
 		renderer->DrawLightOnly(entityManager.GetEntities());
-		renderer->Draw(entityManager.GetEntities(), &colliders);
+		renderer->Draw(entityManager.GetEntities(), PhysicsSimulation::GetColliders());
 	}
 }
 
@@ -225,9 +225,9 @@ void Session::Update(float deltaTime) {
 	{
 		// Update physics
 		using namespace PhysicsSimulation;
-		ApplyGravity(colliders, deltaTime);
-		HandleCollisions(CheckIntersections(colliders));
-		ApplyVelocity(colliders, deltaTime);
+		ApplyGravity(deltaTime);
+		HandleCollisions(CheckIntersections());
+		ApplyVelocity(deltaTime);
 	}
 
 	// Testing sending messages to manager on another thread

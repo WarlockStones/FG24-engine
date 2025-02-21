@@ -13,7 +13,7 @@ public:
 	bool Init();
 	void Draw(
 		const std::vector<Entity*>& entities,
-		const std::vector<Collider*>* colliders);
+		const std::vector<Collider*>& colliders);
 	void DrawLightOnly(const std::vector<Entity*>& entities); // Only draw light pass
 	void SetProjectionMatrix(float fov,
 		std::uint32_t windowWidth,
