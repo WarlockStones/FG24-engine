@@ -4,6 +4,7 @@
 #include "physics/SphereCollider.hpp"
 #include "physics/BoxCollider.hpp"
 #include "physics/Ray.hpp"
+#include <algorithm>
 
 namespace FG24 {
 namespace Intersect {
@@ -74,8 +75,36 @@ bool BoxBox(const BoxCollider* box1, const BoxCollider* box2) {
 }
 
 bool RayBox(const glm::vec3& origin, const glm::vec3& dir, const BoxCollider* b) {
+	// Make box local space
+	glm::vec3 center = glm::vec3(b->m_transform.GetLocation());
+	glm::mat3 rot = b->m_transform.GetRotationMatrix();
 
-	return false;
+	glm::vec3 localOrigin = glm::transpose(rot) * (origin - center);
+	glm::vec3 localDir = glm::transpose(rot) * dir;
+
+	BoxCollider localBox;
+	localBox.m_center = glm::vec3(0, 0, 0);
+	localBox.m_extents = b->m_extents;
+
+	// Do intersection check
+	const glm::vec3& localBoxLoc = localBox.m_transform.GetLocation();
+
+	glm::vec3 min = localBoxLoc - localBox.m_extents;
+	glm::vec3 max = localBoxLoc + localBox.m_extents;
+
+	glm::vec3 invDir = 1.0f / dir;
+
+	float t1 = (min.x - origin.x) * invDir.x;
+	float t2 = (max.x - origin.x) * invDir.x;
+	float t3 = (min.y - origin.y) * invDir.y;
+	float t4 = (max.y - origin.y) * invDir.y;
+	float t5 = (min.z - origin.z) * invDir.z;
+	float t6 = (max.z - origin.z) * invDir.z;
+
+	float tMin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+	float tMax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
+
+	return tMax >= std::max(0.0f, tMin);
 }
 
 bool RaySphere(const glm::vec3& origin, const glm::vec3& dir, const SphereCollider* s) {
