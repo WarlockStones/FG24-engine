@@ -20,7 +20,7 @@ bool g_useFlatShader = false;
 std::uint32_t			g_shader{};
 std::uint32_t			g_blendShader{};
 std::uint32_t			g_flatShader{};
-std::uint32_t	        g_flatBlendShader{};
+std::uint32_t			g_flatBlendShader{};
 
 Entity*					g_entity1{};
 Entity*					g_entity2{};
@@ -30,8 +30,10 @@ Light*					g_light1{};
 Light*					g_light2{};
 Light*					g_light3{};
 Light*					g_lightDir{};
-Mesh*					g_sphereMesh;
-Mesh*					g_cubeMesh;
+Mesh*					g_sphereMesh{};
+Mesh*					g_cubeMesh{};
+glm::vec3				g_rayOrigin{ 0, -4, 4};
+glm::vec3				g_rayDir{ 0, 0, -1};
 
 // Key inputs
 float g_yvel = 0;

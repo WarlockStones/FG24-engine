@@ -341,6 +341,27 @@ void SceneEditor(EntityManager& entityManager) {
 	}
 }
 
+void DebugEditor() {
+	ImGui::Text("Ray");
+	float origin[3];
+	origin[0] = g_rayOrigin.x;
+	origin[1] = g_rayOrigin.y;
+	origin[2] = g_rayOrigin.z;
+	ImGui::InputFloat3("Ray origin", origin);
+	g_rayOrigin.x = origin[0];
+	g_rayOrigin.y = origin[1];
+	g_rayOrigin.z = origin[2];
+
+	float dir[3];
+	dir[0] = g_rayDir.x;
+	dir[1] = g_rayDir.y;
+	dir[2] = g_rayDir.z;
+	ImGui::InputFloat3("Ray direction", dir);
+	g_rayDir.x = dir[0];
+	g_rayDir.y = dir[1];
+	g_rayDir.z = dir[2];
+}
+
 void Draw(EntityManager& entityManager) {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
@@ -367,6 +388,10 @@ void Draw(EntityManager& entityManager) {
 		} 
 		if (ImGui::BeginTabItem("Scene")) {
 			SceneEditor(entityManager);
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Debug")) {
+			DebugEditor();
 			ImGui::EndTabItem();
 		}
 

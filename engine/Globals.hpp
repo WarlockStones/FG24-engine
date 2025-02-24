@@ -36,6 +36,8 @@ extern Light*				g_light3;
 extern Light*				g_lightDir;
 extern Mesh*				g_sphereMesh;
 extern Mesh*				g_cubeMesh;
+extern glm::vec3			g_rayOrigin;
+extern glm::vec3			g_rayDir;
 
 // Inputs
 extern float g_yvel;

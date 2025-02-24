@@ -14,7 +14,7 @@ bool SphereSphere(const SphereCollider* s1, const SphereCollider* s2) {
 		s1->m_transform.GetLocation(),
 		s2->m_transform.GetLocation());
 	if (dist < s1->m_radius + s2->m_radius) {
-		std::printf("Sphere Sphere intersection!\n");
+		std::printf("Sphere Sphere intersection\n");
 		return true;
 	}
 
@@ -32,7 +32,7 @@ bool SphereBox(const SphereCollider* s, const BoxCollider* b) {
 		b->m_extents);
 	float dist = glm::length(localSphereCenter - closestPoint);
 	if (dist < s->m_radius * s->m_radius) {
-		std::printf("Sphere Box intersection!\n");
+		std::printf("Sphere Box intersection\n");
 		return true;
 	} 
 
@@ -75,41 +75,37 @@ bool BoxBox(const BoxCollider* box1, const BoxCollider* box2) {
 }
 
 bool RayBox(const glm::vec3& origin, const glm::vec3& dir, const BoxCollider* b) {
-	// Make box local space
-	glm::vec3 center = glm::vec3(b->m_transform.GetLocation());
-	glm::mat3 rot = b->m_transform.GetRotationMatrix();
+	glm::mat4 invTransform = glm::inverse(b->m_transform.GetModelMatrix());
+	glm::vec3 localRayOrigin = glm::vec3(invTransform * glm::vec4(origin, 1));
+	glm::vec3 localRayDir = glm::normalize(glm::vec3(invTransform * glm::vec4(dir, 1)));
 
-	glm::vec3 localOrigin = glm::transpose(rot) * (origin - center);
-	glm::vec3 localDir = glm::transpose(rot) * dir;
+	glm::vec3 min = -b->m_extents;
+	glm::vec3 max = b->m_extents;
 
-	BoxCollider localBox;
-	localBox.m_center = glm::vec3(0, 0, 0);
-	localBox.m_extents = b->m_extents;
+	glm::vec3 invDir = 1.0f / localRayDir;
 
-	// Do intersection check
-	const glm::vec3& localBoxLoc = localBox.m_transform.GetLocation();
-
-	glm::vec3 min = localBoxLoc - localBox.m_extents;
-	glm::vec3 max = localBoxLoc + localBox.m_extents;
-
-	// BUG: Vector of 0 results in a division of 0 resulting in an 'inf' value
-	glm::vec3 invDir = 1.0f / dir;
-
-	float t1 = (min.x - origin.x) * invDir.x;
-	float t2 = (max.x - origin.x) * invDir.x;
-	float t3 = (min.y - origin.y) * invDir.y;
-	float t4 = (max.y - origin.y) * invDir.y;
-	float t5 = (min.z - origin.z) * invDir.z;
-	float t6 = (max.z - origin.z) * invDir.z;
+	float t1 = (min.x - localRayOrigin.x) * invDir.x;
+	float t2 = (max.x - localRayOrigin.x) * invDir.x;
+	float t3 = (min.y - localRayOrigin.y) * invDir.y;
+	float t4 = (max.y - localRayOrigin.y) * invDir.y;
+	float t5 = (min.z - localRayOrigin.z) * invDir.z;
+	float t6 = (max.z - localRayOrigin.z) * invDir.z;
 
 	float tMin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
 	float tMax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
 
-	return tMax >= std::max(0.0f, tMin);
+	if (tMax < 0) {
+		// On line but behind us
+		return false;
+	}
+	if (tMin > tMax) {
+		return false;
+	}
+	
+	return true;
 }
 
 bool RaySphere(const glm::vec3& origin, const glm::vec3& dir, const SphereCollider* s) {
-
 	glm::vec3 originToSphere = s->m_transform.GetLocation() - origin;
 	float t0 = glm::dot(originToSphere, dir);
 	float distSq = glm::dot(originToSphere, originToSphere) - t0 * t0;

@@ -146,6 +146,7 @@ void Session::Start() {
 	// s1->m_radius = 1;
 	s1->m_transform.SetLocation(glm::vec3(0, 0, 0));
 	s1->m_hasGravity = false;
+	// s1->m_extents = 1;
 	PhysicsSimulation::AddCollider(s1);
 
 
@@ -271,15 +272,14 @@ void Session::Update(float deltaTime) {
 			glm::sin(pos * 1.1) * 4.0f + 4.5f);
 	}
 
-	static glm::vec3 ray[] = { glm::vec3(0,-3,10), glm::vec3(0,0,-1) };
-	auto hit = PhysicsSimulation::Raycast(ray[0], ray[1]);
+	auto hit = PhysicsSimulation::Raycast(g_rayOrigin, g_rayDir);
 	// using DebugRay = std::tuple<glm::vec3, glm::vec3, float>;
 	// static std::vector<DebugRay> debugRays;
 	if (hit.has_value()) {
 		if (hit.value().m_collider->m_type == ColliderType::Box) {
-			std::printf("Ray Box Intersection!\n");
+			std::printf("Ray Box Intersection\n");
 		} else {
-			std::printf("Ray Sphere Intersection!\n");
+			std::printf("Ray Sphere Intersection\n");
 		}
 	}
 }

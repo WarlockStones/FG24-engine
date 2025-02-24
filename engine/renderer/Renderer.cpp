@@ -160,10 +160,9 @@ void Renderer::Draw(
 		glm::mat4 tr =  glm::mat4(1);
 		glm::mat4 rot = glm::mat4(1); // No rotation
 		glm::mat4 scl = glm::mat4(1);
-		// TODO: Use origin and direction from ray as 'tr' and 'scl'
-		// TODO: Draw more than one hard coded ray
-		tr = glm::translate(tr, glm::vec3(0, -3, 10)); // Loc
-		scl = glm::scale(scl, glm::vec3(0.01, 0.01, -1) * 1000.0f); // Dir
+		// TODO: Support more than 1 ray
+		tr = glm::translate(tr, g_rayOrigin); // Loc
+		scl = glm::scale(scl, g_rayDir * 1000.0f); // Dir
 		glm::mat model = tr * rot * scl;
 		Shader::SetMat4(g_flatShader, "model", model);
 		Shader::SetVec3(g_flatShader, "color", glm::vec3(1, 1, 1));
