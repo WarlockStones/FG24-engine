@@ -38,18 +38,18 @@ void ApplyGravity(float deltaTime) {
 std::vector<Collision> CheckIntersections() {
 
 	// Define collision intersections
-	static auto Check = [](const Collider* c1, const Collider* c2) -> std::optional<Collision> {
+	static auto Check = [](const Collider* c1, const Collider* c2, Collision& out) -> bool {
 		if (c1->m_type == ColliderType::Sphere) {
 			if (c2->m_type == ColliderType::Sphere) {
 				const auto* s1 = dynamic_cast<const SphereCollider*>(c1);
 				const auto* s2 = dynamic_cast<const SphereCollider*>(c2);
-				return Intersect::SphereSphere(s1, s2);
+				return Intersect::SphereSphere(s1, s2, out);
 			}
 
 			if (c2->m_type == ColliderType::Box) {
 				const auto* s = dynamic_cast<const SphereCollider*>(c1);
 				const auto* b = dynamic_cast<const BoxCollider*>(c2);
-				return Intersect::SphereBox(s, b);
+				return Intersect::SphereBox(s, b, out);
 			}
 		}
 
@@ -58,7 +58,7 @@ std::vector<Collision> CheckIntersections() {
 			if (c2->m_type == ColliderType::Box) {
 				const auto* box1 = dynamic_cast<const BoxCollider*>(c1);
 				const auto* box2 = dynamic_cast<const BoxCollider*>(c2);
-				return Intersect::BoxBox(box1, box2);
+				return Intersect::BoxBox(box1, box2, out);
 			}
 		}
 
@@ -71,9 +71,9 @@ std::vector<Collision> CheckIntersections() {
 		for (Collider* c2 : colliders) {
 			if (c1 != c2) {
 				// Collision occurred
-				std::optional<Collision> c = Check(c1, c2);
-				if (c.has_value()) {
-					collisions.emplace_back(c.value());
+				Collision c(*c1, *c2);
+				if (Check(c1, c2, c)) {
+					collisions.emplace_back(c);
 				}
 			}
 		}
@@ -89,7 +89,8 @@ void HandleCollisions(const std::vector<Collision>& collisions) {
 		auto& b = c.m_col2;
 		if (a.m_isStatic && b.m_isStatic) {
 			// Static Static
-		} else 	if (!a.m_isStatic && !b.m_isStatic) {
+		} else if (!a.m_isStatic && !b.m_isStatic) {
+		// } else if (true) {
 			// Dynamic Dynamic
 			glm::vec3 n = glm::normalize(
 				b.m_transform.GetLocation() - a.m_transform.GetLocation());
@@ -121,16 +122,22 @@ void HandleCollisions(const std::vector<Collision>& collisions) {
 		} else {
 			// Static Dynamic
 			Collider& dynamicCol = a.m_isStatic ? b : a;
-			Collider& staticCollider = a.m_isStatic ? a : b;
+			// Collider& staticCollider = a.m_isStatic ? a : b;
 
+			// Collider.normal different?
 			glm::vec3 n = glm::normalize(
 				b.m_transform.GetLocation() - a.m_transform.GetLocation());
 			glm::vec3 r = c.m_point - dynamicCol.m_transform.GetLocation();
+			if (dynamicCol.m_type == ColliderType::Box) {
+			   std::printf("Box point = %f %f %f\n",
+						   c.m_point.x, c.m_point.y, c.m_point.z);
+			}
 			glm::vec3 v = dynamicCol.m_velocity + glm::cross(dynamicCol.m_angularVelocity, r);
 			float vnDot = glm::dot(v, n);
 
+			// BUG: Never true on Box Box collision
 			if (vnDot <= 0) {
-				float invMass = (dynamicCol.m_mass > 0) ? 1.0f / dynamicCol.m_mass : 0; // ???
+				float invMass = (dynamicCol.m_mass > 0) ? 1.0f / dynamicCol.m_mass : 0;
 				glm::vec3 rn = glm::cross(r, n);
 				float angularEffect = glm::dot(
 					rn,
@@ -139,22 +146,26 @@ void HandleCollisions(const std::vector<Collision>& collisions) {
 				float impulseMag = -(1 + restitution) * vnDot / (invMass * angularEffect);
 				glm::vec3 impulse = impulseMag * n;
 				dynamicCol.m_velocity += impulse * invMass;
-				dynamicCol.m_angularVelocity += dynamicCol.m_inverseMomentOfInertia * glm::cross(r, impulse);
+				dynamicCol.m_angularVelocity += 
+					dynamicCol.m_inverseMomentOfInertia *
+					glm::cross(r, impulse);
 
 				// Sliding friction
 				glm::vec3 tangentVel = v - (n * glm::dot(v, n));
 				if (glm::length(tangentVel) > 0.0001f) {
 					glm::vec3 frictionDir = -glm::normalize(tangentVel);
 					constexpr float slidingFriction = 0.5f;
-					glm::vec3 frictionImpulse = frictionDir + slidingFriction * glm::length(tangentVel);
+					glm::vec3 frictionImpulse = 
+						frictionDir +
+						slidingFriction *
+						glm::length(tangentVel);
 
 					dynamicCol.m_velocity += frictionImpulse * invMass;
-					dynamicCol.m_angularVelocity += dynamicCol.m_inverseMomentOfInertia * glm::cross(r, frictionImpulse);
 
+					dynamicCol.m_angularVelocity += 
+						dynamicCol.m_inverseMomentOfInertia *
+						glm::cross(r, frictionImpulse);
 				}
-
-
-
 			}
 		}
 	}
@@ -195,24 +206,30 @@ void ApplyVelocity(float deltaTime) {
 			c->m_velocity = { 0,0,0 };
 			c->m_angularVelocity = { 0,0,0 };
 		} else {
+
+		    std::printf("Vel: %f %f %f\n", 
+				c->m_velocity.x,
+				c->m_velocity.y,
+				c->m_velocity.z);
+			std::printf("Pos: %f %f %f\n\n", 
+				c->m_transform.GetLocation().x,
+				c->m_transform.GetLocation().y,
+				c->m_transform.GetLocation().z);
+
 			c->m_transform.SetLocation(
 				c->m_transform.GetLocation() + c->m_velocity * deltaTime);
 
 			// Update rotation
 			if (glm::length(c->m_angularVelocity) > 0.0001f) {
-				glm::vec3 n = glm::normalize(c->m_angularVelocity);
-				glm::quat rot = glm::angleAxis(
-					glm::length(c->m_angularVelocity) * deltaTime,
-					n);
-				// How do I use normal here?
-				c->m_transform.SetRotation(c->m_transform.GetRotationEuler() + (c->m_angularVelocity * deltaTime));
-				// c->m_transform.SetRotation(rot + c->m_transform.GetRotationQuat()); // Correct?
+				c->m_transform.SetRotation(
+					c->m_transform.GetRotationEuler() +
+					(c->m_angularVelocity * deltaTime));
 			}
 
 			if (c->m_mass > 0) {
 				// TODO: Use mass??
 				constexpr float linearDrag = 0.32f;
-				constexpr float angularDrag = 0.0005f;
+				constexpr float angularDrag = 0.05f;
 				c->m_velocity *= glm::pow(1.0f - linearDrag, deltaTime);
 				c->m_angularVelocity *= glm::exp(-angularDrag * deltaTime);
 			}

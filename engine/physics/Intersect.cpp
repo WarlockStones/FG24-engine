@@ -5,12 +5,11 @@
 #include "physics/BoxCollider.hpp"
 #include "physics/Ray.hpp"
 #include <algorithm>
-#include <optional>
 
 namespace FG24 {
 namespace Intersect {
 
-std::optional<Collision> SphereSphere(const SphereCollider* s1, const SphereCollider* s2) {
+bool SphereSphere(const SphereCollider* s1, const SphereCollider* s2, Collision& out) {
 	glm::vec3 pos1 = s1->m_transform.GetLocation();
 	glm::vec3 pos2 = s2->m_transform.GetLocation();
 	float dist = glm::distance(pos1, pos2);
@@ -18,14 +17,16 @@ std::optional<Collision> SphereSphere(const SphereCollider* s1, const SphereColl
 		std::printf("Sphere Sphere intersection\n");
 		glm::vec3 normal = (dist > 0.0f) ? (pos2 - pos1) / dist : glm::vec3(1, 0, 0);
 		glm::vec3 point = normal + normal * s1->m_radius; // ???? Sphere 2???
+		out.m_normal = normal;
+		out.m_point = point;
 
-		return std::optional<Collision>();
+		return true;
 	}
 
-	return std::nullopt;
+	return false;
 }
 
-std::optional<Collision> SphereBox(const SphereCollider* s, const BoxCollider* b) {
+bool SphereBox(const SphereCollider* s, const BoxCollider* b, Collision& out) {
 	glm::mat4 boxTra = b->m_transform.GetModelMatrix();
 	glm::vec4 sphereCent = glm::vec4(s->m_transform.GetLocation(), 1);
 	glm::mat4 inv = glm::inverse(boxTra);
@@ -37,13 +38,14 @@ std::optional<Collision> SphereBox(const SphereCollider* s, const BoxCollider* b
 	float dist = glm::length(localSphereCenter - closestPoint);
 	if (dist < s->m_radius * s->m_radius) {
 		std::printf("Sphere Box intersection\n");
+		out.m_point = closestPoint; // Correct?
 		return true;
 	} 
 
-	return std::nullopt;
+	return false;
 }
 
-std::optional<Collision> BoxBox(const BoxCollider* box1, const BoxCollider* box2) {
+bool BoxBox(const BoxCollider* box1, const BoxCollider* box2, Collision& out) {
 	// Put one cube in the other's local space
 	glm::mat3 rot1 = glm::mat3(box1->m_transform.GetModelMatrix());
 	glm::mat3 rot2 = glm::mat3(box2->m_transform.GetModelMatrix());
@@ -61,7 +63,7 @@ std::optional<Collision> BoxBox(const BoxCollider* box1, const BoxCollider* box2
 		float ra = box1->m_extents[i];
 		float rb = glm::dot(absRot[i], box2->m_extents);
 		if (glm::abs(translation[i]) > ra + rb) {
-			return std::nullopt;
+			return false;
 		}
 	}
 
@@ -69,12 +71,14 @@ std::optional<Collision> BoxBox(const BoxCollider* box1, const BoxCollider* box2
 		float ra = glm::dot(absRot[i], box1->m_extents);
 		float rb = box2->m_extents[i];
 		if (glm::abs(glm::dot(rot[i], translation)) > ra + rb){
-			return std::nullopt;
+			return false;
 		}
 	}
 
 	// Separating Axis Theorem passed, boxes must be intersecting
 	std::printf("Box Box Intersection\n");
+	// Return point
+	// out.m_point = 
 	return true;
 }
 
