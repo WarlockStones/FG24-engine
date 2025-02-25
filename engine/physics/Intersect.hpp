@@ -1,9 +1,9 @@
 #pragma once
 #include "physics/SphereCollider.hpp"
 #include <optional>
+#include <glm/vec3.hpp>
 #include "physics/Collision.hpp"
 
-namespace glm { typedef vec3; }
 namespace FG24 {
 class SphereCollider;
 class BoxCollider;

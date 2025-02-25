@@ -17,7 +17,7 @@ public:
 	glm::vec3 GetRotationEuler() const;
 	glm::mat4 GetRotationMatrix() const;
 	glm::quat GetRotationQuat() const;
-	glm::mat4 Transform::GetModelMatrix() const; // Model is sometimes called the Transform
+	glm::mat4 GetModelMatrix() const; // Model is sometimes called the Transform
 	void SetScale(const glm::vec3& newScale);
 	const glm::vec3& GetScale() const;
 

@@ -1,6 +1,6 @@
 #pragma once
+#include <glm/vec3.hpp>
 #include "physics/Collider.hpp"
-namespace glm { typedef vec3; }
 namespace FG24 {
 struct Collision {
 	Collision(Collider& col1, Collider& col2, const glm::vec3& colPoint, const glm::vec3& normal)
