@@ -79,6 +79,31 @@ std::vector<Collision> CheckIntersections() {
 
 void HandleCollisions(const std::vector<Collision>& collisions) {
 	// Do the responses
+	for (const Collision& c : collisions) {
+		auto& a = c.m_col1;
+		auto& b = c.m_col2;
+
+		glm::vec3 n = glm::normalize(
+			b.m_transform.GetLocation() - a.m_transform.GetLocation());
+
+		glm::vec3 relVel = b.m_velocity - a.m_velocity;
+
+		float velocityAlongNormal = glm::dot(relVel, n);
+
+		// Only update velocity if moving towards each other
+		if (velocityAlongNormal < 0) { 
+			constexpr float restitution = 0.1f;
+			float impulse = (1 + restitution) * velocityAlongNormal;
+
+			glm::vec3 impulseVector = impulse * n;
+			if (!a.m_isStatic) {
+				a.m_velocity += impulseVector;
+			}
+			if (!b.m_isStatic) {
+				b.m_velocity -= impulseVector;
+			}
+		}
+	}
 }
 
 std::optional<const RayHit> Raycast(const glm::vec3& origin, const glm::vec3& dir) {

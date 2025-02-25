@@ -17,8 +17,9 @@ public:
 
 	// Move to dynamic body once that is added
 	glm::vec3 m_velocity{0};
-	float m_mass{};
+	float m_mass = 1;
 	bool m_hasGravity = true;
+	bool m_isStatic = false;
 	
 protected:
 	// Restrict construction

@@ -146,6 +146,7 @@ void Session::Start() {
 	// s1->m_radius = 1;
 	s1->m_transform.SetLocation(glm::vec3(0, 0, 0));
 	s1->m_hasGravity = false;
+	s1->m_isStatic = true;
 	// s1->m_extents = 1;
 	PhysicsSimulation::AddCollider(s1);
 
@@ -158,6 +159,11 @@ void Session::Start() {
 	auto* b1 = new BoxCollider();
 	b1->m_transform.SetLocation(glm::vec3(0.5f, 5, 0.5f));
 	PhysicsSimulation::AddCollider(b1);
+
+	auto* s3 = new SphereCollider();
+	s3->m_radius = 1;
+	s3->m_transform.SetLocation(glm::vec3(0.3, 20, 0.3));
+	PhysicsSimulation::AddCollider(s3);
 
 	
 	return;
