@@ -5,23 +5,27 @@
 #include "physics/BoxCollider.hpp"
 #include "physics/Ray.hpp"
 #include <algorithm>
+#include <optional>
 
 namespace FG24 {
 namespace Intersect {
 
-bool SphereSphere(const SphereCollider* s1, const SphereCollider* s2) {
-	float dist = glm::distance(
-		s1->m_transform.GetLocation(),
-		s2->m_transform.GetLocation());
+std::optional<Collision> SphereSphere(const SphereCollider* s1, const SphereCollider* s2) {
+	glm::vec3 pos1 = s1->m_transform.GetLocation();
+	glm::vec3 pos2 = s2->m_transform.GetLocation();
+	float dist = glm::distance(pos1, pos2);
 	if (dist < s1->m_radius + s2->m_radius) {
 		std::printf("Sphere Sphere intersection\n");
-		return true;
+		glm::vec3 normal = (dist > 0.0f) ? (pos2 - pos1) / dist : glm::vec3(1, 0, 0);
+		glm::vec3 point = normal + normal * s1->m_radius; // ???? Sphere 2???
+
+		return std::optional<Collision>();
 	}
 
-	return false;
+	return std::nullopt;
 }
 
-bool SphereBox(const SphereCollider* s, const BoxCollider* b) {
+std::optional<Collision> SphereBox(const SphereCollider* s, const BoxCollider* b) {
 	glm::mat4 boxTra = b->m_transform.GetModelMatrix();
 	glm::vec4 sphereCent = glm::vec4(s->m_transform.GetLocation(), 1);
 	glm::mat4 inv = glm::inverse(boxTra);
@@ -36,10 +40,10 @@ bool SphereBox(const SphereCollider* s, const BoxCollider* b) {
 		return true;
 	} 
 
-	return false;
+	return std::nullopt;
 }
 
-bool BoxBox(const BoxCollider* box1, const BoxCollider* box2) {
+std::optional<Collision> BoxBox(const BoxCollider* box1, const BoxCollider* box2) {
 	// Put one cube in the other's local space
 	glm::mat3 rot1 = glm::mat3(box1->m_transform.GetModelMatrix());
 	glm::mat3 rot2 = glm::mat3(box2->m_transform.GetModelMatrix());
@@ -57,7 +61,7 @@ bool BoxBox(const BoxCollider* box1, const BoxCollider* box2) {
 		float ra = box1->m_extents[i];
 		float rb = glm::dot(absRot[i], box2->m_extents);
 		if (glm::abs(translation[i]) > ra + rb) {
-			return false;
+			return std::nullopt;
 		}
 	}
 
@@ -65,7 +69,7 @@ bool BoxBox(const BoxCollider* box1, const BoxCollider* box2) {
 		float ra = glm::dot(absRot[i], box1->m_extents);
 		float rb = box2->m_extents[i];
 		if (glm::abs(glm::dot(rot[i], translation)) > ra + rb){
-			return false;
+			return std::nullopt;
 		}
 	}
 

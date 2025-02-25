@@ -38,7 +38,7 @@ const glm::vec3& FG24::Transform::GetLocation() const {
 	return m_location;
 }
 
-void FG24::Transform::SetScale(glm::vec3 newScale) {
+void FG24::Transform::SetScale(const glm::vec3& newScale) {
 	m_scale = newScale;
 }
 
@@ -47,8 +47,12 @@ const glm::vec3& FG24::Transform::GetScale() const {
 }
 
 // x, y, z = pitch, yaw, roll
-void FG24::Transform::SetRotation(glm::vec3 newEuler) {
+void FG24::Transform::SetRotation(const glm::vec3& newEuler) {
 	m_rotation = glm::quat(newEuler);
+}
+
+void FG24::Transform::SetRotation(const glm::quat& newQuat) {
+	m_rotation = newQuat;
 }
 
 glm::vec3 FG24::Transform::GetRotationEuler() const {
@@ -57,6 +61,10 @@ glm::vec3 FG24::Transform::GetRotationEuler() const {
 
 glm::mat4 FG24::Transform::GetRotationMatrix() const {
   return glm::mat4_cast(m_rotation); 
+}
+
+glm::quat FG24::Transform::GetRotationQuat() const {
+	return m_rotation;
 }
 
 glm::mat4 FG24::Transform::GetModelMatrix() const {

@@ -16,7 +16,11 @@ public:
 	const ColliderType m_type;
 
 	// Move to dynamic body once that is added
-	glm::vec3 m_velocity{0};
+	glm::mat3 m_momentOfInertia;
+	glm::mat3 m_inverseMomentOfInertia;
+
+	glm::vec3 m_velocity{};
+	glm::vec3 m_angularVelocity{};
 	float m_mass = 1;
 	bool m_hasGravity = true;
 	bool m_isStatic = false;
