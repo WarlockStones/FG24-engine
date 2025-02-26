@@ -162,7 +162,7 @@ void Renderer::Draw(
 		glm::mat4 scl = glm::mat4(1);
 		// TODO: Support more than 1 ray
 		tr = glm::translate(tr, g_rayOrigin); // Loc
-		scl = glm::scale(scl, g_rayDir * 1000.0f); // Dir
+		scl = glm::scale(scl, g_rayDir * 1000.0f); // Direction. 1000 should be length
 		glm::mat model = tr * rot * scl;
 		Shader::SetMat4(g_flatShader, "model", model);
 		Shader::SetVec3(g_flatShader, "color", glm::vec3(1, 1, 1));

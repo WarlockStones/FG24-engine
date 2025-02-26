@@ -17,7 +17,7 @@ public:
 
 	// Move to dynamic body once that is added
 	glm::mat3 m_momentOfInertia;
-	glm::mat3 m_inverseMomentOfInertia;
+	glm::mat3 m_inverseMomentOfInertia{};
 
 	glm::vec3 m_velocity{};
 	glm::vec3 m_angularVelocity{};

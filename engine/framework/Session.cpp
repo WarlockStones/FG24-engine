@@ -142,15 +142,14 @@ void Session::Start() {
 	CameraManager::CreateCamera(glm::vec3(-3,2,2), -45, -45);
 
 	// Create physics collider objects
-	auto* s1 = new BoxCollider();
+	auto* b0 = new BoxCollider();
 	// s1->m_radius = 1;
-	s1->m_transform.SetLocation(glm::vec3(0, 0, 0));
-	s1->m_hasGravity = false;
-	s1->m_isStatic = true;
+	b0->m_transform.SetLocation(glm::vec3(0, 0, 0));
+	b0->m_hasGravity = false;
+	b0->m_isStatic = true;
 	// s1->m_extents = 1;
-	PhysicsSimulation::AddCollider(s1);
-
-
+	PhysicsSimulation::AddCollider(b0);
+	
 	auto* s2 = new SphereCollider();
 	s2->m_radius = 1;
 	s2->m_transform.SetLocation(glm::vec3(0, 15, 0));
@@ -164,43 +163,7 @@ void Session::Start() {
 	s3->m_radius = 1;
 	s3->m_transform.SetLocation(glm::vec3(0.3, 20, 0.3));
 	PhysicsSimulation::AddCollider(s3);
-
 	
-	return;
-
-#if false // Test serialization
-	// If save file for this entity exists, load it.
-	Vec3 v;
-	v.x = 7000;
-	v.y = 10;
-	v.z = 10;
-	g_flag->transform.location = v;
-
-	FILE* fp = std::fopen("../../assets/flag.sav", "rb"); 
-	if (fp) { // Fails if file does not exist since it uses "r" - read mode
-		std::printf("Reading...");
-		g_monkey->ReadFrom(fp);
-	} else {
-		fp = std::fopen("../../assets/flag.sav", "wb"); // Open for writing
-		if (fp) {
-			std::printf("Writing...\n");
-			g_flag->WriteTo(fp);
-		} else {
-			std::printf("Error: failed to open file for flag asset save\n");
-		}
-	}
-
-	std::printf("Vec3 size = %lu\n", sizeof(Vec3));
-	std::printf("float size = %lu\n", sizeof(float));
-	const Vec3& loc = g_flag->transform.location;
-	const Vec3& rot= g_flag->transform.rotation;
-	const Vec3& scl= g_flag->transform.scale;
-	std::printf("loc: %f %f %f\n", loc.x, loc.y, loc.z);
-	std::printf("rot: %f %f %f\n", rot.x, rot.y, rot.z);
-	std::printf("scl: %f %f %f\n", scl.x, scl.y, scl.z);
-
-	if (fp) std::fclose(fp);
-#endif
 }
 
 void Session::GameLoop() {
@@ -279,8 +242,6 @@ void Session::Update(float deltaTime) {
 	}
 
 	auto hit = PhysicsSimulation::Raycast(g_rayOrigin, g_rayDir);
-	// using DebugRay = std::tuple<glm::vec3, glm::vec3, float>;
-	// static std::vector<DebugRay> debugRays;
 	if (hit.has_value()) {
 		if (hit.value().m_collider->m_type == ColliderType::Box) {
 			std::printf("Ray Box Intersection\n");

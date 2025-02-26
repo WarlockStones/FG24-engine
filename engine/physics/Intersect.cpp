@@ -16,7 +16,7 @@ bool SphereSphere(const SphereCollider* s1, const SphereCollider* s2, Collision&
 	if (dist < s1->m_radius + s2->m_radius) {
 		std::printf("Sphere Sphere intersection\n");
 		glm::vec3 normal = (dist > 0.0f) ? (pos2 - pos1) / dist : glm::vec3(1, 0, 0);
-		glm::vec3 point = normal + normal * s1->m_radius; // ???? Sphere 2???
+		glm::vec3 point = normal + normal * s1->m_radius;
 		out.m_normal = normal;
 		out.m_point = point;
 
@@ -38,7 +38,7 @@ bool SphereBox(const SphereCollider* s, const BoxCollider* b, Collision& out) {
 	float dist = glm::length(localSphereCenter - closestPoint);
 	if (dist < s->m_radius * s->m_radius) {
 		std::printf("Sphere Box intersection\n");
-		out.m_point = closestPoint; // Correct?
+		out.m_point = closestPoint; 
 		return true;
 	} 
 

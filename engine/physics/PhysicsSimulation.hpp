@@ -23,7 +23,5 @@ std::optional<const RayHit> Raycast(
 	const glm::vec3& origin,
 	const glm::vec3& dir);
 void ApplyVelocity(float deltaTime);
-// Update visuals
-
 } // namespace PhysicsSimulation
 } // namespace FG24

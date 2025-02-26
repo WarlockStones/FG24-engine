@@ -8,6 +8,7 @@
 #include "physics/Intersect.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <numbers>
 
 namespace FG24 {
 
@@ -70,9 +71,9 @@ std::vector<Collision> CheckIntersections() {
 	for (Collider* c1 : colliders) {
 		for (Collider* c2 : colliders) {
 			if (c1 != c2) {
-				// Collision occurred
 				Collision c(*c1, *c2);
 				if (Check(c1, c2, c)) {
+					// Collision occurred
 					collisions.emplace_back(c);
 				}
 			}
@@ -83,14 +84,13 @@ std::vector<Collision> CheckIntersections() {
 }
 
 void HandleCollisions(const std::vector<Collision>& collisions) {
-	// Do the responses
 	for (const Collision& c : collisions) {
 		auto& a = c.m_col1;
 		auto& b = c.m_col2;
 		if (a.m_isStatic && b.m_isStatic) {
 			// Static Static
-		} else if (!a.m_isStatic && !b.m_isStatic) {
-		// } else if (true) {
+		// } else if (!a.m_isStatic && !b.m_isStatic) {
+		} else if (true) {
 			// Dynamic Dynamic
 			glm::vec3 n = glm::normalize(
 				b.m_transform.GetLocation() - a.m_transform.GetLocation());
@@ -112,7 +112,7 @@ void HandleCollisions(const std::vector<Collision>& collisions) {
 					a.m_angularVelocity += a.m_inverseMomentOfInertia * torque;
 				}
 				if (!b.m_isStatic) {
-					// Move in oppsoite direction
+					// Move in opposite direction
 					b.m_velocity -= impulseVector;
 					glm::vec3 r = c.m_point - b.m_transform.GetLocation();
 					glm::vec3 torque = glm::cross(r, impulseVector);
@@ -120,28 +120,32 @@ void HandleCollisions(const std::vector<Collision>& collisions) {
 				}
 			}
 		} else {
+			/*                                                                      *
+			 * DOES NOT WORK! Fix cube collision point, and cube moment of intertia *
+			 *                                                                      *
+
 			// Static Dynamic
 			Collider& dynamicCol = a.m_isStatic ? b : a;
 			// Collider& staticCollider = a.m_isStatic ? a : b;
 
-			// Collider.normal different?
 			glm::vec3 n = glm::normalize(
 				b.m_transform.GetLocation() - a.m_transform.GetLocation());
 			glm::vec3 r = c.m_point - dynamicCol.m_transform.GetLocation();
+			// glm::vec3 r = glm::vec3(0, 1, 0) - dynamicCol.m_transform.GetLocation();
 			if (dynamicCol.m_type == ColliderType::Box) {
-			   std::printf("Box point = %f %f %f\n",
-						   c.m_point.x, c.m_point.y, c.m_point.z);
+				std::printf("Box point = %f %f %f\n",
+					c.m_point.x, c.m_point.y, c.m_point.z);
 			}
 			glm::vec3 v = dynamicCol.m_velocity + glm::cross(dynamicCol.m_angularVelocity, r);
 			float vnDot = glm::dot(v, n);
 
-			// BUG: Never true on Box Box collision
 			if (vnDot <= 0) {
 				float invMass = (dynamicCol.m_mass > 0) ? 1.0f / dynamicCol.m_mass : 0;
 				glm::vec3 rn = glm::cross(r, n);
 				float angularEffect = glm::dot(
 					rn,
 					dynamicCol.m_inverseMomentOfInertia * rn);
+				// BUG: inverseMomentOfInertia uninitialised
 				constexpr float restitution = 0.1f;
 				float impulseMag = -(1 + restitution) * vnDot / (invMass * angularEffect);
 				glm::vec3 impulse = impulseMag * n;
@@ -166,9 +170,9 @@ void HandleCollisions(const std::vector<Collision>& collisions) {
 						dynamicCol.m_inverseMomentOfInertia *
 						glm::cross(r, frictionImpulse);
 				}
-			}
+			} */ 
 		}
-	}
+	} // End of for each collision
 }
 
 std::optional<const RayHit> Raycast(const glm::vec3& origin, const glm::vec3& dir) {
@@ -191,9 +195,10 @@ std::optional<const RayHit> Raycast(const glm::vec3& origin, const glm::vec3& di
 		}()) {
 			// Intersect was successful
 			return std::make_optional<const RayHit>(RayHit(
-				glm::vec3(0, 0, 0), // Collision point TODO????
-				c,                  // Collider
-				10.0f));            // Distance TODO???
+				// TODO: Calculate hit location and distance
+				glm::vec3(0, 0, 0), 
+				c,
+				0.0f));
 		}
 	}
 
@@ -206,16 +211,6 @@ void ApplyVelocity(float deltaTime) {
 			c->m_velocity = { 0,0,0 };
 			c->m_angularVelocity = { 0,0,0 };
 		} else {
-
-		    std::printf("Vel: %f %f %f\n", 
-				c->m_velocity.x,
-				c->m_velocity.y,
-				c->m_velocity.z);
-			std::printf("Pos: %f %f %f\n\n", 
-				c->m_transform.GetLocation().x,
-				c->m_transform.GetLocation().y,
-				c->m_transform.GetLocation().z);
-
 			c->m_transform.SetLocation(
 				c->m_transform.GetLocation() + c->m_velocity * deltaTime);
 
@@ -227,9 +222,8 @@ void ApplyVelocity(float deltaTime) {
 			}
 
 			if (c->m_mass > 0) {
-				// TODO: Use mass??
 				constexpr float linearDrag = 0.32f;
-				constexpr float angularDrag = 0.05f;
+				constexpr float angularDrag = 0.5f;
 				c->m_velocity *= glm::pow(1.0f - linearDrag, deltaTime);
 				c->m_angularVelocity *= glm::exp(-angularDrag * deltaTime);
 			}
@@ -238,9 +232,7 @@ void ApplyVelocity(float deltaTime) {
 			glm::mat inertiaTensorInWorldSpace = rot * c->m_momentOfInertia * glm::transpose(rot);
 			c->m_inverseMomentOfInertia = glm::inverse(inertiaTensorInWorldSpace);
 		}
-
 	}
-
 }
 
 } // namespace PhysicsSimulation

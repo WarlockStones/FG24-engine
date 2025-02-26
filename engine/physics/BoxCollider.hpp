@@ -1,12 +1,14 @@
 #pragma once
 #include "physics/Collider.hpp"
 #include <glm/vec3.hpp>
+#include <cstdio>
 
 namespace FG24 {
 
 class BoxCollider : public Collider {
 public:
 	BoxCollider() : Collider(ColliderType::Box) {
+		std::printf("Warning! Box Collider did not initialise a Moment Of Inertia\n");
 	};
 	~BoxCollider() = default;
 
