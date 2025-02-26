@@ -1,5 +1,5 @@
 # Futuregames 2024 Game engine
-Read the docs/ directory for code convention, TODO list, and general documentation.
+The stand-alone editor has been depricated and can no longe be built.
 
 ## Compiling from source
 ### Windows:
